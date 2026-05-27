@@ -1,0 +1,26 @@
+# Quarto build artifacts
+_site/
+.quarto/
+
+# If you publish with `quarto publish gh-pages`, keep the built site out of the repo.
+# If you prefer committing the built site to `main/docs`, remove the `_site/` entry.
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+/env/
+/.quarto/
