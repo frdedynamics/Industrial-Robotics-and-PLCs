@@ -11,16 +11,9 @@ The interactive robot below is a playful first look at kinematics: move any join
 ```{=html}
 <div class="robot-hero">
     <div class="robot-hero__intro">
-        <p class="robot-kicker">Interactive Preview</p>
-        <h2 class="robot-hero__title">Explore a 6-DOF robot in your browser</h2>
-        <p class="robot-hero__lede">This demo runs entirely on the client side, so the plot keeps its sliders, 3D camera, and live pose readout after a normal Quarto render and when the site is published to GitHub Pages.</p>
-        <div class="robot-preset-group" aria-label="Preset robot poses">
-            <button class="robot-preset" data-preset="home" type="button">Home</button>
-            <button class="robot-preset" data-preset="reach" type="button">Reach</button>
-            <button class="robot-preset" data-preset="inspect" type="button">Inspect</button>
-            <button class="robot-preset" data-preset="wave" type="button">Wave</button>
-            <button class="robot-preset" data-preset="random" type="button">Random</button>
-        </div>
+        <p class="robot-kicker">Interactive Demo</p>
+        <h2 class="robot-hero__title">Jog a robot</h2>
+<!--         <p class="robot-hero__lede">This demo runs entirely on the client side, so the plot keeps its sliders, 3D camera, and live pose readout after a normal Quarto render and when the site is published to GitHub Pages.</p> -->
     </div>
 
     <div id="robot-kinematics-widget" class="robot-widget">
@@ -41,7 +34,15 @@ The interactive robot below is a playful first look at kinematics: move any join
                 </section>
             </div>
 
-            <div id="robot-sliders" class="robot-sliders" aria-label="Joint angle controls"></div>
+            <div id="robot-sliders" class="robot-sliders" aria-label="Joint angle controls">
+                <div class="robot-slider-actions">
+                    <span class="robot-slider-actions__label">Presets</span>
+                    <div class="robot-preset-group" aria-label="Preset robot poses">
+                        <button class="robot-preset" data-preset="home" type="button">Home</button>
+                        <button class="robot-preset" data-preset="random" type="button">Random</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

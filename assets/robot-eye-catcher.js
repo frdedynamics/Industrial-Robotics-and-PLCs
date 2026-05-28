@@ -17,19 +17,16 @@
   }
 
   const jointDefinitions = [
-    { label: "J1 Base", min: -180, max: 180, value: 15 },
+    { label: "J1 Base", min: -180, max: 180, value: 0 },
     { label: "J2 Shoulder", min: -120, max: 120, value: -30 },
-    { label: "J3 Elbow", min: -150, max: 150, value: 65 },
-    { label: "J4 Wrist Roll", min: -180, max: 180, value: 10 },
-    { label: "J5 Wrist Pitch", min: -120, max: 120, value: 25 },
+    { label: "J3 Elbow", min: -150, max: 150, value: 75 },
+    { label: "J4 Wrist Roll", min: -180, max: 180, value: -120 },
+    { label: "J5 Wrist Pitch", min: -120, max: 120, value: -90 },
     { label: "J6 Tool Yaw", min: -180, max: 180, value: 0 }
   ];
 
   const presets = {
-    home: [0, -35, 70, 0, 30, 0],
-    reach: [40, -20, 55, 30, 45, 35],
-    inspect: [-35, -55, 95, 65, -20, 30],
-    wave: [85, -30, 80, 75, 20, -45]
+    home: [0, -30, 75, -120, -90, 0]
   };
 
   const dhParameters = [
@@ -210,6 +207,81 @@
     };
   }
 
+  function createGroundPlaneTrace() {
+    const extent = 0.9;
+    const step = 0.1;
+    const axis = [];
+
+    for (let value = -extent; value <= extent + 1e-9; value += step) {
+      axis.push(Number(value.toFixed(2)));
+    }
+
+    const z = axis.map(function () {
+      return axis.map(function () {
+        return 0;
+      });
+    });
+
+    return {
+      type: "surface",
+      x: axis,
+      y: axis,
+      z: z,
+      opacity: 0.16,
+      showscale: false,
+      hoverinfo: "skip",
+      colorscale: [
+        [0, "#f6fbff"],
+        [1, "#dbe9f8"]
+      ],
+      contours: {
+        x: {
+          show: true,
+          start: -extent,
+          end: extent,
+          size: step,
+          color: "rgba(39, 128, 227, 0.20)",
+          width: 1,
+          highlight: false
+        },
+        y: {
+          show: true,
+          start: -extent,
+          end: extent,
+          size: step,
+          color: "rgba(39, 128, 227, 0.20)",
+          width: 1,
+          highlight: false
+        },
+        z: {
+          show: false
+        }
+      },
+      lighting: {
+        ambient: 1,
+        diffuse: 0.4,
+        specular: 0
+      }
+    };
+  }
+
+  function createDropLineTrace(point) {
+    return {
+      type: "scatter3d",
+      mode: "lines",
+      x: [point[0], point[0]],
+      y: [point[1], point[1]],
+      z: [0, point[2]],
+      line: {
+        color: "rgba(255, 127, 80, 0.4)",
+        width: 4,
+        dash: "dot"
+      },
+      hoverinfo: "skip",
+      showlegend: false
+    };
+  }
+
   function updateTrail(endEffectorPoint) {
     const previous = state.trail[state.trail.length - 1];
 
@@ -293,7 +365,9 @@
     };
 
     const data = [
+      createGroundPlaneTrace(),
       createWorkspaceRing(),
+      createDropLineTrace(endEffector),
       shadowTrace,
       robotTrace,
       jointTrace,
@@ -315,34 +389,35 @@
         plot_bgcolor: "rgba(0,0,0,0)",
         showlegend: false,
         scene: {
+          dragmode: "orbit",
           aspectmode: "manual",
-          aspectratio: { x: 1.1, y: 1.1, z: 0.9 },
+          aspectratio: { x: 1.15, y: 1.15, z: 0.95 },
           camera: {
-            eye: { x: 1.55, y: 1.55, z: 0.9 }
+            eye: { x: 1.6, y: 1.5, z: 1.05 }
           },
           xaxis: {
             title: "x [m]",
             range: [-0.95, 0.95],
             gridcolor: "rgba(39, 128, 227, 0.08)",
             zerolinecolor: "rgba(39, 128, 227, 0.18)",
-            showbackground: true,
-            backgroundcolor: "rgba(255, 255, 255, 0.3)"
+            showbackground: false,
+            backgroundcolor: "rgba(255, 255, 255, 0)"
           },
           yaxis: {
             title: "y [m]",
             range: [-0.95, 0.95],
             gridcolor: "rgba(39, 128, 227, 0.08)",
             zerolinecolor: "rgba(39, 128, 227, 0.18)",
-            showbackground: true,
-            backgroundcolor: "rgba(255, 255, 255, 0.3)"
+            showbackground: false,
+            backgroundcolor: "rgba(255, 255, 255, 0)"
           },
           zaxis: {
             title: "z [m]",
-            range: [-0.02, 1.1],
+            range: [-0.05, 1.1],
             gridcolor: "rgba(39, 128, 227, 0.08)",
             zerolinecolor: "rgba(39, 128, 227, 0.18)",
-            showbackground: true,
-            backgroundcolor: "rgba(255, 255, 255, 0.4)"
+            showbackground: false,
+            backgroundcolor: "rgba(255, 255, 255, 0)"
           }
         },
         uirevision: "robot-camera"
@@ -455,6 +530,8 @@
   }
 
   function buildSliders() {
+    const actionRow = slidersRoot.querySelector(".robot-slider-actions");
+
     jointDefinitions.forEach((joint, index) => {
       const wrapper = document.createElement("label");
       wrapper.className = "robot-slider";
@@ -486,7 +563,12 @@
 
       wrapper.appendChild(header);
       wrapper.appendChild(input);
-      slidersRoot.appendChild(wrapper);
+
+      if (actionRow) {
+        slidersRoot.insertBefore(wrapper, actionRow);
+      } else {
+        slidersRoot.appendChild(wrapper);
+      }
 
       sliderInputs.push(input);
       sliderValues.push(value);

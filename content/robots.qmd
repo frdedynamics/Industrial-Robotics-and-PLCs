@@ -5,3 +5,5 @@ title: Robots
 # What is a robot?
 
 # When to use a robot?
+
+![Break even points for automation](img/automation_break_even_points.png)
