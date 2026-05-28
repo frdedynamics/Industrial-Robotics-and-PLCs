@@ -1,13 +1,31 @@
 project:
   type: website
+  resources:
+    - assets/**
 
 website:
-  title: "Material"
-  navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
+  title: "Industrial Robotics and PLCs"
+  favicon: favicon.ico
+
+  repo-url: https://github.com/frdedynamics/Industrial-Robotics-and-PLCs
+  repo-branch: master
+  repo-actions: [edit, issue]
+
+  sidebar:
+    style: floating
+    search: true
+    contents: 
+      - text: "Home"
+        href: index.qmd
+
+      - section: Robot Foundations
+        contents: 
+          - content\robots.qmd
+          
+      - section: content\simulation.qmd
+        contents: 
+          - content\simulation.qmd
+      
 
 format:
   html:

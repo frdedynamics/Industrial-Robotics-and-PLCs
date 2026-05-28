@@ -1,17 +1,55 @@
 ---
-title: "Material"
+title: "Welcome!"
 ---
 
-This is a Quarto website.
+On this website you find course materials for the course ELE804/ELE2010 - Industrial Robotics and PLCs at HVL.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-```{python}
-import plotly.express as px
-import plotly.io as pio
-df = px.data.iris()
-fig = px.scatter(df, x="sepal_width", y="sepal_length", 
-                 color="species", 
-                 marginal_y="violin", marginal_x="box", 
-                 trendline="ols", template="simple_white")
-fig.show()
+Note that some of the PLC related materials are to be found on Canvas, and not on this website.
+
+The interactive robot below is a playful first look at kinematics: move any joint, watch the arm reconfigure, and see how the end-effector pose changes in real time.
+
+```{=html}
+<div class="robot-hero">
+    <div class="robot-hero__intro">
+        <p class="robot-kicker">Interactive Preview</p>
+        <h2 class="robot-hero__title">Explore a 6-DOF robot in your browser</h2>
+        <p class="robot-hero__lede">This demo runs entirely on the client side, so the plot keeps its sliders, 3D camera, and live pose readout after a normal Quarto render and when the site is published to GitHub Pages.</p>
+        <div class="robot-preset-group" aria-label="Preset robot poses">
+            <button class="robot-preset" data-preset="home" type="button">Home</button>
+            <button class="robot-preset" data-preset="reach" type="button">Reach</button>
+            <button class="robot-preset" data-preset="inspect" type="button">Inspect</button>
+            <button class="robot-preset" data-preset="wave" type="button">Wave</button>
+            <button class="robot-preset" data-preset="random" type="button">Random</button>
+        </div>
+    </div>
+
+    <div id="robot-kinematics-widget" class="robot-widget">
+        <div class="robot-plot-frame">
+            <div id="robot-plot" class="robot-plot" role="img" aria-label="Interactive 3D model of a six degree of freedom robot arm"></div>
+        </div>
+
+        <div class="robot-panel">
+            <div class="robot-readouts">
+                <section class="robot-readout-card" aria-labelledby="robot-joint-heading">
+                    <h3 id="robot-joint-heading">Joint angles</h3>
+                    <dl id="robot-joint-readout" class="robot-readout-list"></dl>
+                </section>
+
+                <section class="robot-readout-card" aria-labelledby="robot-pose-heading">
+                    <h3 id="robot-pose-heading">End-effector pose</h3>
+                    <dl id="robot-pose-readout" class="robot-readout-list"></dl>
+                </section>
+            </div>
+
+            <div id="robot-sliders" class="robot-sliders" aria-label="Joint angle controls"></div>
+        </div>
+    </div>
+
+    <noscript>
+        <p class="robot-noscript">JavaScript is required to use the interactive robot preview.</p>
+    </noscript>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="assets/robot-eye-catcher.js"></script>
 ```
