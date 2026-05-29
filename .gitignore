@@ -24,3 +24,5 @@ Thumbs.db
 *.log
 /env/
 /.quarto/
+
+**/*.quarto_ipynb

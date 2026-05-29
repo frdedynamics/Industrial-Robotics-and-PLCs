@@ -20,11 +20,11 @@ website:
 
       - section: Robot Foundations
         contents: 
-          - content\robots.qmd
+          - content/robots.qmd
           
-      - section: content\simulation.qmd
+      - section: content/simulation.qmd
         contents: 
-          - content\simulation.qmd
+          - content/simulation.qmd
       
 
 format:
@@ -38,3 +38,6 @@ format:
 
 
 
+execute:
+  freeze: false
+  cache: false
