@@ -1,1 +1,225 @@
 /* css styles */
+
+.robot-hero {
+	margin: 2rem 0 1rem;
+	padding: 1.5rem;
+	border: 1px solid rgba(31, 45, 61, 0.08);
+	border-radius: 1.5rem;
+	background:
+		radial-gradient(circle at top right, rgba(39, 128, 227, 0.14), transparent 34%),
+		linear-gradient(160deg, rgba(248, 252, 255, 0.98), rgba(255, 255, 255, 0.98));
+	box-shadow: 0 24px 60px rgba(31, 45, 61, 0.08);
+}
+
+.robot-hero__intro {
+	max-width: 60rem;
+	margin-bottom: 1.5rem;
+}
+
+.robot-kicker {
+	margin: 0 0 0.4rem;
+	color: #2780e3;
+	font-size: 0.8rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.robot-hero__title {
+	margin: 0;
+	font-size: clamp(1.8rem, 3.5vw, 2.7rem);
+	line-height: 1.05;
+}
+
+.robot-hero__lede {
+	margin: 0.8rem 0 0;
+	max-width: 48rem;
+	color: #4f5f73;
+	font-size: 1.05rem;
+}
+
+.robot-preset-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.65rem;
+}
+
+.robot-slider-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem 1rem;
+	margin-top: 0.25rem;
+	padding-top: 0.85rem;
+	border-top: 1px solid rgba(31, 45, 61, 0.08);
+	grid-column: 1 / -1;
+}
+
+.robot-slider-actions__label {
+	color: #566578;
+	font-size: 0.92rem;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.robot-preset {
+	padding: 0.55rem 0.95rem;
+	border: 1px solid rgba(39, 128, 227, 0.24);
+	border-radius: 999px;
+	background: rgba(39, 128, 227, 0.08);
+	color: #1d4f8e;
+	font-weight: 600;
+	transition: transform 150ms ease, background-color 150ms ease, border-color 150ms ease;
+}
+
+.robot-preset:hover,
+.robot-preset:focus-visible {
+	border-color: rgba(39, 128, 227, 0.45);
+	background: rgba(39, 128, 227, 0.16);
+	transform: translateY(-1px);
+}
+
+.robot-widget {
+	display: grid;
+	gap: 1.15rem;
+}
+
+.robot-plot-frame {
+	padding: 0.9rem;
+	border-radius: 1.25rem;
+	background:
+		linear-gradient(180deg, rgba(228, 239, 251, 0.9), rgba(244, 247, 251, 0.75));
+	border: 1px solid rgba(39, 128, 227, 0.12);
+	overflow: hidden;
+}
+
+.robot-plot {
+	min-height: clamp(30rem, 68vh, 46rem);
+	width: 100%;
+}
+
+.robot-panel {
+	display: grid;
+	gap: 1rem;
+}
+
+.robot-readouts {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+
+.robot-readout-card {
+	padding: 1rem 1.05rem;
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.92);
+	border: 1px solid rgba(31, 45, 61, 0.08);
+}
+
+.robot-readout-card h3 {
+	margin: 0 0 0.8rem;
+	font-size: 1rem;
+}
+
+.robot-readout-list {
+	display: grid;
+	gap: 0.45rem;
+	margin: 0;
+}
+
+.robot-readout-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-bottom: 0.3rem;
+	border-bottom: 1px solid rgba(31, 45, 61, 0.06);
+}
+
+.robot-readout-row:last-child {
+	padding-bottom: 0;
+	border-bottom: 0;
+}
+
+.robot-readout-row dt,
+.robot-readout-row dd {
+	margin: 0;
+}
+
+.robot-readout-row dt {
+	color: #566578;
+	font-weight: 600;
+}
+
+.robot-readout-row dd {
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+}
+
+.robot-sliders {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+	gap: 0.9rem;
+	padding: 1rem 1.05rem;
+	border-radius: 1rem;
+	background: rgba(255, 255, 255, 0.92);
+	border: 1px solid rgba(31, 45, 61, 0.08);
+}
+
+.robot-slider {
+	display: grid;
+	gap: 0.45rem;
+}
+
+.robot-slider__header {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	font-size: 0.94rem;
+}
+
+.robot-slider__name {
+	font-weight: 600;
+}
+
+.robot-slider__value {
+	color: #2780e3;
+	font-variant-numeric: tabular-nums;
+	font-weight: 700;
+}
+
+.robot-slider input[type="range"] {
+	width: 100%;
+}
+
+.robot-noscript,
+.robot-widget__fallback {
+	margin: 1rem 0 0;
+	padding: 0.9rem 1rem;
+	border-radius: 0.9rem;
+	background: rgba(255, 243, 205, 0.8);
+	color: #7a5a00;
+}
+
+
+@media (min-width: 992px) {
+	.robot-panel {
+		gap: 1.15rem;
+	}
+}
+
+@media (max-width: 767px) {
+	.robot-hero {
+		padding: 1rem;
+		border-radius: 1rem;
+	}
+
+	.robot-plot {
+		min-height: 24rem;
+	}
+
+	.robot-sliders {
+		grid-template-columns: 1fr;
+	}
+}
