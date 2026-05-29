@@ -1,0 +1,8 @@
+---
+title: Further Reading
+bibliography: references.bib
+---
+
+
+- Robotics, Vision and Control: Fundamental Algorithms in Python by Peter Corke [@Corke.2023]. Available for free through HVL library.
+- Lean Robotics: A Guide to Making Robots Work in Your Factory by Samuel Bouchard [@Bouchard.2017]. Available for free [here](https://blog.robotiq.com/hubfs/Leanroboticsbook.pdf).

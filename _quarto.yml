@@ -25,6 +25,10 @@ website:
       - section: content/simulation.qmd
         contents: 
           - content/simulation.qmd
+          
+      - text: "Further Reading"
+        href: content/further_reading.qmd
+
       
 
 format:
