@@ -45,15 +45,21 @@ and pick-and-place operations. Robots are especially useful when the task is
 dull, dirty, dangerous, ergonomically demanding, or requires repeatable motion
 and process quality.
 
-![A guarded robotic welding cell. Welding is a typical example of a hazardous automation task because it combines intense light, heat, fumes, and moving equipment. Photo: WireCrafters, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Robotic_Welding_Cell.jpg), [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).](img/robotic_welding_cell.jpg){#fig-hazardous-robot-task}
+::: {#fig-hazardous-robot-tasks layout-ncol=2}
+![Painting robots applying coating in a spray booth.](img/painting_robots.png){#fig-painting-robots}
 
-@fig-hazardous-robot-task illustrates why safety is part of the automation
-decision, not an add-on after the robot has been installed. In welding, the
-process can expose workers to arc radiation, hot surfaces, fumes, and moving
-machinery. In painting and coating processes, the main reasons are often paint
-mist, solvents, dust, overspray, and the need for controlled ventilation. In
-both cases, the robot can improve repeatability while keeping people farther
-away from the hazardous part of the process.
+![A welding robot operating in a robot cell.](img/welding_robot.png){#fig-welding-robot}
+
+Examples of hazardous robot tasks.
+:::
+
+@fig-hazardous-robot-tasks illustrates why safety is part of the automation
+decision, not an add-on after the robot has been installed. Painting and coating
+processes can expose workers to paint mist, solvents, dust, overspray, and
+controlled ventilation requirements. Welding can expose workers to arc
+radiation, hot surfaces, fumes, sparks, and moving machinery. In both cases, the
+robot can improve repeatability while keeping people farther away from the
+hazardous part of the process.
 
 Fixed automation is usually preferred for very high production volumes and
 stable products. Dedicated machines can often achieve shorter cycle times and
