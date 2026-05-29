@@ -4,16 +4,51 @@ bibliography: references.bib
 ---
 
 # What is a robot?
-a goal oriented machine that can sense, plan, and act.
+> A robot is a goal-oriented machine that can sense, plan, and act
+> [@Corke.2023].
 
+This definition is useful because it separates a robot from a simple machine
+that only repeats one fixed motion. A robot receives information from sensors,
+uses a controller to decide what motion or action should happen next, and then
+acts on the physical world through motors, tools, or grippers.
 
-There are two main categories of robots: mobile robots (e.g. autonomous ground/areal/underwater vehicles) and manipulators (e.g. industrial robot arms, collaborative robot arms). In this course, we focus on manipulators and more specifically on industrial robot arms, which are the most common type of robot in manufacturing.
+Robots can be divided into two broad categories: mobile robots and
+manipulators. Mobile robots move through an environment. Examples include
+autonomous ground vehicles, aerial vehicles, and underwater vehicles.
+Manipulators are robot arms. They are designed to move a tool, sensor, gripper,
+or workpiece to a desired position and orientation. In this course, the focus is
+on manipulators, and especially on industrial robot arms used in manufacturing.
 
-- a bunch of motors, encoders connected by some metal; and also a controller that makes everything move in a coordinated way
+An industrial robot arm can be understood as a programmable multi-axis motion
+generator. Mechanically, it consists of links connected by joints. Each joint is
+driven by a motor, often through a gearbox, and the joint positions are measured
+with sensors such as encoders. The robot controller coordinates all the joints so
+that the end of the robot follows the desired path. Without this coordination,
+the robot would only be a collection of motors and metal parts.
 
-- a robot arm is basically a "motion generator" - a fancy, programmable, multi-axis positioning system. It can be used to move things around, but it can also be used to hold tools, sensors, or end-effectors that perform some operation on the workpiece.
+This is different from a purpose-built machine, which may also use motors,
+sensors, and control logic to generate motion and react to its environment. A
+purpose-built machine is normally designed for a specific process and a limited
+set of motion paths. A manipulator is deliberately more generic: it is designed
+to reach as many positions and orientations as possible within its working
+range, so it can be reused for different tools, products, and tasks.
 
-- a robot cell is a robot arm plus some way of presenting parts to the robot, and some way of taking them away after the robot has done its work. The cell may also include fixtures, grippers, sensors, safety equipment, and a controller that coordinates everything.
+The robot arm itself is only part of an automation system. To perform useful
+work, it normally needs an end-effector, such as a gripper, welding torch,
+painting nozzle, screwdriver, camera, or dispensing tool. The end-effector is
+what turns the robot's motion into a production operation.
+
+A complete robot cell includes more than the robot arm. It also needs a way to
+present parts to the robot and remove them after processing. Depending on the
+application, the cell may include fixtures, conveyors, feeders, sensors,
+grippers, safety equipment, a robot controller, and a PLC or other controller
+that coordinates the full process.
+
+The internal construction of industrial robot axes can be seen in these
+examples:
+
+- [Inside a KUKA robot](https://www.youtube.com/watch?v=iRKDfknqtbc)
+- [Inside a UR robot axis](https://www.youtube.com/watch?v=oje2ucwe3vI)
 
 # When to use a robot?
 The decision to use a robot should be based on the task, the production volume,
