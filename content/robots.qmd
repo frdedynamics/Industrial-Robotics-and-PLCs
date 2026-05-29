@@ -1,9 +1,19 @@
 ---
-title: Robots
+title: Automation with Robots
 bibliography: references.bib
 ---
 
 # What is a robot?
+a goal oriented machine that can sense, plan, and act.
+
+
+There are two main categories of robots: mobile robots (e.g. autonomous ground/areal/underwater vehicles) and manipulators (e.g. industrial robot arms, collaborative robot arms). In this course, we focus on manipulators and more specifically on industrial robot arms, which are the most common type of robot in manufacturing.
+
+- a bunch of motors, encoders connected by some metal; and also a controller that makes everything move in a coordinated way
+
+- a robot arm is basically a "motion generator" - a fancy, programmable, multi-axis positioning system. It can be used to move things around, but it can also be used to hold tools, sensors, or end-effectors that perform some operation on the workpiece.
+
+- a robot cell is a robot arm plus some way of presenting parts to the robot, and some way of taking them away after the robot has done its work. The cell may also include fixtures, grippers, sensors, safety equipment, and a controller that coordinates everything.
 
 # When to use a robot?
 The decision to use a robot should be based on the task, the production volume,
@@ -46,9 +56,9 @@ dull, dirty, dangerous, ergonomically demanding, or requires repeatable motion
 and process quality.
 
 ::: {#fig-hazardous-robot-tasks layout-ncol=2}
-![Painting robots applying coating in a spray booth.](img/painting_robots.png){#fig-painting-robots}
+![Painting robots applying coating in a spray booth. [Source](https://www.youtube.com/watch?v=-iEelDpKIEQ)](img/painting_robots.png){#fig-painting-robots}
 
-![A welding robot operating in a robot cell.](img/welding_robot.png){#fig-welding-robot}
+![A welding robot operating in a robot cell. [Source](https://www.fronius.com/en-us/usa/welding-technology/product-information/welding-automation/robotic-welding)](img/welding_robot.png){#fig-welding-robot}
 
 Examples of hazardous robot tasks.
 :::
@@ -74,3 +84,5 @@ enough to justify fully dedicated fixed automation. The final decision should
 include not only purchase price, but also grippers and fixtures, sensors, PLC and
 safety integration, programming time, cycle time, maintenance, operator training,
 floor space, and expected future product changes.
+
+# Lean Robotics
