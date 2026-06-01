@@ -1,0 +1,21 @@
+---
+title: Ideas
+draft: true
+---
+
+# Exercises
+- think of a task at your work where you could use a robot, describe how and why, refer to Lean Robotics principles
+
+# Content
+- movement types L vs J and python visualization, with singularity and jacobian
+- is there useful stuff in UR academy?
+
+# other pages
+- make AI guide highlighting the power of modern AI tools but also their negative impact on learning when used uncritically, give hints on how to use them, maybe with prompts that are useful for learning (not giving full answers but guiding the user to find the answer themselves or only answering syntax questions in python not giving the full code or solution or conceptual answer)
+
+
+# General
+- when writing:
+    - think about useful exercises, on page with code or offline
+    - think about links to project, PLC and Visual Components, and how to integrate them in the content, e.g. by giving exercises that use them, or by giving examples that show how to use them, or by giving further reading that points to them
+    - think of other resources like UR academy, robot academy, robotics codes from scratch, etc

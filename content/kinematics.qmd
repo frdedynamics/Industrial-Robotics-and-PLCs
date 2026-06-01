@@ -1,0 +1,33 @@
+---
+title: Kinematics
+bibliography: references.bib
+draft: true
+--- 
+
+# Basics
+
+- Explain basics of kinematics, why we need it, base <-> tool, with the backdrop that a manipulator is a collection of joints and links, and we want to control the end-effector. This leads to the need for kinematics, which is the mathematical relationship between joint positions and end-effector position and orientation.
+
+- forward and inverse kinematics, and the difference between them. And when we need to use each of them in practice, e.g. for controlling the robot, for planning a path, for simulating the robot, etc.
+
+- do not go into detail how the equations are derived, but make an interactive demo which shows kinematics on planar arm, with 1 dof, then 2 dof, then 3 dof, find a way to show that the relationship is a concatenation of sines and cosines, but kind of leave it there and say that we will just use it
+
+- briefly mention DH parameters, but say that they are one way of representing the kinematics, in our simulation in visual components, the robot models we use are given anyways
+
+- always stick to Peter Corke notation @Corke.2023
+
+- Point to further reading; Corke chapters
+
+- make demo of planar arm where one can drag a goal position and orientation and the robot tracks it
+- make exercises
+
+# Singularities and Jacobian
+- explain what a singularity is, and how it can cause problems for the robot, and how to avoid it
+
+- explain what the Jacobian is, and how it relates to the kinematics, and how it can be used to find singularities, and how it can be used for control
+
+- all without going into the mathematical details but understanding the concepts and what is relevant for using a robot in practice, where one does not calculate, but e.g. has to know how to inspect the jacobian for healthiness and understand what it means when the jacobian is close to singular, and how to avoid it in practice, e.g. by changing the robot configuration or using a different tool orientation
+
+- make an interactive demo which shows the jacobian and singularities on a planar arm, with 2 dof, then 3 dof, show how the jacobian changes with the configuration, and how it becomes singular at certain configurations, and how to avoid it by changing the configuration or tool orientation, highlight speed increase
+
+- make another demo that shows the difference between L and J movement types, if not possible to show in the demo above in a didactic way, show how the L movement can lead to singularities and how the J movement can avoid it, and how the robot moves differently in the two cases, and how to choose the right movement type for a given task and configuration

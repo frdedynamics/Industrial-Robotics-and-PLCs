@@ -1,0 +1,25 @@
+---
+title: Frames and Poses
+bibliography: references.bib
+draft: true
+---
+
+# Intro
+- robots are fancy positioning devices, and to use them, we need to understand how to describe positions and orientations in space, and how to relate them to the robot's joints and links. This is the topic of frames and poses.
+- position is simple, orientation not so much, there exists multiple ways to represent orientation, briefly mention why orientation is  different and more difficult, but no math details, just brief concept.
+- we will mainly focus on homogeneous transformation matrices, which are a convenient way to represent both position and orientation in a single mathematical object, and they are widely used in robotics and computer vision. They also have nice properties that make them easy to work with, such as being able to concatenate transformations by matrix multiplication, and being able to invert transformations by taking the inverse of the matrix.
+- we use the notation from Peter Corke's book @Corke.2023
+
+# Coordinate frames
+- a coordinate frame is a reference system that defines the position and orientation of points in space. 
+- show the two right hand rules for coordinate frames, the one for the frame axes and the other one for positive direction of rotation
+- points in a frame are represented as vectors, and a frame in a frame is represented as a homogeneous transformation matrix, which consists of a rotation matrix and a translation vector.
+- we can have multiple frames in a robot cell, such as the base frame, the tool frame, camera frame, etc and we often have to convert between them, e.g. to control the robot in the base frame but specify the target pose in the tool frame, or to transform sensor data from the camera frame to the robot frame.
+
+# Poses
+- a pose is a specific position and orientation of an object in space, and it can be represented as a homogeneous transformation matrix that describes the transformation from a reference frame to the object's frame.
+- for example, the end-effector pose is the transformation from the robot's base frame to the tool frame, and it describes where the tool is in space and how it is oriented.
+- describe the components of the homogeneous transformation matrix, and how to extract the position and orientation from it
+- show the basic operations that are needed as in @Corke.2023, but do not go into details about how to derive the equations, but rather show how to use them in practice, e.g. how to concatenate transformations to find the pose of the end-effector in the base frame given the joint angles and the robot's kinematics, or how to invert a transformation to find the pose of the base frame in the tool frame, etc. Combine this with a hands on exercise
+- make example calculations to show what was described above
+- make interactive demo / exercise about poses, maybe around converting from a camera frame to robot base frame

@@ -121,3 +121,5 @@ safety integration, programming time, cycle time, maintenance, operator training
 floor space, and expected future product changes.
 
 # Lean Robotics
+
+TODO: Write about @Bouchard.2017 and the Lean Robotics principles, and how they can be used to make better decisions about when to use a robot, and how to design and implement robotic automation in a way that is more efficient, flexible, and sustainable.
