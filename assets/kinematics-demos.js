@@ -472,9 +472,12 @@
     const coordinates = createCoordinateSystem(520, 360);
     const state = {
       target: [150, 90],
+      currentTarget: [150, 90],
       phi: 20,
+      currentPhi: 20,
       elbowMode: "down",
-      dragging: false
+      dragging: false,
+      animationFrame: null
     };
 
     root.innerHTML = [
@@ -510,7 +513,7 @@
 
     phiInput.addEventListener("input", function () {
       state.phi = Number(phiInput.value);
-      render();
+      startTracking();
     });
 
     svg.addEventListener("pointerdown", function (event) {
@@ -549,7 +552,37 @@
       } else {
         state.target = worldPoint;
       }
+      startTracking();
+    }
+
+    function startTracking() {
+      if (state.animationFrame === null) {
+        state.animationFrame = requestAnimationFrame(stepTracking);
+      }
+    }
+
+    function stepTracking() {
+      const dx = state.target[0] - state.currentTarget[0];
+      const dy = state.target[1] - state.currentTarget[1];
+      const dPhi = wrapDegrees(state.phi - state.currentPhi);
+      const gain = 0.18;
+
+      state.currentTarget = [
+        state.currentTarget[0] + (dx * gain),
+        state.currentTarget[1] + (dy * gain)
+      ];
+      state.currentPhi = state.currentPhi + (dPhi * gain);
+
       render();
+
+      if (Math.hypot(dx, dy) > 0.5 || Math.abs(dPhi) > 0.4) {
+        state.animationFrame = requestAnimationFrame(stepTracking);
+      } else {
+        state.currentTarget = state.target.slice();
+        state.currentPhi = state.phi;
+        state.animationFrame = null;
+        render();
+      }
     }
 
     function drawTarget(solution) {
@@ -592,8 +625,26 @@
       svg.appendChild(targetGroup);
     }
 
+    function drawTrackingError(tcp) {
+      const error = Math.hypot(tcp[0] - state.target[0], tcp[1] - state.target[1]);
+      if (error < 1) {
+        return;
+      }
+
+      const tcpSvg = toSvg(tcp, coordinates);
+      const targetSvg = toSvg(state.target, coordinates);
+      svg.appendChild(createSvgElement("line", {
+        x1: tcpSvg[0],
+        y1: tcpSvg[1],
+        x2: targetSvg[0],
+        y2: targetSvg[1],
+        class: "kinematics-svg__tracking-error"
+      }));
+    }
+
     function render() {
-      const solution = inverseKinematics3R(state.target, state.phi, state.elbowMode, lengths);
+      const desiredSolution = inverseKinematics3R(state.target, state.phi, state.elbowMode, lengths);
+      const solution = inverseKinematics3R(state.currentTarget, state.currentPhi, state.elbowMode, lengths);
       const result = forwardKinematics(solution.angles, lengths);
       const tcp = result.points[result.points.length - 1];
       const wristSvg = toSvg(solution.wrist, coordinates);
@@ -606,8 +657,9 @@
         r: 4,
         class: "kinematics-svg__wrist-center"
       }));
+      drawTrackingError(tcp);
       drawArm(svg, result.points, coordinates, { orientationDegrees: result.orientation });
-      drawTarget(solution);
+      drawTarget(desiredSolution);
 
       buttons.forEach(function (button) {
         button.classList.toggle("is-active", button.dataset.elbow === state.elbowMode);
@@ -619,7 +671,7 @@
         buildReadoutRow("q2", formatNumber(solution.angles[1], 1) + "°"),
         buildReadoutRow("q3", formatNumber(solution.angles[2], 1) + "°"),
         buildReadoutRow("TCP error", Math.hypot(tcp[0] - state.target[0], tcp[1] - state.target[1]).toFixed(1)),
-        buildReadoutRow("Status", solution.reachable ? "reachable" : "outside reach")
+        buildReadoutRow("Status", desiredSolution.reachable ? "reachable" : "outside reach")
       ].join("");
     }
 

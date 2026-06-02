@@ -88,6 +88,20 @@ joints to compute the pose of the tool. For a full walkthrough of the 6DOF case,
 <noscript><p>JavaScript is required to use the forward kinematics demo.</p></noscript>
 ```
 
+In practice, this is often used like a function call. The robot model and tool
+data are already known to the controller or simulation software, so the joint
+positions are the input and the TCP pose is the output:
+
+```text
+q = [q1, q2, q3, q4, q5, q6]       # joint positions
+
+T_base_tcp = forward_kinematics(q) # pose of the TCP in the base frame
+```
+
+The returned pose `T_base_tcp` describes the TCP position and orientation
+relative to the robot base frame. Different software packages use different
+names and data formats, but the idea is the same.
+
 Forward kinematics is used whenever the robot controller, simulation software,
 or offline programming system needs to know where the TCP is for a given robot
 configuration. It is also used when jogging individual joints, checking reach,
@@ -100,11 +114,28 @@ model describes how the joints and links are connected. Denavit-Hartenberg
 parameters, often called DH parameters, are one common way to write this model
 down.
 
+The planar arm above only needs link lengths and joint angles because all joints
+rotate in the same plane. A real industrial robot needs a richer description.
+Its joint axes can be offset from each other, twisted relative to each other,
+and arranged so that the arm can leave the plane and move in 3D. DH parameters
+capture these distances and angles between neighboring joint axes in a compact
+way.
+
 For this course, the important point is not how to derive DH parameters by hand.
 In normal industrial use, the model is already provided by the robot controller,
 the manufacturer, or the simulation software. In Visual Components, for example,
 we normally select a robot model that already contains the relevant geometry and
 joint limits. We use the model; we do not usually build it from scratch.
+
+If you want to see how DH parameters are derived for a particular robot, have a
+look at the following visual explanation, or see @Corke.2023 [chap. 7.1.5].
+
+```{=html}
+<div class="video-embed">
+  <iframe src="https://www.youtube.com/embed/rA9tm0gTln8?si=Ks_F64Wt7BV3fOuP" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+```
+
 
 # Inverse kinematics
 
@@ -115,6 +146,24 @@ Inverse kinematics answers the opposite question:
 This is the problem the controller solves when we teach a Cartesian target, jog
 the TCP in a tool frame, or command a linear move to a pose. It is also the
 problem behind offline programming, camera-guided picking, and simulation.
+
+For example, consider a machine-tending task (@fig-kuka-machine-tending). The part is at a known position in
+the CNC machine, and the gripper must approach it with a known orientation. The
+task is naturally described as a desired TCP pose. The robot, however, can only
+be commanded through its joints. Inverse kinematics is the step that answers:
+which joint angles will put the gripper at that pose? 
+
+![Machine tending with a KUKA KR AGILUS robot. Image source: [KUKA](https://www.kuka.com/en-us/company/press/news/2016/07/dannoritzer).](img/kuka_agilus_machine_tending.jpg){#fig-kuka-machine-tending}
+
+This problem has a different character than forward kinematics. Forward
+kinematics is a direct calculation: insert the joint angles into the robot model
+and compute the TCP pose. Inverse kinematics works backwards from a desired TCP
+pose. For some standard industrial robot geometries, the controller can use a
+specialized analytical solution. In more generic software tools, inverse
+kinematics is often solved numerically as a root-finding or optimization
+problem. The solver starts from a likely robot configuration, adjusts the joint
+angles, checks the resulting TCP pose using forward kinematics, and repeats
+until the pose error is small enough.
 
 Inverse kinematics is more complicated than forward kinematics for three
 practical reasons:
@@ -130,6 +179,26 @@ solution. On a real robot, the equivalent configuration choices can decide
 whether the robot avoids a fixture, stays away from a singularity, or approaches
 the part from the correct side.
 
+The demo below uses a three-joint planar arm to control a three-coordinate
+planar TCP pose: `x`, `y`, and tool angle. In that sense, the example is
+non-redundant: there are three joint variables available and three task
+coordinates to control. Still, non-redundant does not always mean unique. The
+geometry can give a small number of separate inverse kinematics solutions.
+
+In the demo, this appears as the `Elbow down` and `Elbow up` buttons. The TCP
+pose is the same, but the joint solution is different. This is a discrete switch
+between solution branches. It is different from redundancy and nullspace motion,
+which are discussed in @sec-redundancy-nullspace.
+
+The cross is the desired TCP pose. Drag it to a new position and the robot
+solves for joint angles that move the TCP toward that goal. The small delay is
+intentional: it shows that the robot is not being dragged directly; an inverse
+kinematics calculation is being performed between the target pose and the joint
+angles. Move the target toward the edge of the workspace and the demo will
+indicate when the requested pose is not reachable. The demo only checks reach
+and joint geometry; it does not check for self-collision or collision with
+external equipment.
+
 ```{=html}
 <div id="kinematics-ik-demo" class="kinematics-demo"></div>
 <noscript><p>JavaScript is required to use the inverse kinematics demo.</p></noscript>
@@ -140,6 +209,75 @@ controller. The programmer does not normally solve the equations manually. The
 important skill is to recognize when the controller is struggling: unreachable
 targets, awkward configurations, unexpected wrist flips, or paths that require
 the robot to pass too close to a singularity.
+
+As a function call, inverse kinematics has the opposite input and output from
+forward kinematics. In practice, we often also provide the current joint
+positions or a preferred configuration so the solver knows which solution branch
+to choose:
+
+```text
+T_base_tcp_goal = desired_tcp_pose()
+q_current = current_joint_positions()
+
+q_solution, status = inverse_kinematics(
+    T_base_tcp_goal,
+    seed=q_current,
+    configuration="elbow_down"
+)
+```
+
+The returned `q_solution` is a set of joint positions. The `status` tells
+whether the solver found an acceptable solution.
+
+## Redundancy and nullspace {#sec-redundancy-nullspace}
+
+It is useful to relate inverse kinematics to the number of independent joint
+motions available for the task:
+
+- A robot is fully actuated for a task when it has enough independently
+  controlled joints to control all required task coordinates. A typical six-axis
+  industrial arm is non-redundant for a full 3D TCP pose: three position
+  coordinates and three orientation coordinates.
+- A redundant robot has more joints than the task strictly requires. A seven-axis
+  arm, or a six-axis arm mounted on a linear track, can often reach the same TCP
+  pose in many more ways.
+- An underactuated robot has fewer controllable joints than the desired task
+  requires. For example, a simple four-axis palletizing robot can place boxes in
+  many positions, but it cannot freely choose every possible tool orientation.
+
+The planar demo above is non-redundant for the selected task because it uses
+three joints to control `x`, `y`, and tool angle. If we removed the tool-angle
+requirement and only asked the TCP to reach an `x`,`y` position, the same arm
+would become redundant for that smaller task. It would have three joints for a
+two-coordinate task, so the same point could be reached with many different
+robot configurations. These configurations would place the TCP at the specified
+`x`,`y` coordinate, but with different tool angles.
+
+For redundant robots, the extra freedom is often described as nullspace motion.
+This means continuous joint motion that changes the robot posture without
+changing the task coordinate we care about. A common industrial example is a
+seven-axis robot that keeps the TCP fixed while moving its elbow away from an
+obstacle. The important word is continuous: the robot can move through a range
+of postures while the TCP task remains satisfied.
+
+This is different from the `Elbow down` / `Elbow up` switch in the demo. That
+switch selects between separate inverse kinematics branches. It is a discrete
+configuration choice, not a continuous nullspace motion. Both ideas matter in
+industrial programming: configuration branches decide which posture family the
+robot uses, while redundancy gives the controller extra room inside a task.
+
+@fig-fr3-nullspace shows this idea on a Franka Research 3 robot. The
+end-effector pose is held fixed, while the body of the robot is made compliant
+enough that a person can push the elbow around.
+
+::: {#fig-fr3-nullspace .video-embed-narrow}
+{{< video img/fr3_nullspace.mp4
+    aria-label="Nullspace motion on a Franka Research 3 robot"
+>}}
+
+Nullspace motion on a Franka Research 3: the end-effector pose remains fixed
+while the robot body is moved through compliant impedance behavior.
+:::
 
 # Path, trajectory, and movement type
 

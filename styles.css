@@ -236,6 +236,27 @@
 	background: #f8fafc;
 }
 
+.video-embed {
+	width: 100%;
+	margin: 1rem auto 1.5rem;
+}
+
+.video-embed iframe,
+.video-embed video {
+	display: block;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	height: auto;
+	border: 0;
+	border-radius: 0.5rem;
+}
+
+.video-embed-narrow {
+	max-width: 34rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .kinematics-demo__stage {
 	min-height: 22rem;
 	border: 1px solid rgba(31, 45, 61, 0.1);
@@ -367,6 +388,13 @@
 .kinematics-svg__target.is-unreachable circle,
 .kinematics-svg__target.is-unreachable line {
 	stroke: #c2410c;
+}
+
+.kinematics-svg__tracking-error {
+	stroke: rgba(194, 65, 12, 0.55);
+	stroke-width: 2;
+	stroke-dasharray: 5 5;
+	stroke-linecap: round;
 }
 
 .kinematics-svg__wrist-center {
