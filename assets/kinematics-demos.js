@@ -309,6 +309,15 @@
     return "<div class=\"kinematics-readout__row\"><dt>" + label + "</dt><dd>" + value + "</dd></div>";
   }
 
+  function buildInterpolationItem(label, value, className) {
+    return [
+      "<span class=\"kinematics-interpolation__item " + className + "\">",
+      "<span>" + label + "</span>",
+      "<strong>" + value + "</strong>",
+      "</span>"
+    ].join("");
+  }
+
   function initializeForwardDemo(root) {
     const lengths = [115, 90, 65];
     const coordinates = createCoordinateSystem(520, 360);
@@ -704,8 +713,8 @@
       "<span class=\"kinematics-slider__header\"><span>Motion progress</span><span class=\"kinematics-slider__value\"></span></span>",
       "<input type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"50\" data-role=\"progress\">",
       "</label>",
+      "<div class=\"kinematics-interpolation\" aria-label=\"Interpolated values\"></div>",
       "<dl class=\"kinematics-readout\"></dl>",
-      "<div class=\"kinematics-health\"><span class=\"kinematics-health__fill\"></span></div>",
       "</div>"
     ].join("");
 
@@ -713,8 +722,8 @@
     const buttons = Array.from(root.querySelectorAll("button[data-mode]"));
     const progressInput = root.querySelector("input[data-role='progress']");
     const progressValue = root.querySelector(".kinematics-slider__value");
+    const interpolation = root.querySelector(".kinematics-interpolation");
     const readout = root.querySelector(".kinematics-readout");
-    const healthFill = root.querySelector(".kinematics-health__fill");
 
     buttons.forEach(function (button) {
       button.addEventListener("click", function () {
@@ -771,23 +780,6 @@
       return samples;
     }
 
-    function singularityMargin(angles) {
-      return Math.abs(Math.sin(radians(angles[1])));
-    }
-
-    function relativeJointMotion(t) {
-      const step = 0.01;
-      const low = clamp(t - step, 0, 1);
-      const high = clamp(t + step, 0, 1);
-      const lowAngles = anglesAtProgress(low);
-      const highAngles = anglesAtProgress(high);
-      const delta = Math.sqrt(lowAngles.reduce(function (sum, angle, index) {
-        const diff = wrapDegrees(highAngles[index] - angle);
-        return sum + (diff * diff);
-      }, 0));
-      return delta / Math.max(high - low, 0.001);
-    }
-
     function drawMarkers() {
       [
         { label: "Start", point: startPose.target },
@@ -813,9 +805,7 @@
       const angles = anglesAtProgress(state.progress);
       const result = forwardKinematics(angles, lengths);
       const tcp = result.points[result.points.length - 1];
-      const margin = singularityMargin(angles);
-      const motion = relativeJointMotion(state.progress);
-      const healthPercent = Math.round(clamp(margin, 0, 1) * 100);
+      const linearPose = poseAtLinear(state.progress);
 
       clear(svg);
       drawGrid(svg, coordinates, lengths.reduce(function (sum, value) { return sum + value; }, 0));
@@ -828,26 +818,283 @@
         button.classList.toggle("is-active", button.dataset.mode === state.mode);
       });
       progressValue.textContent = Math.round(state.progress * 100) + "%";
-      healthFill.style.width = healthPercent + "%";
-      healthFill.classList.toggle("is-warning", margin < 0.22);
+
+      if (state.mode === "movej") {
+        interpolation.innerHTML = [
+          buildInterpolationItem("q1", formatNumber(angles[0], 1) + "\u00b0", "is-joint"),
+          buildInterpolationItem("q2", formatNumber(angles[1], 1) + "\u00b0", "is-joint"),
+          buildInterpolationItem("q3", formatNumber(angles[2], 1) + "\u00b0", "is-joint")
+        ].join("");
+      } else {
+        interpolation.innerHTML = [
+          buildInterpolationItem("x", formatNumber(linearPose.target[0], 1), "is-cartesian"),
+          buildInterpolationItem("y", formatNumber(linearPose.target[1], 1), "is-cartesian"),
+          buildInterpolationItem("\u03c6", formatNumber(linearPose.phi, 1) + "\u00b0", "is-cartesian")
+        ].join("");
+      }
 
       readout.innerHTML = [
         buildReadoutRow("Active motion", state.mode === "movej" ? "MoveJ / PTP" : "MoveL / LIN"),
-        buildReadoutRow("TCP x", formatNumber(tcp[0], 1)),
-        buildReadoutRow("TCP y", formatNumber(tcp[1], 1)),
-        buildReadoutRow("q2", formatNumber(angles[1], 1) + "°"),
-        buildReadoutRow("Singularity margin", margin < 0.22 ? "low" : "acceptable"),
-        buildReadoutRow("Relative joint motion", motion.toFixed(0) + "° per path")
+        buildReadoutRow("Interpolated directly", state.mode === "movej" ? "joint angles" : "TCP pose"),
+        buildReadoutRow("TCP path", state.mode === "movej" ? "resulting curve" : "straight line"),
+        buildReadoutRow("Current TCP", "x " + formatNumber(tcp[0], 1) + ", y " + formatNumber(tcp[1], 1)),
+        buildReadoutRow("Current joints", [
+          formatNumber(angles[0], 1),
+          formatNumber(angles[1], 1),
+          formatNumber(angles[2], 1)
+        ].join("\u00b0, ") + "\u00b0")
       ].join("");
     }
 
     render();
   }
 
+  function initializeSingularityDemo(root) {
+    const lengths = [115, 90, 45];
+    const coordinates = createCoordinateSystem(560, 360);
+    const startPose = { target: [155, 90], phi: 0 };
+    const endPose = { target: [249, 0], phi: 0 };
+    const elbowMode = "down";
+    const startSolution = inverseKinematics3R(startPose.target, startPose.phi, elbowMode, lengths);
+    const endSolution = inverseKinematics3R(endPose.target, endPose.phi, elbowMode, lengths);
+    const duration = 5600;
+    const state = {
+      mode: "movel",
+      progress: 0,
+      direction: 1,
+      playing: false
+    };
+    let animationId = null;
+    let previousTime = null;
+
+    root.innerHTML = [
+      "<div class=\"kinematics-demo__stage\">",
+      "<svg class=\"kinematics-svg\" viewBox=\"0 0 560 360\" role=\"img\" aria-label=\"Linear motion near a stretched-arm singularity\"></svg>",
+      "</div>",
+      "<div class=\"kinematics-demo__panel\">",
+      "<div class=\"kinematics-demo__buttons\" aria-label=\"Select motion type\">",
+      "<button type=\"button\" data-mode=\"movel\">MoveL / LIN</button>",
+      "<button type=\"button\" data-mode=\"movej\">MoveJ / PTP</button>",
+      "</div>",
+      "<div class=\"kinematics-demo__buttons\" aria-label=\"Animation controls\">",
+      "<button type=\"button\" data-role=\"toggle\">Pause animation</button>",
+      "<button type=\"button\" data-role=\"reset\">Reset</button>",
+      "</div>",
+      "<label class=\"kinematics-slider\">",
+      "<span class=\"kinematics-slider__header\"><span>Linear move progress</span><span class=\"kinematics-slider__value\"></span></span>",
+      "<input type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" data-role=\"progress\">",
+      "</label>",
+      "<dl class=\"kinematics-readout\"></dl>",
+      "<div class=\"kinematics-health\" aria-label=\"Relative joint speed indicator\"><span class=\"kinematics-health__fill\"></span></div>",
+      "</div>"
+    ].join("");
+
+    const svg = root.querySelector("svg");
+    const modeButtons = Array.from(root.querySelectorAll("button[data-mode]"));
+    const toggleButton = root.querySelector("button[data-role='toggle']");
+    const resetButton = root.querySelector("button[data-role='reset']");
+    const progressInput = root.querySelector("input[data-role='progress']");
+    const progressValue = root.querySelector(".kinematics-slider__value");
+    const readout = root.querySelector(".kinematics-readout");
+    const speedFill = root.querySelector(".kinematics-health__fill");
+
+    function interpolate(a, b, t) {
+      return a + ((b - a) * t);
+    }
+
+    function interpolateAngles(startAngles, endAngles, t) {
+      return startAngles.map(function (angle, index) {
+        return interpolate(angle, endAngles[index], t);
+      });
+    }
+
+    function poseAt(t) {
+      return {
+        target: [
+          interpolate(startPose.target[0], endPose.target[0], t),
+          interpolate(startPose.target[1], endPose.target[1], t)
+        ],
+        phi: interpolate(startPose.phi, endPose.phi, t)
+      };
+    }
+
+    function anglesAt(t) {
+      if (state.mode === "movej") {
+        return interpolateAngles(startSolution.angles, endSolution.angles, t);
+      }
+
+      const pose = poseAt(t);
+      return inverseKinematics3R(pose.target, pose.phi, elbowMode, lengths).angles;
+    }
+
+    function tcpPathSamples(mode) {
+      const samples = [];
+      for (let i = 0; i <= 80; i += 1) {
+        const t = i / 80;
+        if (mode === "movej") {
+          const result = forwardKinematics(interpolateAngles(startSolution.angles, endSolution.angles, t), lengths);
+          samples.push(result.points[result.points.length - 1]);
+        } else {
+          samples.push(poseAt(t).target);
+        }
+      }
+      return samples;
+    }
+
+    function singularityMargin(angles) {
+      return Math.abs(Math.sin(radians(angles[1])));
+    }
+
+    function relativeJointSpeed(t) {
+      const step = 0.004;
+      const low = clamp(t - step, 0, 1);
+      const high = clamp(t + step, 0, 1);
+      const lowAngles = anglesAt(low);
+      const highAngles = anglesAt(high);
+      const delta = Math.sqrt(lowAngles.reduce(function (sum, angle, index) {
+        const diff = wrapDegrees(highAngles[index] - angle);
+        return sum + (diff * diff);
+      }, 0));
+      return delta / Math.max(high - low, 0.001);
+    }
+
+    function drawMarkers() {
+      [
+        { label: "Start", point: startPose.target, xOffset: 10 },
+        { label: "Near stretch", point: endPose.target, xOffset: -94 }
+      ].forEach(function (marker) {
+        const svgPoint = toSvg(marker.point, coordinates);
+        const group = createSvgElement("g", { class: "kinematics-svg__motion-marker" });
+        group.appendChild(createSvgElement("circle", {
+          cx: svgPoint[0],
+          cy: svgPoint[1],
+          r: 6
+        }));
+        group.appendChild(createSvgElement("text", {
+          x: svgPoint[0] + marker.xOffset,
+          y: svgPoint[1] - 8
+        }));
+        group.lastChild.textContent = marker.label;
+        svg.appendChild(group);
+      });
+    }
+
+    function drawSingularityZone() {
+      const svgPoint = toSvg([lengths.reduce(function (sum, value) { return sum + value; }, 0), 0], coordinates);
+      svg.appendChild(createSvgElement("circle", {
+        cx: svgPoint[0],
+        cy: svgPoint[1],
+        r: 18,
+        class: "kinematics-svg__singularity-zone"
+      }));
+    }
+
+    function render() {
+      const angles = anglesAt(state.progress);
+      const result = forwardKinematics(angles, lengths);
+      const tcp = result.points[result.points.length - 1];
+      const margin = singularityMargin(angles);
+      const speed = relativeJointSpeed(state.progress);
+      const speedPercent = Math.round(clamp(speed / 520, 0, 1) * 100);
+
+      clear(svg);
+      drawGrid(svg, coordinates, lengths.reduce(function (sum, value) { return sum + value; }, 0));
+      drawSingularityZone();
+      drawPath(svg, tcpPathSamples("movel"), coordinates, "kinematics-svg__path-line");
+      drawPath(svg, tcpPathSamples("movej"), coordinates, "kinematics-svg__path-joint");
+      drawArm(svg, result.points, coordinates, { orientationDegrees: result.orientation });
+      drawMarkers();
+
+      modeButtons.forEach(function (button) {
+        button.classList.toggle("is-active", button.dataset.mode === state.mode);
+      });
+      progressInput.value = Math.round(state.progress * 100);
+      progressValue.textContent = Math.round(state.progress * 100) + "%";
+      toggleButton.textContent = state.playing ? "Pause animation" : "Play animation";
+      toggleButton.classList.toggle("is-active", state.playing);
+      speedFill.style.width = speedPercent + "%";
+      speedFill.classList.toggle("is-warning", margin < 0.22);
+
+      readout.innerHTML = [
+        buildReadoutRow("Active motion", state.mode === "movej" ? "MoveJ / PTP" : "MoveL / LIN"),
+        buildReadoutRow("Interpolated directly", state.mode === "movej" ? "joint angles" : "TCP pose"),
+        buildReadoutRow("q2", formatNumber(angles[1], 1) + "\u00b0"),
+        buildReadoutRow("Relative joint speed", speed.toFixed(0) + "\u00b0 per path"),
+        buildReadoutRow("Status", margin < 0.22 ? "near singularity" : "acceptable")
+      ].join("");
+    }
+
+    function setPlaying(playing) {
+      state.playing = playing;
+      previousTime = performance.now();
+      if (animationId !== null) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      render();
+      if (state.playing) {
+        animationId = requestAnimationFrame(animate);
+      }
+    }
+
+    function animate(timestamp) {
+      if (!state.playing) {
+        return;
+      }
+      if (previousTime === null) {
+        previousTime = performance.now();
+      }
+
+      const delta = Math.min((timestamp - previousTime) / duration, 0.04);
+      previousTime = timestamp;
+      state.progress += delta * state.direction;
+
+      if (state.progress >= 1) {
+        state.progress = 1;
+        state.direction = -1;
+        previousTime = null;
+      } else if (state.progress <= 0) {
+        state.progress = 0;
+        state.direction = 1;
+        previousTime = null;
+      }
+
+      render();
+      animationId = requestAnimationFrame(animate);
+    }
+
+    modeButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        state.mode = button.dataset.mode;
+        render();
+      });
+    });
+
+    toggleButton.addEventListener("click", function () {
+      setPlaying(!state.playing);
+    });
+
+    resetButton.addEventListener("click", function () {
+      state.progress = 0;
+      state.direction = 1;
+      setPlaying(false);
+    });
+
+    progressInput.addEventListener("input", function () {
+      state.progress = Number(progressInput.value) / 100;
+      state.direction = 1;
+      setPlaying(false);
+    });
+
+    render();
+    setPlaying(true);
+  }
+
   function initializeAll() {
     const fkRoot = document.getElementById("kinematics-fk-demo");
     const ikRoot = document.getElementById("kinematics-ik-demo");
     const motionRoot = document.getElementById("kinematics-motion-demo");
+    const singularityRoot = document.getElementById("kinematics-singularity-demo");
 
     if (fkRoot) {
       initializeForwardDemo(fkRoot);
@@ -857,6 +1104,9 @@
     }
     if (motionRoot) {
       initializeMotionDemo(motionRoot);
+    }
+    if (singularityRoot) {
+      initializeSingularityDemo(singularityRoot);
     }
   }
 

@@ -320,13 +320,13 @@ acceleration settings describe the timing.
 <div id="kinematics-motion-demo" class="kinematics-demo"></div>
 <noscript><p>JavaScript is required to use the motion type demo.</p></noscript>
 ```
-TODO: now difference is more visible, but robot not close to singualirity anymore, maybe split up the demos into two, where the singularity one is more of an animation that then also shows how the robot speeds up
 
 In the demo, the orange dashed path represents a Cartesian linear move
 (`MoveL`/`LIN`) and the green path represents a joint-space move (`MoveJ`/`PTP`).
-The linear move keeps the TCP on a straight line, but the joints may need to move
-more aggressively near the stretched configuration. The joint move gives the
-controller a smoother joint-space problem, but the TCP path bends.
+The colored value boxes show what is interpolated directly. For `MoveL`/`LIN`,
+the controller interpolates the TCP pose, so the TCP path is straight. For
+`MoveJ`/`PTP`, the controller interpolates the joint angles, so the TCP path is
+a result of the joint motion and usually bends.
 
 # Singularities
 
@@ -342,6 +342,19 @@ Common practical examples include:
 - a wrist configuration where two wrist axes line up,
 - a target orientation that forces the robot into an awkward posture,
 - a linear move that passes through a difficult configuration.
+
+The animation below compares a `LIN`/`MoveL` and a `PTP`/`MoveJ` approach toward
+the same near-stretched target. In the linear move, the TCP follows a simple
+straight line, but the relative joint speed increases as the elbow angle
+approaches zero. In the joint move, the joint angles are interpolated instead,
+so the TCP path bends and the speed indicator behaves differently. This does not
+mean that `MoveJ` avoids singularities in general: the final posture is still
+near the stretched-arm configuration.
+
+```{=html}
+<div id="kinematics-singularity-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the singularity animation.</p></noscript>
+```
 
 The solution is usually not to calculate a new robot by hand. In practice, we
 avoid singularities by changing the target pose, changing the approach
