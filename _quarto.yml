@@ -21,6 +21,7 @@ website:
       - section: Robot Foundations
         contents: 
           - content/robots.qmd
+          - content/kinematics.qmd
           
       - section: content/simulation.qmd
         contents: 

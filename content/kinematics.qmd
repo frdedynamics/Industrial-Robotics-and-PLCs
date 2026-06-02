@@ -1,33 +1,236 @@
 ---
 title: Kinematics
 bibliography: references.bib
-draft: true
---- 
+---
 
-# Basics
+# Why kinematics matters
 
-- Explain basics of kinematics, why we need it, base <-> tool, with the backdrop that a manipulator is a collection of joints and links, and we want to control the end-effector. This leads to the need for kinematics, which is the mathematical relationship between joint positions and end-effector position and orientation.
+An industrial robot arm is a collection of joints and links. The controller
+commands the joints, but the production task usually cares about the tool: where
+is the TCP, which direction is the tool pointing, and how does it move through
+the workpiece?
 
-- forward and inverse kinematics, and the difference between them. And when we need to use each of them in practice, e.g. for controlling the robot, for planning a path, for simulating the robot, etc.
+Kinematics is the connection between these two descriptions. It describes how
+joint positions create the position and orientation of the tool, and how a
+desired tool pose can be converted back into joint positions.
 
-- do not go into detail how the equations are derived, but make an interactive demo which shows kinematics on planar arm, with 1 dof, then 2 dof, then 3 dof, find a way to show that the relationship is a concatenation of sines and cosines, but kind of leave it there and say that we will just use it
+Following the notation used by Corke, we use `q` for the robot's joint
+coordinates and `T` for a pose represented as a homogeneous transformation
+matrix [@Corke.2023]. In practical terms:
 
-- briefly mention DH parameters, but say that they are one way of representing the kinematics, in our simulation in visual components, the robot models we use are given anyways
+- `q` describes the robot in joint space.
+- `T` describes the TCP in Cartesian space.
+- forward kinematics computes `T` from `q`.
+- inverse kinematics computes one possible `q` from a desired `T`.
 
-- always stick to Peter Corke notation @Corke.2023
+This page uses simple planar robot arms to explain the concepts. Real industrial
+robots move in 3D and usually have six axes, but the same ideas apply.
 
-- Point to further reading; Corke chapters
+# Joint space and Cartesian space
 
-- make demo of planar arm where one can drag a goal position and orientation and the robot tracks it
-- make exercises
+Joint space is the robot's internal view of motion. A six-axis industrial robot
+has six joint coordinates: `q1` to `q6`. When the robot moves in joint space,
+each axis moves from one joint angle to another. The TCP path is whatever comes
+out of those coordinated joint motions.
 
-# Singularities and Jacobian
-- explain what a singularity is, and how it can cause problems for the robot, and how to avoid it
+Cartesian space is the task view of motion. Here we describe the TCP by position
+and orientation relative to a frame, for example the robot base frame, a work
+object frame, or a tool frame. This is the view that matters when a welding
+torch must follow a seam, a gripper must approach a part, or a dispensing nozzle
+must stay normal to a surface.
 
-- explain what the Jacobian is, and how it relates to the kinematics, and how it can be used to find singularities, and how it can be used for control
+Industrial robot controllers expose both views. On Universal Robots, `MoveJ` is
+a joint-space move and `MoveL` is a linear Cartesian move. On KUKA robots, the
+corresponding terms are typically `PTP` and `LIN`. KUKA also uses `CIRC` for
+circular Cartesian motion, while Universal Robots has `MoveP` for process-style
+blended motion. The vendor names differ, but the underlying distinction is the
+same: either the controller prioritizes joint motion, or it prioritizes the TCP
+path.
 
-- all without going into the mathematical details but understanding the concepts and what is relevant for using a robot in practice, where one does not calculate, but e.g. has to know how to inspect the jacobian for healthiness and understand what it means when the jacobian is close to singular, and how to avoid it in practice, e.g. by changing the robot configuration or using a different tool orientation
+# Forward kinematics
 
-- make an interactive demo which shows the jacobian and singularities on a planar arm, with 2 dof, then 3 dof, show how the jacobian changes with the configuration, and how it becomes singular at certain configurations, and how to avoid it by changing the configuration or tool orientation, highlight speed increase
+Forward kinematics answers the question:
 
-- make another demo that shows the difference between L and J movement types, if not possible to show in the demo above in a didactic way, show how the L movement can lead to singularities and how the J movement can avoid it, and how the robot moves differently in the two cases, and how to choose the right movement type for a given task and configuration
+> If the joint positions are known, where is the TCP?
+
+For a simple planar arm, each link adds one more rotation and one more
+translation. The TCP position is therefore built from a chain of sine and cosine
+terms. For a three-link planar arm, the idea looks like this:
+
+$$
+x = L_1 \cos(q_1) + L_2 \cos(q_1 + q_2) + L_3 \cos(q_1 + q_2 + q_3)
+$$
+
+$$
+y = L_1 \sin(q_1) + L_2 \sin(q_1 + q_2) + L_3 \sin(q_1 + q_2 + q_3)
+$$
+
+The exact equations for a real six-axis robot are more complex, but the
+principle is the same: the controller combines the geometry of all links and
+joints to compute the pose of the tool.
+
+```{=html}
+<div id="kinematics-fk-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the forward kinematics demo.</p></noscript>
+```
+
+Forward kinematics is used whenever the robot controller, simulation software,
+or offline programming system needs to know where the TCP is for a given robot
+configuration. It is also used when jogging individual joints, checking reach,
+simulating robot motion, and visualizing the robot in a digital model.
+
+# Robot models and DH parameters
+
+To compute kinematics, the software needs a model of the robot geometry. This
+model describes how the joints and links are connected. Denavit-Hartenberg
+parameters, often called DH parameters, are one common way to write this model
+down.
+
+For this course, the important point is not how to derive DH parameters by hand.
+In normal industrial use, the model is already provided by the robot controller,
+the manufacturer, or the simulation software. In Visual Components, for example,
+we normally select a robot model that already contains the relevant geometry and
+joint limits. We use the model; we do not usually build it from scratch.
+
+# Inverse kinematics
+
+Inverse kinematics answers the opposite question:
+
+> If the desired TCP pose is known, which joint positions should the robot use?
+
+This is the problem the controller solves when we teach a Cartesian target, jog
+the TCP in a tool frame, or command a linear move to a pose. It is also the
+problem behind offline programming, camera-guided picking, and simulation.
+
+Inverse kinematics is more complicated than forward kinematics for three
+practical reasons:
+
+- There may be no solution because the target is outside the robot's workspace.
+- There may be several solutions for the same TCP pose.
+- A mathematical solution may violate joint limits or collide with equipment.
+
+The second point is especially important in industrial robotics. A six-axis arm
+can often reach the same TCP pose with different shoulder, elbow, and wrist
+configurations. On a planar arm this appears as an elbow-up or elbow-down
+solution. On a real robot, the equivalent configuration choices can decide
+whether the robot avoids a fixture, stays away from a singularity, or approaches
+the part from the correct side.
+
+```{=html}
+<div id="kinematics-ik-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the inverse kinematics demo.</p></noscript>
+```
+
+In a production cell, inverse kinematics is usually hidden inside the robot
+controller. The programmer does not normally solve the equations manually. The
+important skill is to recognize when the controller is struggling: unreachable
+targets, awkward configurations, unexpected wrist flips, or paths that require
+the robot to pass too close to a singularity.
+
+# Path, trajectory, and movement type
+
+A path describes the geometric route of the TCP. A trajectory describes the same
+route together with timing, speed, and acceleration. This distinction matters
+because two robot programs can have the same start and end point while moving in
+very different ways.
+
+A joint-space move, such as `MoveJ` on Universal Robots or `PTP` on KUKA, moves
+the axes from one joint configuration to another. This is often the best choice
+for repositioning because it is robust and usually fast. The TCP path is not a
+straight line, so it should not be used when the tool must follow a process path.
+
+A Cartesian linear move, such as `MoveL` on Universal Robots or `LIN` on KUKA,
+commands the TCP to follow a straight line. This is the right choice for many
+process operations: welding, dispensing, inserting, scanning, or approaching a
+part along a known direction. The cost is that the controller must continuously
+solve inverse kinematics along the line. Near difficult configurations, a simple
+straight TCP path can require uncomfortable joint motion.
+
+```{=html}
+<div id="kinematics-motion-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the motion type demo.</p></noscript>
+```
+
+In the demo, the orange dashed path represents a Cartesian linear move
+(`MoveL`/`LIN`) and the green path represents a joint-space move (`MoveJ`/`PTP`).
+The linear move keeps the TCP on a straight line, but the joints may need to move
+more aggressively near the stretched configuration. The joint move gives the
+controller a smoother joint-space problem, but the TCP path bends.
+
+# Singularities
+
+A singularity is a robot configuration where the robot loses the ability to move
+the TCP freely in some direction, or where a small TCP motion would require very
+large joint speeds. Near a singularity, the robot may slow down, stop with a
+controller warning, or make a large wrist motion for what looks like a small TCP
+change.
+
+Common practical examples include:
+
+- a robot arm that is almost fully stretched,
+- a wrist configuration where two wrist axes line up,
+- a target orientation that forces the robot into an awkward posture,
+- a linear move that passes through a difficult configuration.
+
+The solution is usually not to calculate a new robot by hand. In practice, we
+avoid singularities by changing the target pose, changing the approach
+direction, using another robot configuration, moving the part or fixture, or
+using a joint move for repositioning before starting a process move.
+
+# The Jacobian as a health indicator
+
+The Jacobian describes how joint speeds create TCP speed. If the joints move
+with speeds `qd`, the TCP has a corresponding Cartesian velocity. Corke writes
+this relationship using the Jacobian matrix `J(q)` [@Corke.2023].
+
+For this course, the key idea is enough:
+
+> The Jacobian tells how effectively the current robot posture can create TCP
+> motion.
+
+When the Jacobian is healthy, the robot can create TCP motion without excessive
+joint speeds. When the Jacobian is close to singular, the robot may need very
+high joint speeds to create a small TCP motion, or it may be unable to move in a
+particular direction. Robot controllers and simulation tools often expose this
+indirectly through warnings, slow motion, failed linear moves, or configuration
+changes.
+
+# Practical rules of thumb
+
+- Use joint moves (`MoveJ`, `PTP`) for free-space repositioning.
+- Use linear moves (`MoveL`, `LIN`) when the TCP path matters.
+- Keep process paths away from fully stretched arm configurations.
+- Avoid unnecessary tool orientations that force wrist axes to line up.
+- Teach approach and retreat points so the robot enters the process posture
+  gradually.
+- Check that targets are reachable with the desired tool orientation, not only
+  with the desired position.
+- Be aware that the same TCP pose can have several robot configurations.
+- In simulation, inspect both the TCP path and the joint motion.
+
+# Exercises
+
+1. In the forward kinematics demo, set the arm to one, two, and three joints.
+   Move `q1` in each case. What changes when more joints are added after `q1`?
+
+2. In the inverse kinematics demo, drag the target near the edge of the
+   workspace. What happens to the joint angles? What happens when you switch
+   between elbow-up and elbow-down?
+
+3. In the motion type demo, compare `MoveJ`/`PTP` and `MoveL`/`LIN`. Which one
+   gives a straight TCP path? Which one gives smoother joint motion?
+
+4. Think about a real robot task such as welding, palletizing, machine tending,
+   or dispensing. Which parts of the task should use joint moves, and which
+   parts should use linear moves?
+
+# Further reading
+
+For more detail, see Corke's treatment of robot arm kinematics, inverse
+kinematics, velocity relationships, and the Jacobian [@Corke.2023]. The
+mathematics is deeper than what we need in this course, but the notation is the
+same.
+
+```{=html}
+<script src="../assets/kinematics-demos.js"></script>
+```

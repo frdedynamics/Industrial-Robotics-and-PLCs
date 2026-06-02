@@ -23,3 +23,7 @@ draft: true
 - show the basic operations that are needed as in @Corke.2023, but do not go into details about how to derive the equations, but rather show how to use them in practice, e.g. how to concatenate transformations to find the pose of the end-effector in the base frame given the joint angles and the robot's kinematics, or how to invert a transformation to find the pose of the base frame in the tool frame, etc. Combine this with a hands on exercise
 - make example calculations to show what was described above
 - make interactive demo / exercise about poses, maybe around converting from a camera frame to robot base frame
+
+
+Further reading:
+- https://robotacademy.net.au/masterclass/3d-geometry/
