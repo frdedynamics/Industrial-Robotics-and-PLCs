@@ -1,0 +1,7 @@
+---
+title: Robot Programming
+bibliography: references.bib
+draft: true
+---
+
+TODO: write about different programming approaches: online, offline, hand guiding, teach pendant, lead through, walkthrough, scripting, CAM/Sim, robot learning
