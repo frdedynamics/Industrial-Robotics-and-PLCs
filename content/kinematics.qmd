@@ -281,14 +281,14 @@ while the robot body is moved through compliant impedance behavior.
 # Path, trajectory, and movement type
 
 A **path** is the geometric route followed by the TCP. A **trajectory** is that
-path plus timing: for example the chosen velocity and acceleration. Two robot
+path plus timing: for example the chosen velocity and acceleration profiles. Two robot
 programs can therefore have the same path but different trajectories. They can
 also have the same start and end poses but different paths, depending on the
 selected movement type.
 
-In industrial robot programming, motions are still often built from key points:
+In industrial robot programming, motions are still often built from key poses of the TCP:
 home, approach, process start, process end, retreat, and so on. Once those
-points have been taught or calculated, the programmer has to decide how the
+poses have been taught or calculated, the programmer has to decide how the
 robot should connect them. The practical question is: does the TCP need to move
 through Cartesian space in a particular way to achieve the task, or is it enough
 that the robot reaches the next key point safely and efficiently?
@@ -311,13 +311,16 @@ part along a known direction. The cost is that the controller must continuously
 solve inverse kinematics along the line. Near difficult configurations, a simple
 straight TCP path can require uncomfortable joint motion.
 
-After the movement type has defined the path, the trajectory settings define how
-the robot moves along it. This is where speed and acceleration settings come in.
+In practice, these choices are usually made together in one motion command. For
+understanding what the command does, it is still useful to separate the ideas:
+the movement type mainly describes the geometric route, while speed and
+acceleration settings describe the timing.
 
 ```{=html}
 <div id="kinematics-motion-demo" class="kinematics-demo"></div>
 <noscript><p>JavaScript is required to use the motion type demo.</p></noscript>
 ```
+TODO: now difference is more visible, but robot not close to singualirity anymore, maybe split up the demos into two, where the singularity one is more of an animation that then also shows how the robot speeds up
 
 In the demo, the orange dashed path represents a Cartesian linear move
 (`MoveL`/`LIN`) and the green path represents a joint-space move (`MoveJ`/`PTP`).

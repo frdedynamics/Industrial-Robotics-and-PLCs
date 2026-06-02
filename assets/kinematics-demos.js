@@ -681,8 +681,8 @@
   function initializeMotionDemo(root) {
     const lengths = [115, 90, 45];
     const coordinates = createCoordinateSystem(520, 360);
-    const startPose = { target: [245, 42], phi: 0 };
-    const endPose = { target: [245, -42], phi: 0 };
+    const startPose = { target: [220, 100], phi: 0 };
+    const endPose = { target: [220, -100], phi: 0 };
     const elbowMode = "down";
     const startSolution = inverseKinematics3R(startPose.target, startPose.phi, elbowMode, lengths);
     const endSolution = inverseKinematics3R(endPose.target, endPose.phi, elbowMode, lengths);
