@@ -234,14 +234,14 @@ whether the solver found an acceptable solution.
 It is useful to relate inverse kinematics to the number of independent joint
 motions available for the task:
 
-- A robot is fully actuated for a task when it has enough independently
+- A robot is **fully actuated** for a task when it has enough independently
   controlled joints to control all required task coordinates. A typical six-axis
   industrial arm can control a full 3D TCP pose: three position coordinates and
   three orientation coordinates.
-- A redundant robot has more joints than the task strictly requires. A seven-axis
+- A **redundant robot** has more joints than the task strictly requires. A seven-axis
   arm, or a six-axis arm mounted on a linear track, can often reach the same TCP
   pose in many more ways.
-- An underactuated robot has fewer controllable joints than the desired task
+- An **underactuated robot** has fewer controllable joints than the desired task
   requires. For example, a simple four-axis palletizing robot can place boxes in
   many positions, but it cannot freely choose every possible tool orientation.
 
@@ -280,22 +280,39 @@ while the robot body is moved through compliant impedance behavior.
 
 # Path, trajectory, and movement type
 
-A path describes the geometric route of the TCP. A trajectory describes the same
-route together with timing, speed, and acceleration. This distinction matters
-because two robot programs can have the same start and end point while moving in
-very different ways.
+A **path** is the geometric route followed by the TCP. A **trajectory** is that
+path plus timing: for example the chosen velocity and acceleration. Two robot
+programs can therefore have the same path but different trajectories. They can
+also have the same start and end poses but different paths, depending on the
+selected movement type.
 
-A joint-space move, such as `MoveJ` on Universal Robots or `PTP` on KUKA, moves
-the axes from one joint configuration to another. This is often the best choice
-for repositioning because it is robust and usually fast. The TCP path is not a
-straight line, so it should not be used when the tool must follow a process path.
+In industrial robot programming, motions are still often built from key points:
+home, approach, process start, process end, retreat, and so on. Once those
+points have been taught or calculated, the programmer has to decide how the
+robot should connect them. The practical question is: does the TCP need to move
+through Cartesian space in a particular way to achieve the task, or is it enough
+that the robot reaches the next key point safely and efficiently?
+
+The movement type answers this connection question. It tells the controller
+whether to interpolate in joint space or in Cartesian space. This choice can
+change the geometric path of the TCP, even if the start and end poses are the
+same.
+
+A joint-space move, such as `MoveJ` on Universal Robots or `PTP` on KUKA,
+interpolates from one joint configuration to another. This is often the best
+choice for repositioning because it is robust and usually fast. The TCP path is
+not prescribed and is usually not a straight line, so this movement type should
+not be used when the tool must follow a process path.
 
 A Cartesian linear move, such as `MoveL` on Universal Robots or `LIN` on KUKA,
-commands the TCP to follow a straight line. This is the right choice for many
+interpolates the TCP along a straight line. This is the right choice for many
 process operations: welding, dispensing, inserting, scanning, or approaching a
 part along a known direction. The cost is that the controller must continuously
 solve inverse kinematics along the line. Near difficult configurations, a simple
 straight TCP path can require uncomfortable joint motion.
+
+After the movement type has defined the path, the trajectory settings define how
+the robot moves along it. This is where speed and acceleration settings come in.
 
 ```{=html}
 <div id="kinematics-motion-demo" class="kinematics-demo"></div>
