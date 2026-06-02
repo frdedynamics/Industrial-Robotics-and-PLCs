@@ -53,9 +53,23 @@ Forward kinematics answers the question:
 
 > If the joint positions are known, where is the TCP?
 
-For a simple planar arm, each link adds one more rotation and one more
-translation. The TCP position is therefore built from a chain of sine and cosine
-terms. For a three-link planar arm, the idea looks like this:
+The simplest case is a one-joint planar arm. This is like a pendulum with a
+known length. If the link length is `L1` and the joint angle is `q1`, the TCP
+position is just the conversion from polar coordinates to Cartesian
+coordinates:
+
+$$
+x = L_1 \cos(q_1)
+$$
+
+$$
+y = L_1 \sin(q_1)
+$$
+
+Adding more links repeats the same idea. Each link contributes an `x` component
+and a `y` component, but the angle of each link depends on all the previous
+joints. `L1`, `L2`, and `L3` are the link lengths, while `q1`, `q2`, and `q3`
+are the joint angles. For a three-link planar arm, the TCP position becomes:
 
 $$
 x = L_1 \cos(q_1) + L_2 \cos(q_1 + q_2) + L_3 \cos(q_1 + q_2 + q_3)
@@ -67,7 +81,7 @@ $$
 
 The exact equations for a real six-axis robot are more complex, but the
 principle is the same: the controller combines the geometry of all links and
-joints to compute the pose of the tool.
+joints to compute the pose of the tool. For a full walkthrough of the 6DOF case, see @Corke.2023 [chap. 7]. 
 
 ```{=html}
 <div id="kinematics-fk-demo" class="kinematics-demo"></div>

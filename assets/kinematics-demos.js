@@ -168,20 +168,53 @@
       class: "kinematics-svg__workspace"
     }));
 
+    const xLabel = createSvgElement("text", {
+      x: coordinates.width - 24,
+      y: coordinates.originY - 10,
+      class: "kinematics-svg__axis-label"
+    });
+    xLabel.textContent = "x";
+    group.appendChild(xLabel);
+
+    const yLabel = createSvgElement("text", {
+      x: coordinates.originX + 10,
+      y: 22,
+      class: "kinematics-svg__axis-label"
+    });
+    yLabel.textContent = "y";
+    group.appendChild(yLabel);
+
     svg.appendChild(group);
+  }
+
+  function componentClass(index) {
+    return "component-" + (index + 1);
   }
 
   function drawArm(svg, points, coordinates, options) {
     const armGroup = createSvgElement("g", { class: "kinematics-svg__arm" });
-    const polylinePoints = points.map(function (point) {
-      const svgPoint = toSvg(point, coordinates);
-      return svgPoint[0] + "," + svgPoint[1];
-    }).join(" ");
 
-    armGroup.appendChild(createSvgElement("polyline", {
-      points: polylinePoints,
-      class: "kinematics-svg__link-path"
-    }));
+    for (let index = 0; index < points.length - 1; index += 1) {
+      const start = toSvg(points[index], coordinates);
+      const end = toSvg(points[index + 1], coordinates);
+      armGroup.appendChild(createSvgElement("line", {
+        x1: start[0],
+        y1: start[1],
+        x2: end[0],
+        y2: end[1],
+        class: "kinematics-svg__link-segment " + componentClass(index)
+      }));
+
+      if (options.showLinkLabels) {
+        const label = createSvgElement("text", {
+          x: (start[0] + end[0]) / 2,
+          y: ((start[1] + end[1]) / 2) - 10,
+          class: "kinematics-svg__link-label " + componentClass(index)
+        });
+        label.textContent = "L" + (index + 1);
+        armGroup.appendChild(label);
+      }
+    }
 
     points.forEach(function (point, index) {
       const svgPoint = toSvg(point, coordinates);
@@ -210,6 +243,43 @@
     }));
 
     svg.appendChild(armGroup);
+  }
+
+  function drawTcpProjection(svg, tcp, coordinates) {
+    const tcpSvg = toSvg(tcp, coordinates);
+    const xProjection = toSvg([tcp[0], 0], coordinates);
+    const yProjection = toSvg([0, tcp[1]], coordinates);
+    const group = createSvgElement("g", { class: "kinematics-svg__tcp-projection" });
+
+    group.appendChild(createSvgElement("line", {
+      x1: tcpSvg[0],
+      y1: tcpSvg[1],
+      x2: xProjection[0],
+      y2: xProjection[1]
+    }));
+
+    group.appendChild(createSvgElement("line", {
+      x1: tcpSvg[0],
+      y1: tcpSvg[1],
+      x2: yProjection[0],
+      y2: yProjection[1]
+    }));
+
+    const xLabel = createSvgElement("text", {
+      x: xProjection[0] + 6,
+      y: xProjection[1] + 18
+    });
+    xLabel.textContent = "x = " + formatNumber(tcp[0], 1);
+    group.appendChild(xLabel);
+
+    const yLabel = createSvgElement("text", {
+      x: yProjection[0] + 8,
+      y: yProjection[1] - 8
+    });
+    yLabel.textContent = "y = " + formatNumber(tcp[1], 1);
+    group.appendChild(yLabel);
+
+    svg.appendChild(group);
   }
 
   function drawPath(svg, samples, coordinates, className) {
@@ -259,13 +329,15 @@
       "</div>",
       "<div class=\"kinematics-demo__sliders\"></div>",
       "<dl class=\"kinematics-readout\"></dl>",
-      "</div>"
+      "</div>",
+      "<div class=\"kinematics-equation\" aria-live=\"polite\"></div>"
     ].join("");
 
     const svg = root.querySelector("svg");
     const buttons = Array.from(root.querySelectorAll("button[data-joints]"));
     const slidersRoot = root.querySelector(".kinematics-demo__sliders");
     const readout = root.querySelector(".kinematics-readout");
+    const equationRoot = root.querySelector(".kinematics-equation");
     const sliderValues = [];
     const sliderInputs = [];
 
@@ -298,6 +370,68 @@
       });
     });
 
+    function mathSymbol(name, index) {
+      return "<span class=\"kinematics-equation__symbol " + componentClass(index) + "\">" +
+        "<i>" + name + "</i><sub>" + (index + 1) + "</sub>" +
+        "</span>";
+    }
+
+    function angleValue(angle, index) {
+      return "<span class=\"kinematics-equation__symbol " + componentClass(index) + "\">" +
+        formatNumber(angle, 0) + "°" +
+        "</span>";
+    }
+
+    function angleSum(activeAngles, index) {
+      const terms = [];
+      for (let termIndex = 0; termIndex <= index; termIndex += 1) {
+        terms.push(angleValue(activeAngles[termIndex], termIndex));
+      }
+      return terms.join("<span class=\"kinematics-equation__operator\"> + </span>");
+    }
+
+    function symbolicTerm(functionName, activeAngles, index) {
+      return [
+        mathSymbol("L", index),
+        "<span class=\"kinematics-equation__trig\"> " + functionName + "</span>",
+        "<span class=\"kinematics-equation__paren\">(</span>",
+        angleSum(activeAngles, index),
+        "<span class=\"kinematics-equation__paren\">)</span>"
+      ].join("");
+    }
+
+    function valueBadge(index, length) {
+      return [
+        "<span class=\"kinematics-equation__value " + componentClass(index) + "\">",
+        "<span><i>L</i><sub>" + (index + 1) + "</sub> = " + length + "</span>",
+        "</span>"
+      ].join("");
+    }
+
+    function buildEquation(activeAngles, activeLengths, tcp) {
+      const xTerms = activeLengths.map(function (length, index) {
+        return symbolicTerm("cos", activeAngles, index);
+      });
+      const yTerms = activeLengths.map(function (length, index) {
+        return symbolicTerm("sin", activeAngles, index);
+      });
+      const values = activeLengths.map(function (length, index) {
+        return valueBadge(index, length);
+      });
+
+      return [
+        "<div class=\"kinematics-equation__row\"><span>x = </span>",
+        xTerms.join("<span class=\"kinematics-equation__operator\"> + </span>"),
+        "<span class=\"kinematics-equation__result\"> = " + formatNumber(tcp[0], 1) + "</span></div>",
+        "<div class=\"kinematics-equation__row\"><span>y = </span>",
+        yTerms.join("<span class=\"kinematics-equation__operator\"> + </span>"),
+        "<span class=\"kinematics-equation__result\"> = " + formatNumber(tcp[1], 1) + "</span></div>",
+        "<div class=\"kinematics-equation__values\">",
+        values.join(""),
+        "</div>"
+      ].join("");
+    }
+
     function render() {
       const activeLengths = lengths.slice(0, state.activeJoints);
       const activeAngles = state.angles.slice(0, state.activeJoints);
@@ -306,11 +440,15 @@
 
       clear(svg);
       drawGrid(svg, coordinates, lengths.reduce(function (sum, value) { return sum + value; }, 0));
-      drawArm(svg, result.points, coordinates, { orientationDegrees: result.orientation });
+      drawTcpProjection(svg, tcp, coordinates);
+      drawArm(svg, result.points, coordinates, {
+        orientationDegrees: result.orientation,
+        showLinkLabels: true
+      });
 
       sliderInputs.forEach(function (input, index) {
         input.disabled = index >= state.activeJoints;
-        sliderValues[index].textContent = formatNumber(state.angles[index], 0) + " deg";
+        sliderValues[index].textContent = formatNumber(state.angles[index], 0) + "°";
       });
 
       buttons.forEach(function (button) {
@@ -320,8 +458,10 @@
       readout.innerHTML = [
         buildReadoutRow("TCP x", formatNumber(tcp[0], 1)),
         buildReadoutRow("TCP y", formatNumber(tcp[1], 1)),
-        buildReadoutRow("TCP angle", formatNumber(result.orientation, 1) + " deg")
+        buildReadoutRow("TCP angle", formatNumber(result.orientation, 1) + "°")
       ].join("");
+
+      equationRoot.innerHTML = buildEquation(activeAngles, activeLengths, tcp);
     }
 
     render();
@@ -472,12 +612,12 @@
       buttons.forEach(function (button) {
         button.classList.toggle("is-active", button.dataset.elbow === state.elbowMode);
       });
-      phiValue.textContent = formatNumber(state.phi, 0) + " deg";
+      phiValue.textContent = formatNumber(state.phi, 0) + "°";
 
       readout.innerHTML = [
-        buildReadoutRow("q1", formatNumber(solution.angles[0], 1) + " deg"),
-        buildReadoutRow("q2", formatNumber(solution.angles[1], 1) + " deg"),
-        buildReadoutRow("q3", formatNumber(solution.angles[2], 1) + " deg"),
+        buildReadoutRow("q1", formatNumber(solution.angles[0], 1) + "°"),
+        buildReadoutRow("q2", formatNumber(solution.angles[1], 1) + "°"),
+        buildReadoutRow("q3", formatNumber(solution.angles[2], 1) + "°"),
         buildReadoutRow("TCP error", Math.hypot(tcp[0] - state.target[0], tcp[1] - state.target[1]).toFixed(1)),
         buildReadoutRow("Status", solution.reachable ? "reachable" : "outside reach")
       ].join("");
@@ -643,9 +783,9 @@
         buildReadoutRow("Active motion", state.mode === "movej" ? "MoveJ / PTP" : "MoveL / LIN"),
         buildReadoutRow("TCP x", formatNumber(tcp[0], 1)),
         buildReadoutRow("TCP y", formatNumber(tcp[1], 1)),
-        buildReadoutRow("q2", formatNumber(angles[1], 1) + " deg"),
+        buildReadoutRow("q2", formatNumber(angles[1], 1) + "°"),
         buildReadoutRow("Singularity margin", margin < 0.22 ? "low" : "acceptable"),
-        buildReadoutRow("Relative joint motion", motion.toFixed(0) + " deg per path")
+        buildReadoutRow("Relative joint motion", motion.toFixed(0) + "° per path")
       ].join("");
     }
 
