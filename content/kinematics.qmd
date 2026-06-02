@@ -236,8 +236,8 @@ motions available for the task:
 
 - A robot is fully actuated for a task when it has enough independently
   controlled joints to control all required task coordinates. A typical six-axis
-  industrial arm is non-redundant for a full 3D TCP pose: three position
-  coordinates and three orientation coordinates.
+  industrial arm can control a full 3D TCP pose: three position coordinates and
+  three orientation coordinates.
 - A redundant robot has more joints than the task strictly requires. A seven-axis
   arm, or a six-axis arm mounted on a linear track, can often reach the same TCP
   pose in many more ways.
@@ -260,8 +260,7 @@ seven-axis robot that keeps the TCP fixed while moving its elbow away from an
 obstacle. The important word is continuous: the robot can move through a range
 of postures while the TCP task remains satisfied.
 
-This is different from the `Elbow down` / `Elbow up` switch in the demo. That
-switch selects between separate inverse kinematics branches. It is a discrete
+This is different from the `Elbow down` / `Elbow up` switch for the fully actuated robot in the demo. That switch selects between separate inverse kinematics branches. It is a discrete
 configuration choice, not a continuous nullspace motion. Both ideas matter in
 industrial programming: configuration branches decide which posture family the
 robot uses, while redundancy gives the controller extra room inside a task.
