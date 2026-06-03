@@ -463,10 +463,11 @@ posture.
 <noscript><p>JavaScript is required to use the singularity animation.</p></noscript>
 ```
 
-The solution is usually not to calculate a new robot by hand. In practice, we
-avoid singularities by changing the target pose, changing the approach
-direction, using another robot configuration, moving the part or fixture, or
-using a joint move for repositioning before starting a process move.
+In practice, singularity problems are usually solved by changing the task setup
+or the programmed motion. We avoid singularities by changing the target pose,
+changing the approach direction, using another robot configuration, moving the
+part or fixture, or using a joint move for repositioning before starting a
+process move.
 
 # Practical rules of thumb
 
