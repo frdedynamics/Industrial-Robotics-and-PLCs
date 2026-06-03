@@ -336,13 +336,13 @@ travel because the controller must keep the TCP on the straight line. A
 joint-space move often gives simpler joint motion for free-space repositioning,
 even though the TCP path is no longer prescribed.
 
-# Singularities
+# Singularities and the Jacobian
 
-A singularity is a robot configuration where the robot loses the ability to move
-the TCP freely in some direction, or where a small TCP motion would require very
-large joint speeds. Near a singularity, the robot may slow down, stop with a
-controller warning, or make a large wrist motion for what looks like a small TCP
-change.
+A singularity is a robot posture where the robot loses a useful motion
+possibility. Because of the geometry of the posture, some joint motions no
+longer create independent TCP motions. The robot may therefore be unable to move
+the TCP freely in all the directions the task might ask for. A very small
+requested TCP motion can then require very large joint motion.
 
 Common practical examples include:
 
@@ -351,13 +351,109 @@ Common practical examples include:
 - a target orientation that forces the robot into an awkward posture,
 - a linear move that passes through a difficult configuration.
 
-The animation below compares a `LIN`/`MoveL` and a `PTP`/`MoveJ` approach toward
-the same near-stretched target. In the linear move, the TCP follows a simple
-straight line, but the relative joint speed increases as the elbow angle
-approaches zero. In the joint move, the joint angles are interpolated instead,
-so the TCP path bends and the speed indicator behaves differently. This does not
-mean that `MoveJ` avoids singularities in general: the final posture is still
-near the stretched-arm configuration.
+Many singularities are easy to recognize because joint axes line up or become
+parallel. This is a useful visual warning, especially for wrist singularities,
+but it is not the definition and not the only possible cause. The more general
+test is whether the current robot posture has lost an independent TCP motion
+direction.
+
+ISO 10218-1:2025 defines a singularity as the "occurrence whenever the rank of
+the Jacobian matrix becomes less than full rank" [@ISO10218-1.2025]. That is a
+compact technical definition, but the practical meaning is simple enough:
+
+- the **Jacobian** describes what TCP motion the current robot posture can
+  create from joint motion,
+- the **rank** says how many independent TCP motion directions are actually
+  available,
+- **less than full rank** means that at least one required motion direction has
+  been lost.
+
+For a typical six-axis robot doing a full 3D pose task, "full rank" means that
+the robot can create the six independent TCP velocity components: three for
+position and three for orientation. Not full rank means that the robot can only
+create fewer independent TCP velocity components in that posture.
+
+As the robot approaches a singularity, some Cartesian TCP motions require very
+large joint speeds. At the ideal mathematical singularity, the required joint
+speed can become theoretically infinite, or the requested Cartesian motion may
+not be possible in that direction at all. This is why singularities must be
+handled deliberately in the robot and in the task. A real industrial robot may
+slow down, limit motion, change behavior, or stop with a warning, but that is
+because the controller includes measures to deal with the singularity safely
+[@ISO10218-1.2025, sec. 5.2.3]. The geometry itself does not politely make the
+problem harmless.
+
+## The Jacobian view
+
+Forward kinematics maps joint positions to the TCP pose:
+
+$$
+\text{TCP pose} = f(\text{joint angles})
+$$
+
+The Jacobian is the local motion version of that same idea. It tells how joint
+speeds create TCP speed at the current posture. In mathematics, a Jacobian is a
+matrix of derivatives. In robotics, the Jacobian we usually mean is the
+derivative of the forward kinematics function with respect to the joint
+coordinates. It answers a local question: if each joint moves a tiny amount,
+how does the TCP position and orientation change?
+
+For the planar arm above, the forward kinematics equations give $x$, $y$, and
+tool angle from $q_1$, $q_2$, and $q_3$. The Jacobian contains the local slopes
+of those equations. For a six-axis industrial arm, the same idea applies to the
+full TCP velocity: three translational components and three rotational
+components. Corke writes this velocity relationship using the Jacobian matrix
+$J(q)$
+[@Corke.2023]:
+
+$$
+\dot{x} = J(q)\dot{q}
+$$
+
+Here, $q$ is the current joint position, $\dot{q}$ is joint speed, and
+$\dot{x}$ is TCP speed. The important point is that $J(q)$ depends on the
+current posture. As the robot moves, the Jacobian changes.
+
+When the Jacobian is healthy, the robot can create the requested TCP motion
+without excessive joint speeds. Near a singularity, the same TCP motion can
+require much larger joint speeds. At the singularity, one independent TCP motion
+direction is no longer available at all. Robot singularities are called
+singularities because the Jacobian matrix becomes singular: it loses full rank.
+Robot controllers, offline programming tools, and simulation systems can test
+the Jacobian rank, or use related numerical indicators, to check whether a
+Cartesian move is feasible and whether the robot is getting close to a difficult
+posture.
+
+## Why movement type matters
+
+This connects directly to `MoveJ`/`PTP` and `MoveL`/`LIN`. In a joint-space move,
+the controller interpolates joint angles. The TCP path is not prescribed, so the
+controller is not forced to keep solving for a specific Cartesian path between
+the points. This is one reason joint moves are often preferred for free-space
+repositioning.
+
+In a Cartesian linear move, the TCP path is prescribed. The controller has to
+generate joint motion that keeps the TCP on the line, and the Jacobian is part
+of how the controller relates the requested TCP velocity to required joint
+velocities. If that line passes near a singular posture, the joint speeds needed
+to maintain the line can become very large. This does not mean that `MoveJ`
+avoids singularities in general. A joint move can still start, end, or pass near
+a singular posture. The difference is that a `LIN`/`MoveL` command makes the TCP
+path a hard requirement.
+
+The animation below uses the same 3R planar arm as before, now as a full planar
+TCP pose example: $x$, $y$, and tool angle. The marked posture is a folded-elbow
+singularity. At that posture, motion along the folded link direction is not
+available in the same way as sideways motion. The blue motion-ability ellipse at
+the TCP shows this: when it collapses into a thin shape, one TCP motion direction
+has become difficult or unavailable.
+
+The `LIN`/`MoveL` option forces the TCP through a straight Cartesian line that
+passes close to the folded singularity. The `PTP`/`MoveJ` option interpolates
+the joint angles instead, so the TCP path bends around that posture in this
+example. This does not mean that `MoveJ` avoids singularities in general. It
+only shows that strict Cartesian path constraints can force the controller
+closer to a singular posture.
 
 ```{=html}
 <div id="kinematics-singularity-demo" class="kinematics-demo"></div>
@@ -368,24 +464,6 @@ The solution is usually not to calculate a new robot by hand. In practice, we
 avoid singularities by changing the target pose, changing the approach
 direction, using another robot configuration, moving the part or fixture, or
 using a joint move for repositioning before starting a process move.
-
-# The Jacobian as a health indicator
-
-The Jacobian describes how joint speeds create TCP speed. If the joints move
-with speeds `qd`, the TCP has a corresponding Cartesian velocity. Corke writes
-this relationship using the Jacobian matrix `J(q)` [@Corke.2023].
-
-For this course, the key idea is enough:
-
-> The Jacobian tells how effectively the current robot posture can create TCP
-> motion.
-
-When the Jacobian is healthy, the robot can create TCP motion without excessive
-joint speeds. When the Jacobian is close to singular, the robot may need very
-high joint speeds to create a small TCP motion, or it may be unable to move in a
-particular direction. Robot controllers and simulation tools often expose this
-indirectly through warnings, slow motion, failed linear moves, or configuration
-changes.
 
 # Practical rules of thumb
 

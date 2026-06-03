@@ -423,6 +423,32 @@
 	stroke-dasharray: 5 4;
 }
 
+.kinematics-svg__singularity-label {
+	fill: #7c2d12;
+	font-size: 12px;
+	font-weight: 800;
+	paint-order: stroke;
+	stroke: #ffffff;
+	stroke-width: 3;
+}
+
+.kinematics-svg__ability-ellipse {
+	fill: rgba(39, 128, 227, 0.12);
+	stroke: #2780e3;
+	stroke-width: 2.5;
+}
+
+.kinematics-svg__ability-axis {
+	stroke: rgba(39, 128, 227, 0.65);
+	stroke-width: 2;
+	stroke-linecap: round;
+}
+
+.kinematics-svg__ability-axis.is-minor {
+	stroke: rgba(194, 65, 12, 0.7);
+	stroke-width: 2.5;
+}
+
 .kinematics-svg__motion-marker circle {
 	fill: #ffffff;
 	stroke: #111827;

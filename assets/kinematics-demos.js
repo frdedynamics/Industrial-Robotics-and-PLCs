@@ -1016,8 +1016,9 @@
   function initializeSingularityDemo(root) {
     const lengths = [115, 90, 45];
     const coordinates = createCoordinateSystem(560, 360);
-    const startPose = { target: [155, 90], phi: 0 };
-    const endPose = { target: [249, 0], phi: 0 };
+    const startPose = { target: [70, -130], phi: 0 };
+    const endPose = { target: [70, 130], phi: 0 };
+    const singularPose = { target: [lengths[0] - lengths[1] + lengths[2], 0], phi: 0 };
     const elbowMode = "down";
     const startSolution = inverseKinematics3R(startPose.target, startPose.phi, elbowMode, lengths);
     const endSolution = inverseKinematics3R(endPose.target, endPose.phi, elbowMode, lengths);
@@ -1033,7 +1034,7 @@
 
     root.innerHTML = [
       "<div class=\"kinematics-demo__stage\">",
-      "<svg class=\"kinematics-svg\" viewBox=\"0 0 560 360\" role=\"img\" aria-label=\"Linear motion near a stretched-arm singularity\"></svg>",
+      "<svg class=\"kinematics-svg\" viewBox=\"0 0 560 360\" role=\"img\" aria-label=\"Motion near a folded-elbow singularity\"></svg>",
       "</div>",
       "<div class=\"kinematics-demo__panel\">",
       "<div class=\"kinematics-demo__buttons\" aria-label=\"Select motion type\">",
@@ -1045,7 +1046,7 @@
       "<button type=\"button\" data-role=\"reset\">Reset</button>",
       "</div>",
       "<label class=\"kinematics-slider\">",
-      "<span class=\"kinematics-slider__header\"><span>Linear move progress</span><span class=\"kinematics-slider__value\"></span></span>",
+      "<span class=\"kinematics-slider__header\"><span>Motion progress</span><span class=\"kinematics-slider__value\"></span></span>",
       "<input type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" data-role=\"progress\">",
       "</label>",
       "<dl class=\"kinematics-readout\"></dl>",
@@ -1109,6 +1110,55 @@
       return Math.abs(Math.sin(radians(angles[1])));
     }
 
+    function singularityDistance(angles) {
+      const q2 = Math.abs(wrapDegrees(angles[1]));
+      return Math.min(q2, Math.abs(180 - q2));
+    }
+
+    function translationalJacobian(angles) {
+      const theta1 = radians(angles[0]);
+      const theta2 = radians(angles[0] + angles[1]);
+      const theta3 = radians(angles[0] + angles[1] + angles[2]);
+      const s1 = Math.sin(theta1);
+      const s2 = Math.sin(theta2);
+      const s3 = Math.sin(theta3);
+      const c1 = Math.cos(theta1);
+      const c2 = Math.cos(theta2);
+      const c3 = Math.cos(theta3);
+
+      return [
+        [
+          -(lengths[0] * s1) - (lengths[1] * s2) - (lengths[2] * s3),
+          -(lengths[1] * s2) - (lengths[2] * s3),
+          -(lengths[2] * s3)
+        ],
+        [
+          (lengths[0] * c1) + (lengths[1] * c2) + (lengths[2] * c3),
+          (lengths[1] * c2) + (lengths[2] * c3),
+          lengths[2] * c3
+        ]
+      ];
+    }
+
+    function abilityEllipse(angles) {
+      const jacobian = translationalJacobian(angles);
+      const a = jacobian[0].reduce(function (sum, value) { return sum + (value * value); }, 0);
+      const b = jacobian[0].reduce(function (sum, value, index) { return sum + (value * jacobian[1][index]); }, 0);
+      const c = jacobian[1].reduce(function (sum, value) { return sum + (value * value); }, 0);
+      const trace = a + c;
+      const determinant = (a * c) - (b * b);
+      const root = Math.sqrt(Math.max((trace * trace / 4) - determinant, 0));
+      const lambda1 = Math.max(trace / 2 + root, 0);
+      const lambda2 = Math.max(trace / 2 - root, 0);
+      const angle = 0.5 * Math.atan2(2 * b, a - c);
+
+      return {
+        rx: clamp(Math.sqrt(lambda1) * 0.18, 6, 46),
+        ry: clamp(Math.sqrt(lambda2) * 0.18, 1.5, 30),
+        angle: -degrees(angle)
+      };
+    }
+
     function relativeJointSpeed(t) {
       const step = 0.004;
       const low = clamp(t - step, 0, 1);
@@ -1125,7 +1175,7 @@
     function drawMarkers() {
       [
         { label: "Start", point: startPose.target, xOffset: 10 },
-        { label: "Near stretch", point: endPose.target, xOffset: -94 }
+        { label: "End", point: endPose.target, xOffset: 10 }
       ].forEach(function (marker) {
         const svgPoint = toSvg(marker.point, coordinates);
         const group = createSvgElement("g", { class: "kinematics-svg__motion-marker" });
@@ -1144,13 +1194,52 @@
     }
 
     function drawSingularityZone() {
-      const svgPoint = toSvg([lengths.reduce(function (sum, value) { return sum + value; }, 0), 0], coordinates);
+      const svgPoint = toSvg(singularPose.target, coordinates);
       svg.appendChild(createSvgElement("circle", {
         cx: svgPoint[0],
         cy: svgPoint[1],
         r: 18,
         class: "kinematics-svg__singularity-zone"
       }));
+      const label = createSvgElement("text", {
+        x: svgPoint[0] + 12,
+        y: svgPoint[1] - 14,
+        class: "kinematics-svg__singularity-label"
+      });
+      label.textContent = "folded singularity";
+      svg.appendChild(label);
+    }
+
+    function drawMotionAbility(tcp, angles) {
+      const svgPoint = toSvg(tcp, coordinates);
+      const ellipse = abilityEllipse(angles);
+      const group = createSvgElement("g", {
+        class: "kinematics-svg__ability",
+        transform: "translate(" + svgPoint[0].toFixed(1) + " " + svgPoint[1].toFixed(1) + ") rotate(" + ellipse.angle.toFixed(1) + ")"
+      });
+
+      group.appendChild(createSvgElement("ellipse", {
+        cx: 0,
+        cy: 0,
+        rx: ellipse.rx.toFixed(1),
+        ry: ellipse.ry.toFixed(1),
+        class: "kinematics-svg__ability-ellipse"
+      }));
+      group.appendChild(createSvgElement("line", {
+        x1: (-ellipse.rx).toFixed(1),
+        y1: 0,
+        x2: ellipse.rx.toFixed(1),
+        y2: 0,
+        class: "kinematics-svg__ability-axis"
+      }));
+      group.appendChild(createSvgElement("line", {
+        x1: 0,
+        y1: (-ellipse.ry).toFixed(1),
+        x2: 0,
+        y2: ellipse.ry.toFixed(1),
+        class: "kinematics-svg__ability-axis is-minor"
+      }));
+      svg.appendChild(group);
     }
 
     function render() {
@@ -1158,6 +1247,7 @@
       const result = forwardKinematics(angles, lengths);
       const tcp = result.points[result.points.length - 1];
       const margin = singularityMargin(angles);
+      const distance = singularityDistance(angles);
       const speed = relativeJointSpeed(state.progress);
       const speedPercent = Math.round(clamp(speed / 520, 0, 1) * 100);
 
@@ -1166,6 +1256,7 @@
       drawSingularityZone();
       drawPath(svg, tcpPathSamples("movel"), coordinates, "kinematics-svg__path-line");
       drawPath(svg, tcpPathSamples("movej"), coordinates, "kinematics-svg__path-joint");
+      drawMotionAbility(tcp, angles);
       drawArm(svg, result.points, coordinates, { orientationDegrees: result.orientation });
       drawMarkers();
 
@@ -1183,8 +1274,9 @@
         buildReadoutRow("Active motion", state.mode === "movej" ? "MoveJ / PTP" : "MoveL / LIN"),
         buildReadoutRow("Interpolated directly", state.mode === "movej" ? "joint angles" : "TCP pose"),
         buildReadoutRow("q2", formatNumber(angles[1], 1) + "\u00b0"),
-        buildReadoutRow("Relative joint speed", speed.toFixed(0) + "\u00b0 per path"),
-        buildReadoutRow("Status", margin < 0.22 ? "near singularity" : "acceptable")
+        buildReadoutRow("Elbow singularity distance", formatNumber(distance, 1) + "\u00b0"),
+        buildReadoutRow("Joint speed demand", speed.toFixed(0) + "\u00b0 per path"),
+        buildReadoutRow("Jacobian status", margin < 0.22 ? "near singular" : "full rank")
       ].join("");
     }
 
