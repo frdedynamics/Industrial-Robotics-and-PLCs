@@ -892,6 +892,98 @@
 	}
 }
 
+.frame-in-frame {
+	margin: 1.5rem 0;
+	padding: 1rem;
+	border: 1px solid rgba(31, 45, 61, 0.08);
+	border-radius: 0.75rem;
+	background: #f6f8fb;
+}
+
+.frame-in-frame svg {
+	display: block;
+	width: 100%;
+	height: auto;
+	border: 1px solid rgba(31, 45, 61, 0.1);
+	border-radius: 0.5rem;
+	background: #ffffff;
+}
+
+.frame-in-frame figcaption {
+	margin-top: 0.7rem;
+	color: #566578;
+	font-size: 0.92rem;
+}
+
+.frame-in-frame__grid line {
+	stroke: rgba(31, 45, 61, 0.08);
+	stroke-width: 1;
+}
+
+.frame-in-frame__base line {
+	stroke: #1d4f8e;
+	stroke-width: 4;
+	stroke-linecap: round;
+}
+
+.frame-in-frame__base circle {
+	fill: #ffffff;
+	stroke: #1d4f8e;
+	stroke-width: 3;
+}
+
+.frame-in-frame__base text {
+	fill: #1d4f8e;
+	font-size: 14px;
+	font-weight: 800;
+	paint-order: stroke;
+	stroke: #ffffff;
+	stroke-width: 3;
+}
+
+.frame-in-frame__local line {
+	stroke: #2a9d8f;
+	stroke-width: 4;
+	stroke-linecap: round;
+}
+
+.frame-in-frame__local circle {
+	fill: #ffffff;
+	stroke: #2a9d8f;
+	stroke-width: 3;
+}
+
+.frame-in-frame__local text {
+	fill: #0f766e;
+	font-size: 14px;
+	font-weight: 800;
+	paint-order: stroke;
+	stroke: #ffffff;
+	stroke-width: 3;
+}
+
+.frame-in-frame__point {
+	fill: #ff7f50 !important;
+	stroke: #7a2f14 !important;
+}
+
+.frame-in-frame__pose-arrow {
+	fill: none;
+	stroke: #c2410c;
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-dasharray: 7 6;
+}
+
+.frame-in-frame__pose-label {
+	fill: #7c2d12;
+	font-size: 13px;
+	font-weight: 800;
+	paint-order: stroke;
+	stroke: #ffffff;
+	stroke-width: 3;
+}
+
 .frames-demo {
 	display: grid;
 	grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);

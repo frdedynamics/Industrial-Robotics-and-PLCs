@@ -6,10 +6,10 @@ draft: false
 
 # Why frames and poses matter
 
-Robot tasks contain many things that have a location: the robot base, the tool,
-the workpiece, the fixture, a camera, a pallet, or a machine door. To program
-and debug a robot cell, we need a clear way to describe where these things are
-and how they are oriented relative to each other.
+Many robot tasks are about motion and positioning. A tool has to approach a
+part, a gripper has to align with a handle, a camera has to measure a workpiece,
+or a pallet has to be placed relative to a fixture. To program and debug these
+tasks, we need tools for describing positions and orientations in space.
 
 To answer those questions we need two ideas:
 
@@ -17,6 +17,9 @@ To answer those questions we need two ideas:
   directions.
 - A **pose** describes the position and orientation of one frame relative to
   another frame.
+
+For robot tools, the important tool point is usually called the **TCP**: the
+tool center point.
 
 A **point** is only a position. It can describe where a hole, corner, or detected
 feature is. A **pose** is stronger: it describes both position and orientation.
@@ -44,6 +47,64 @@ A coordinate frame is attached to something. In a robot cell, typical frames are
 - a **camera frame**,
 - a frame attached to a conveyor, pallet, table, or machine.
 
+The figure below shows the basic idea. A local frame can sit inside another
+frame: its origin is shifted, and its axes are rotated. Points or poses attached
+to that local frame must be transformed before the robot can use them in the
+base frame.
+
+```{=html}
+<figure class="frame-in-frame">
+  <svg viewBox="0 0 680 330" role="img" aria-label="A local frame inside a robot base frame">
+    <defs>
+      <marker id="frame-arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M 0 0 L 8 3 L 0 6 z" fill="#1d4f8e"></path>
+      </marker>
+      <marker id="frame-arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M 0 0 L 8 3 L 0 6 z" fill="#2a9d8f"></path>
+      </marker>
+      <marker id="frame-arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+        <path d="M 0 0 L 8 3 L 0 6 z" fill="#c2410c"></path>
+      </marker>
+    </defs>
+    <g class="frame-in-frame__grid">
+      <line x1="70" y1="265" x2="620" y2="265"></line>
+      <line x1="95" y1="290" x2="95" y2="55"></line>
+      <line x1="180" y1="290" x2="180" y2="55"></line>
+      <line x1="265" y1="290" x2="265" y2="55"></line>
+      <line x1="350" y1="290" x2="350" y2="55"></line>
+      <line x1="435" y1="290" x2="435" y2="55"></line>
+      <line x1="520" y1="290" x2="520" y2="55"></line>
+      <line x1="605" y1="290" x2="605" y2="55"></line>
+      <line x1="70" y1="220" x2="620" y2="220"></line>
+      <line x1="70" y1="175" x2="620" y2="175"></line>
+      <line x1="70" y1="130" x2="620" y2="130"></line>
+      <line x1="70" y1="85" x2="620" y2="85"></line>
+    </g>
+    <g class="frame-in-frame__base">
+      <line x1="95" y1="265" x2="245" y2="265" marker-end="url(#frame-arrow-blue)"></line>
+      <line x1="95" y1="265" x2="95" y2="105" marker-end="url(#frame-arrow-blue)"></line>
+      <circle cx="95" cy="265" r="5"></circle>
+      <text x="250" y="258">x_base</text>
+      <text x="106" y="108">y_base</text>
+      <text x="82" y="288">base frame</text>
+    </g>
+    <g class="frame-in-frame__local" transform="translate(375 185) rotate(-28)">
+      <line x1="0" y1="0" x2="135" y2="0" marker-end="url(#frame-arrow-green)"></line>
+      <line x1="0" y1="0" x2="0" y2="-120" marker-end="url(#frame-arrow-green)"></line>
+      <circle cx="0" cy="0" r="5"></circle>
+      <text x="140" y="-6">x_part</text>
+      <text x="8" y="-120">y_part</text>
+      <text x="-28" y="30">part frame</text>
+      <circle cx="82" cy="-48" r="7" class="frame-in-frame__point"></circle>
+      <text x="93" y="-52">same physical point</text>
+    </g>
+    <path class="frame-in-frame__pose-arrow" d="M 110 252 C 190 220, 275 190, 360 185" marker-end="url(#frame-arrow-orange)"></path>
+    <text class="frame-in-frame__pose-label" x="210" y="205">pose of part frame in base frame</text>
+  </svg>
+  <figcaption>A frame inside another frame. The local part frame has its own origin and axis directions, so coordinates attached to it must be interpreted relative to that frame.</figcaption>
+</figure>
+```
+
 Coordinates are only meaningful together with the frame they are expressed in.
 The point `(100, 50, 20)` in the robot base frame is not the same physical point
 as `(100, 50, 20)` in the camera frame or the tool frame. The numbers are the
@@ -70,11 +131,11 @@ target pose is always expressed relative to some frame.
 # Poses
 
 A pose is the relationship between two frames. The notation
-\({}^{A}T_B\) means:
+${}^{A}\!T_B$ means:
 
 > the pose of frame `B`, expressed in frame `A`.
 
-For example, \({}^{base}T_{tcp}\) describes where the TCP frame is relative to
+For example, ${}^{base}\!T_{tcp}$ describes where the TCP frame is relative to
 the robot base frame. In later kinematics calculations, this is the kind of pose
 we often want to calculate from robot joint positions:
 
@@ -87,8 +148,8 @@ The pose contains both:
 - the position of the TCP origin in the base frame,
 - the orientation of the TCP axes relative to the base axes.
 
-This is also why the order of the frame names matters. \({}^{base}T_{tcp}\) and
-\({}^{tcp}T_{base}\) describe the same two physical frames, but in opposite
+This is also why the order of the frame names matters. ${}^{base}\!T_{tcp}$ and
+${}^{tcp}\!T_{base}$ describe the same two physical frames, but in opposite
 directions. They are not the same matrix.
 
 ## A short 2D version
@@ -162,11 +223,11 @@ This is a useful way to check whether the multiplication order makes sense.
 A common robot-cell example is vision guidance:
 
 1. Calibration gives the camera pose in the robot base frame:
-   \({}^{base}T_{camera}\).
+   ${}^{base}\!T_{camera}$.
 2. The camera detects the part pose in the camera frame:
-   \({}^{camera}T_{part}\).
+   ${}^{camera}\!T_{part}$.
 3. A taught grasp offset describes the TCP pose relative to the part:
-   \({}^{part}T_{tcp}\).
+   ${}^{part}\!T_{tcp}$.
 
 The robot target in the base frame is then:
 
@@ -208,7 +269,7 @@ connected.
 # Inverting a pose
 
 Sometimes the pose is known in the opposite direction from the one we need. If
-we know \({}^{base}T_{camera}\), we can compute \({}^{camera}T_{base}\) by
+we know ${}^{base}\!T_{camera}$, we can compute ${}^{camera}\!T_{base}$ by
 inverting the transform:
 
 $$
@@ -256,8 +317,8 @@ has the wrong sign.
    calibration, which transform comes from vision, and which transform is a
    taught offset?
 
-3. In the equation, why does \({}^{camera}T_{part}\) have to be placed after
-   \({}^{base}T_{camera}\), not before it?
+3. In the equation, why does ${}^{camera}\!T_{part}$ have to be placed after
+   ${}^{base}\!T_{camera}$, not before it?
 
 4. Write a transform chain for a robot that should place a tool at a taught
    process point on a part detected by a camera.
