@@ -1055,7 +1055,7 @@
       "<span class=\"kinematics-slider__header\"><span>Motion progress</span><span class=\"kinematics-slider__value\"></span></span>",
       "<input type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" data-role=\"progress\">",
       "</label>",
-      "<dl class=\"kinematics-readout\"></dl>",
+      "<dl class=\"kinematics-readout kinematics-readout--singularity\"></dl>",
       "<div class=\"kinematics-health-label\">Joint speed demand</div>",
       "<div class=\"kinematics-health\" aria-label=\"Relative joint speed indicator\"><span class=\"kinematics-health__fill\"></span></div>",
       "</div>"
@@ -1351,6 +1351,383 @@
 
     render();
     setPlaying(true);
+  }
+
+  function initializeIndustrialSingularityDemo(root) {
+    const cases = {
+      elbow: {
+        label: "Elbow / stretch",
+        status: "Shoulder, elbow, and wrist center line up.",
+        effect: "Wrist-center motion along the arm direction becomes difficult."
+      },
+      wrist: {
+        label: "Wrist",
+        status: "Two wrist axes become parallel.",
+        effect: "Two wrist rotations start producing nearly the same tool motion."
+      },
+      shoulder: {
+        label: "Shoulder / base",
+        status: "The wrist center approaches the base axis.",
+        effect: "Base rotation gives little useful sideways motion of the wrist center."
+      }
+    };
+    const state = {
+      caseName: "elbow",
+      phase: 0
+    };
+    let animationId = null;
+    let previousTime = null;
+
+    root.innerHTML = [
+      "<div class=\"kinematics-demo__stage\">",
+      "<div class=\"kinematics-plotly\" role=\"img\" aria-label=\"3D stick-figure examples of industrial robot singularities\"></div>",
+      "</div>",
+      "<div class=\"kinematics-demo__panel\">",
+      "<div class=\"kinematics-demo__buttons\" aria-label=\"Select singularity example\">",
+      "<button type=\"button\" data-case=\"elbow\">Elbow / stretch</button>",
+      "<button type=\"button\" data-case=\"wrist\">Wrist</button>",
+      "<button type=\"button\" data-case=\"shoulder\">Shoulder / base</button>",
+      "</div>",
+      "<dl class=\"kinematics-readout\"></dl>",
+      "<p class=\"kinematics-demo__hint\">Schematic PUMA-style examples, not a calibrated robot model.</p>",
+      "</div>"
+    ].join("");
+
+    const plotRoot = root.querySelector(".kinematics-plotly");
+    const buttons = Array.from(root.querySelectorAll("button[data-case]"));
+    const readout = root.querySelector(".kinematics-readout");
+
+    if (typeof Plotly === "undefined") {
+      plotRoot.innerHTML = "<p class=\"robot-widget__fallback\">The 3D singularity schematic could not load because Plotly.js is unavailable.</p>";
+      return;
+    }
+
+    function interpolate(a, b, t) {
+      return a + ((b - a) * t);
+    }
+
+    function interpolatePoint(a, b, t) {
+      return [
+        interpolate(a[0], b[0], t),
+        interpolate(a[1], b[1], t)
+      ];
+    }
+
+    function interpolatePoint3(a, b, t) {
+      return [
+        interpolate(a[0], b[0], t),
+        interpolate(a[1], b[1], t),
+        interpolate(a[2], b[2], t)
+      ];
+    }
+
+    function traceLine(points, color, width, options) {
+      const traceOptions = options || {};
+      return {
+        type: "scatter3d",
+        mode: "lines",
+        x: points.map(function (point) { return point[0]; }),
+        y: points.map(function (point) { return point[1]; }),
+        z: points.map(function (point) { return point[2]; }),
+        line: {
+          color: color,
+          width: width,
+          dash: traceOptions.dash || "solid"
+        },
+        hoverinfo: "skip",
+        showlegend: false
+      };
+    }
+
+    function traceMarkers(points, labels) {
+      return {
+        type: "scatter3d",
+        mode: "markers+text",
+        x: points.map(function (point) { return point[0]; }),
+        y: points.map(function (point) { return point[1]; }),
+        z: points.map(function (point) { return point[2]; }),
+        text: labels,
+        textposition: "top center",
+        marker: {
+          color: labels.map(function (label, index) { return index === labels.length - 1 || label === "TCP" ? "#ff7f50" : "#2780e3"; }),
+          size: labels.map(function (label, index) { return index === 0 ? 5 : 7; }),
+          line: {
+            color: "#ffffff",
+            width: 1.5
+          }
+        },
+        hoverinfo: "skip",
+        showlegend: false
+      };
+    }
+
+    function traceText(point, text, color) {
+      return {
+        type: "scatter3d",
+        mode: "text",
+        x: [point[0]],
+        y: [point[1]],
+        z: [point[2]],
+        text: [text],
+        textfont: {
+          color: color,
+          size: 13
+        },
+        hoverinfo: "skip",
+        showlegend: false
+      };
+    }
+
+    function traceAxis(origin, direction, color, label, scale) {
+      const length = scale || 0.18;
+      const end = [
+        origin[0] + (direction[0] * length),
+        origin[1] + (direction[1] * length),
+        origin[2] + (direction[2] * length)
+      ];
+      const trace = traceLine([origin, end], color, 6);
+      trace.name = label;
+      return trace;
+    }
+
+    function traceGroundPlane() {
+      const extent = 0.78;
+      const values = [-extent, -0.52, -0.26, 0, 0.26, 0.52, extent];
+      return {
+        type: "surface",
+        x: values,
+        y: values,
+        z: values.map(function () { return values.map(function () { return 0; }); }),
+        opacity: 0.14,
+        showscale: false,
+        hoverinfo: "skip",
+        colorscale: [
+          [0, "#f6fbff"],
+          [1, "#dbe9f8"]
+        ],
+        contours: {
+          x: { show: true, color: "rgba(39, 128, 227, 0.16)", width: 1, highlight: false },
+          y: { show: true, color: "rgba(39, 128, 227, 0.16)", width: 1, highlight: false },
+          z: { show: false }
+        },
+        lighting: {
+          ambient: 1,
+          diffuse: 0.4,
+          specular: 0
+        }
+      };
+    }
+
+    function traceWorkspaceRing() {
+      const points = [];
+      for (let i = 0; i <= 120; i += 1) {
+        const angle = (i / 120) * Math.PI * 2;
+        points.push([0.72 * Math.cos(angle), 0.72 * Math.sin(angle), 0]);
+      }
+      return traceLine(points, "rgba(39, 128, 227, 0.24)", 3, { dash: "dot" });
+    }
+
+    function vectorFromAngles(azimuth, elevation) {
+      const az = radians(azimuth);
+      const el = radians(elevation || 0);
+      return [
+        Math.cos(el) * Math.cos(az),
+        Math.cos(el) * Math.sin(az),
+        Math.sin(el)
+      ];
+    }
+
+    function buildElbowCase(t) {
+      const base = [0, 0, 0];
+      const shoulder = [0, 0, 0.32];
+      const elbowNormal = [0.24, -0.14, 0.58];
+      const wristNormal = [0.52, 0.10, 0.50];
+      const elbowSingular = [0.27, 0.01, 0.43];
+      const wristSingular = [0.58, 0.01, 0.43];
+      const elbow = interpolatePoint3(elbowNormal, elbowSingular, t);
+      const wrist = interpolatePoint3(wristNormal, wristSingular, t);
+      const tool = [wrist[0] + 0.16, wrist[1], wrist[2] + 0.02];
+      const points = [base, shoulder, elbow, wrist, tool];
+      return {
+        points: points,
+        labels: ["Base", "J2", "Elbow", "Wrist", "TCP"],
+        data: [
+          traceLine([shoulder, elbowNormal, wristNormal], "rgba(31, 45, 61, 0.22)", 7, { dash: "dot" }),
+          traceLine([shoulder, wristSingular], "rgba(194, 65, 12, 0.68)", 4, { dash: "dash" }),
+          traceText([0.58, 0.05, 0.48], "wrist center on arm line", "#7c2d12")
+        ]
+      };
+    }
+
+    function buildWristCase(t) {
+      const base = [0, 0, 0];
+      const shoulder = [0, 0, 0.32];
+      const elbow = [0.24, -0.14, 0.58];
+      const wrist = [0.50, 0.10, 0.50];
+      const tool = [0.66, 0.12, 0.50];
+      const axis4 = vectorFromAngles(0, 8);
+      const axis5 = vectorFromAngles(90, 85);
+      const axis6Open = vectorFromAngles(70, -8);
+      const axis6Aligned = axis4;
+      const axis6 = interpolatePoint3(axis6Open, axis6Aligned, t);
+      const points = [base, shoulder, elbow, wrist, tool];
+      return {
+        points: points,
+        labels: ["Base", "J2", "Elbow", "Wrist", "TCP"],
+        data: [
+          traceAxis(wrist, axis4, "#1d4f8e", "J4", 0.19),
+          traceAxis(wrist, axis5, "#2a9d8f", "J5", 0.15),
+          traceAxis(wrist, axis6, "#c2410c", "J6", 0.19),
+          traceText([wrist[0] + 0.05, wrist[1] + 0.16, wrist[2] + 0.12], "J4 and J6 align", "#7c2d12")
+        ]
+      };
+    }
+
+    function buildShoulderCase(t) {
+      const base = [0, 0, 0];
+      const shoulder = [0, 0, 0.34];
+      const elbowNormal = [0.20, -0.26, 0.58];
+      const wristNormal = [0.46, -0.34, 0.44];
+      const elbowSingular = [0.05, -0.08, 0.58];
+      const wristSingular = [0.03, -0.04, 0.44];
+      const elbow = interpolatePoint3(elbowNormal, elbowSingular, t);
+      const wrist = interpolatePoint3(wristNormal, wristSingular, t);
+      const tool = [wrist[0] + 0.15, wrist[1] - 0.02, wrist[2] + 0.02];
+      const points = [base, shoulder, elbow, wrist, tool];
+      return {
+        points: points,
+        labels: ["Base axis", "J2", "Elbow", "Wrist", "TCP"],
+        data: [
+          traceLine([[0, 0, 0], [0, 0, 0.85]], "rgba(194, 65, 12, 0.72)", 5, { dash: "dash" }),
+          traceLine([[0, 0, wrist[2]], wrist], "rgba(42, 157, 143, 0.78)", 4, { dash: "dot" }),
+          traceText([0.08, 0.04, 0.55], "wrist center near base axis", "#7c2d12")
+        ]
+      };
+    }
+
+    function buildFigure(robot, currentCase, t) {
+      const endEffector = robot.points[robot.points.length - 1];
+      const data = [
+        traceGroundPlane(),
+        traceWorkspaceRing(),
+        traceLine(robot.points.map(function (point) { return [point[0], point[1], 0]; }), "rgba(31, 45, 61, 0.18)", 4, { dash: "dot" }),
+        traceLine(robot.points, "#2780e3", 9),
+        traceMarkers(robot.points, robot.labels),
+        traceAxis(endEffector, [1, 0, 0.08], "#c2410c", "Tool", 0.16)
+      ].concat(robot.data);
+
+      return {
+        data: data,
+        layout: {
+          margin: { l: 0, r: 0, t: 8, b: 0 },
+          paper_bgcolor: "rgba(0,0,0,0)",
+          plot_bgcolor: "rgba(0,0,0,0)",
+          showlegend: false,
+          scene: {
+            dragmode: "orbit",
+            aspectmode: "manual",
+            aspectratio: { x: 1.15, y: 1.05, z: 0.95 },
+            camera: {
+              eye: { x: 1.45, y: 1.55, z: 0.95 }
+            },
+            xaxis: {
+              title: "x [m]",
+              range: [-0.2, 0.82],
+              gridcolor: "rgba(39, 128, 227, 0.08)",
+              zerolinecolor: "rgba(39, 128, 227, 0.18)",
+              showbackground: false
+            },
+            yaxis: {
+              title: "y [m]",
+              range: [-0.68, 0.52],
+              gridcolor: "rgba(39, 128, 227, 0.08)",
+              zerolinecolor: "rgba(39, 128, 227, 0.18)",
+              showbackground: false
+            },
+            zaxis: {
+              title: "z [m]",
+              range: [-0.02, 0.9],
+              gridcolor: "rgba(39, 128, 227, 0.08)",
+              zerolinecolor: "rgba(39, 128, 227, 0.18)",
+              showbackground: false
+            }
+          },
+          annotations: [{
+            text: currentCase.label,
+            x: 0,
+            y: 1,
+            xref: "paper",
+            yref: "paper",
+            xanchor: "left",
+            yanchor: "top",
+            showarrow: false,
+            font: { size: 16, color: "#111827" }
+          }],
+          uirevision: "industrial-singularity-camera"
+        },
+        config: {
+          displayModeBar: false,
+          responsive: true,
+          scrollZoom: true
+        }
+      };
+    }
+
+    function render() {
+      const t = 0.5 - (0.5 * Math.cos(state.phase * Math.PI * 2));
+      const currentCase = cases[state.caseName];
+      let robot;
+
+      if (state.caseName === "elbow") {
+        robot = buildElbowCase(t);
+      } else if (state.caseName === "wrist") {
+        robot = buildWristCase(t);
+      } else {
+        robot = buildShoulderCase(t);
+      }
+
+      const figure = buildFigure(robot, currentCase, t);
+      if (!plotRoot.dataset.initialized) {
+        Plotly.newPlot(plotRoot, figure.data, figure.layout, figure.config);
+        plotRoot.dataset.initialized = "true";
+      } else {
+        Plotly.react(plotRoot, figure.data, figure.layout, figure.config);
+      }
+
+      buttons.forEach(function (button) {
+        button.classList.toggle("is-active", button.dataset.case === state.caseName);
+      });
+
+      readout.innerHTML = [
+        buildReadoutRow("Example", currentCase.label),
+        buildReadoutRow("What lines up", currentCase.status),
+        buildReadoutRow("Effect", currentCase.effect),
+        buildReadoutRow("Status", t > 0.82 ? "near singular" : "moving toward singularity")
+      ].join("");
+    }
+
+    function animate(timestamp) {
+      if (previousTime === null) {
+        previousTime = timestamp;
+      }
+      const deltaSeconds = Math.min((timestamp - previousTime) / 1000, 0.05);
+      previousTime = timestamp;
+      state.phase = (state.phase + (deltaSeconds / 4.8)) % 1;
+      render();
+      animationId = requestAnimationFrame(animate);
+    }
+
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        state.caseName = button.dataset.case;
+        state.phase = 0;
+        previousTime = null;
+        render();
+      });
+    });
+
+    render();
+    animationId = requestAnimationFrame(animate);
   }
 
   function initializeAll() {

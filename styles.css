@@ -533,6 +533,7 @@
 	display: flex;
 	justify-content: space-between;
 	gap: 1rem;
+	min-width: 0;
 	padding-bottom: 0.3rem;
 	border-bottom: 1px solid rgba(31, 45, 61, 0.08);
 }
@@ -553,9 +554,17 @@
 }
 
 .kinematics-readout dd {
+	min-width: 0;
 	font-variant-numeric: tabular-nums;
 	font-weight: 700;
 	text-align: right;
+	overflow-wrap: anywhere;
+}
+
+.kinematics-readout--singularity dd {
+	min-width: 7.5rem;
+	white-space: nowrap;
+	overflow-wrap: normal;
 }
 
 .kinematics-trace-graphs {
