@@ -1,0 +1,8 @@
+---
+title: Robot safety
+bibliography: references.bib
+draft: true
+---
+
+- write on robot safety
+- ISO10218-1/2
