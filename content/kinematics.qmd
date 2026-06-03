@@ -464,6 +464,39 @@ posture.
 <noscript><p>JavaScript is required to use the singularity animation.</p></noscript>
 ```
 
+Real six-axis industrial robots have additional singularity families. For a
+typical wrist-partitioned arm such as a KUKA KR AGILUS, the common cases are:
+
+- an **extended position singularity**, where the wrist center lies in the
+  extension of the main arm links,
+- a **wrist-axis singularity**, where wrist axes line up and two wrist rotations
+  start to produce nearly the same tool motion,
+- an **overhead or shoulder singularity**, where the wrist center is in an
+  awkward relation to the base axis.
+
+The exact names and warning behavior depend on the robot vendor, but the
+underlying idea is the same: the current posture makes the Jacobian lose an
+independent motion direction. Robots with a different mechanical structure can
+have different singularity patterns. For example, many collaborative robots such
+as Universal Robots arms have a different axis arrangement than a KUKA AGILUS,
+so the practical singularity situations and controller warnings are not exactly
+the same.
+
+The video below shows typical singularities for a six-axis arm. Turn on captions
+if they are not shown automatically; the subtitles explain what happens in each
+case.
+
+```{=html}
+<div class="video-embed">
+  <iframe
+    src="https://www.youtube.com/embed/lD2HQcxeNoA?cc_load_policy=1&cc_lang_pref=en"
+    title="Six-axis robot singularities"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen>
+  </iframe>
+</div>
+```
+
 In practice, singularity problems are usually solved by changing the task setup
 or the programmed motion. We avoid singularities by changing the target pose,
 changing the approach direction, using another robot configuration, moving the
@@ -486,18 +519,33 @@ process move.
 # Exercises
 
 1. In the forward kinematics demo, set the arm to one, two, and three joints.
-   Move `q1` in each case. What changes when more joints are added after `q1`?
+   Move only `q1`. What changes when more joints are added after `q1`, and why
+   does the TCP move even though those later joints are not changed?
 
 2. In the inverse kinematics demo, drag the target near the edge of the
-   workspace. What happens to the joint angles? What happens when you switch
-   between elbow-up and elbow-down?
+   workspace. What happens to the joint angles? Switch between elbow-up and
+   elbow-down. Which parts of the robot configuration change while the TCP pose
+   stays the same?
 
-3. In the motion type demo, compare `MoveJ`/`PTP` and `MoveL`/`LIN`. Which one
-   gives a straight TCP path? Which one gives smoother joint motion?
+3. In the motion type demo, compare `MoveJ`/`PTP` and `MoveL`/`LIN`. Which
+   motion gives a straight TCP path? Which graph is interpolated directly in
+   each case? Compare the total joint travel bars. What does this tell you about
+   free-space repositioning versus process motion?
 
-4. Think about a real robot task such as welding, palletizing, machine tending,
-   or dispensing. Which parts of the task should use joint moves, and which
-   parts should use linear moves?
+4. In the singularity demo, select `MoveL`/`LIN` and move through the folded
+   elbow region. What happens to the blue motion-ability ellipse and the joint
+   speed demand bar? Switch to `MoveJ`/`PTP`. Does the robot still have the same
+   singularity, or does the path simply avoid getting as close to it in this
+   example?
+
+5. Watch the six-axis singularity video with captions enabled. Identify one
+   example of an extended-position singularity and one wrist-axis singularity.
+   What robot axes or parts appear to line up in each case?
+
+6. Choose a real task such as welding, dispensing, palletizing, or machine
+   tending. List which parts should use joint moves and which should use linear
+   moves. Then choose one target or approach direction you would adjust if the
+   simulation showed a singularity warning.
 
 # Further reading
 
