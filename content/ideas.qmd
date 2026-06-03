@@ -19,6 +19,7 @@ draft: true
     - think about useful exercises, on page with code or offline
     - think about links to project, PLC and Visual Components, and how to integrate them in the content, e.g. by giving exercises that use them, or by giving examples that show how to use them, or by giving further reading that points to them
     - think of other resources like UR academy, robot academy, robotics codes from scratch, etc
+    - think of connections to ISO standards
 
 
 
