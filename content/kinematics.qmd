@@ -441,12 +441,13 @@ avoids singularities in general. A joint move can still start, end, or pass near
 a singular posture. The difference is that a `LIN`/`MoveL` command makes the TCP
 path a hard requirement.
 
-The animation below uses the same 3R planar arm as before, now as a full planar
-TCP pose example: $x$, $y$, and tool angle. The marked posture is a folded-elbow
-singularity. At that posture, motion along the folded link direction is not
-available in the same way as sideways motion. The blue motion-ability ellipse at
-the TCP shows this: when it collapses into a thin shape, one TCP motion direction
-has become difficult or unavailable.
+The animation below uses the same 3DOF planar arm as before, and must move
+between two full planar TCP poses: $x$, $y$, and tool angle. The marked area is
+around a folded-elbow singularity. Near that posture, motion along the folded
+link direction is not available in the same way as sideways motion. The blue
+motion-ability ellipse at the TCP shows this: when it collapses into a thin
+shape, the Jacobian is losing rank and one TCP motion direction has become
+difficult or unavailable.
 
 The `LIN`/`MoveL` option forces the TCP through a straight Cartesian line while
 holding the tool angle fixed. In this example, that line passes close to the
