@@ -21,9 +21,10 @@ website:
       - section: Robot Foundations
         contents: 
           - content/robots.qmd
+          - content/frames_poses.qmd
           - content/kinematics.qmd
           
-      - section: content/simulation.qmd
+      - section: Simulation
         contents: 
           - content/simulation.qmd
           

@@ -1,29 +1,275 @@
 ---
 title: Frames and Poses
 bibliography: references.bib
-draft: true
+draft: false
 ---
 
-# Intro
-- robots are fancy positioning devices, and to use them, we need to understand how to describe positions and orientations in space, and how to relate them to the robot's joints and links. This is the topic of frames and poses.
-- position is simple, orientation not so much, there exists multiple ways to represent orientation, briefly mention why orientation is  different and more difficult, but no math details, just brief concept.
-- we will mainly focus on homogeneous transformation matrices, which are a convenient way to represent both position and orientation in a single mathematical object, and they are widely used in robotics and computer vision. They also have nice properties that make them easy to work with, such as being able to concatenate transformations by matrix multiplication, and being able to invert transformations by taking the inverse of the matrix.
-- we use the notation from Peter Corke's book @Corke.2023
+# Why frames and poses matter
+
+Industrial robots are programmable positioning devices. The robot controller
+moves joints, but the production task is usually described in terms of the tool:
+where is the TCP, which direction is the tool pointing, and where is the part or
+fixture relative to the robot?
+
+To answer those questions we need two ideas:
+
+- A **coordinate frame** is a local reference system with an origin and axis
+  directions.
+- A **pose** describes the position and orientation of one frame relative to
+  another frame.
+
+A position alone is not enough for most robot tasks. A welding torch, gripper,
+camera, screwdriver, or dispensing nozzle must be at the right place and point
+in the right direction. Position is the "where". Orientation is the "which way".
+
+Different robot systems expose this in different formats. A KUKA target is often
+written with `X`, `Y`, `Z`, `A`, `B`, and `C`. Universal Robots uses poses such
+as `p[x, y, z, rx, ry, rz]`. The numbers and angle conventions differ, but the
+idea is the same: a robot target is a pose, not only a point.
+
+In this page we use the notation from Corke [@Corke.2023]: `T` denotes a pose
+represented as a homogeneous transformation matrix. We will not derive all the
+matrix equations. The goal is to understand what the matrices mean and how they
+are used in practical robot programs.
 
 # Coordinate frames
-- a coordinate frame is a reference system that defines the position and orientation of points in space. 
-- show the two right hand rules for coordinate frames, the one for the frame axes and the other one for positive direction of rotation
-- points in a frame are represented as vectors, and a frame in a frame is represented as a homogeneous transformation matrix, which consists of a rotation matrix and a translation vector.
-- we can have multiple frames in a robot cell, such as the base frame, the tool frame, camera frame, etc and we often have to convert between them, e.g. to control the robot in the base frame but specify the target pose in the tool frame, or to transform sensor data from the camera frame to the robot frame.
+
+A coordinate frame is attached to something. In a robot cell, typical frames are:
+
+- the robot **base frame**,
+- the **tool frame** or **TCP frame**,
+- a **fixture**, **part**, or **workobject frame**,
+- a **camera frame**,
+- a frame attached to a conveyor, pallet, table, or machine.
+
+Coordinates are only meaningful together with the frame they are expressed in.
+The point `(100, 50, 20)` in the robot base frame is not the same physical point
+as `(100, 50, 20)` in the camera frame or the tool frame. The numbers are the
+same, but the reference frame is different.
+
+Frame axes follow the right-hand rule. If the thumb, index finger, and middle
+finger of your right hand point along the positive `x`, `y`, and `z` axes, the
+three axes form a right-handed frame. Positive rotation also follows the
+right-hand rule: point your right thumb along the positive axis of rotation, and
+your curled fingers show the positive rotation direction.
+
+In robot programming, frames are not just theory. They are often taught or
+calibrated:
+
+- a tool frame is found by TCP calibration,
+- a fixture or workobject frame can be taught from points on the real fixture,
+- a camera frame is found by camera-to-robot calibration,
+- robot targets are stored relative to a selected base, tool, or workobject.
+
+This is why frames connect directly to the movement types from the
+[kinematics page](kinematics.qmd#path-trajectory-and-movement-types). A `LIN` or
+`MoveL` command may say "move the TCP in a straight line", but the target pose
+and the meaning of "straight" are still defined relative to frames.
 
 # Poses
-- a pose is a specific position and orientation of an object in space, and it can be represented as a homogeneous transformation matrix that describes the transformation from a reference frame to the object's frame.
-- for example, the end-effector pose is the transformation from the robot's base frame to the tool frame, and it describes where the tool is in space and how it is oriented.
-- describe the components of the homogeneous transformation matrix, and how to extract the position and orientation from it
-- show the basic operations that are needed as in @Corke.2023, but do not go into details about how to derive the equations, but rather show how to use them in practice, e.g. how to concatenate transformations to find the pose of the end-effector in the base frame given the joint angles and the robot's kinematics, or how to invert a transformation to find the pose of the base frame in the tool frame, etc. Combine this with a hands on exercise
-- make example calculations to show what was described above
-- make interactive demo / exercise about poses, maybe around converting from a camera frame to robot base frame
 
+A pose is the relationship between two frames. The notation
+`${}^{A}T_B$` means:
 
-Further reading:
-- https://robotacademy.net.au/masterclass/3d-geometry/
+> the pose of frame `B`, expressed in frame `A`.
+
+For example, `${}^{base}T_{tcp}$` describes where the TCP frame is relative to
+the robot base frame. This is the kind of pose returned by forward kinematics:
+
+```python
+T_base_tcp = forward_kinematics(q)
+```
+
+The pose contains both:
+
+- the position of the TCP origin in the base frame,
+- the orientation of the TCP axes relative to the base axes.
+
+This is also why the order of the frame names matters. `${}^{base}T_{tcp}$` and
+`${}^{tcp}T_{base}$` describe the same two physical frames, but in opposite
+directions. They are not the same matrix.
+
+## A short 2D version
+
+Real industrial robots move in 3D. Still, a 2D top-view example is a useful
+training step because it keeps the same logic with fewer numbers.
+
+In 2D, a pose has three coordinates:
+
+$$
+x, \quad y, \quad \theta
+$$
+
+where `x` and `y` describe the position and `theta` describes the rotation of
+the frame. The corresponding homogeneous transformation matrix is:
+
+$$
+{}^{A}T_B =
+\begin{bmatrix}
+\cos \theta & -\sin \theta & x \\
+\sin \theta &  \cos \theta & y \\
+0           &  0           & 1
+\end{bmatrix}
+$$
+
+The first two columns describe orientation. The last column describes position.
+The last row is bookkeeping that lets us combine rotations and translations
+using one matrix multiplication.
+
+## The 3D version used in robotics
+
+In 3D, a pose is commonly represented as a 4 by 4 homogeneous transformation
+matrix:
+
+$$
+T =
+\begin{bmatrix}
+R & t \\
+0 & 1
+\end{bmatrix}
+$$
+
+Here:
+
+- `R` is a 3 by 3 rotation matrix,
+- `t` is a 3 by 1 translation vector,
+- the bottom row is again bookkeeping for homogeneous coordinates.
+
+The translation part `t` gives the position of the moving frame origin. The
+rotation part `R` gives the orientation of the moving frame axes. In practical
+terms, the matrix says: if an object is described in one frame, this is how to
+express it in another frame.
+
+Robot controllers often show orientation with three angles or a rotation vector
+instead of a rotation matrix, because that is easier to display and edit. The
+controller or software library can convert between these representations.
+
+# Combining poses
+
+The most important operation with poses is chaining. If we know the pose of
+frame `B` relative to `A`, and the pose of frame `C` relative to `B`, then we can
+find the pose of `C` relative to `A`:
+
+$$
+{}^{A}T_C = {}^{A}T_B \; {}^{B}T_C
+$$
+
+The frame names behave like units: the adjacent `B` frames cancel in the middle.
+This is a useful way to check whether the multiplication order makes sense.
+
+A common robot-cell example is vision guidance:
+
+1. Calibration gives the camera pose in the robot base frame:
+   `${}^{base}T_{camera}$`.
+2. The camera detects the part pose in the camera frame:
+   `${}^{camera}T_{part}$`.
+3. A taught grasp offset describes the TCP pose relative to the part:
+   `${}^{part}T_{tcp}$`.
+
+The robot target in the base frame is then:
+
+$$
+{}^{base}T_{tcp}
+=
+{}^{base}T_{camera}
+\;{}^{camera}T_{part}
+\;{}^{part}T_{tcp}
+$$
+
+In code, the operation often looks like this:
+
+```python
+T_base_camera = calibrated_camera_pose()
+T_camera_part = vision_detect_part()
+T_part_tcp = taught_grasp_offset()
+
+T_base_tcp_goal = T_base_camera @ T_camera_part @ T_part_tcp
+move_l(T_base_tcp_goal)
+```
+
+The exact syntax depends on the software environment. The important idea is the
+chain of frames. Each transform answers one local question, and the product
+answers the question the robot controller needs: where should the TCP go in the
+robot base frame?
+
+The demo below uses a 2D top view to make the transform chain visible. Select
+the steps to highlight the corresponding pose in the equation and in the plot.
+Move the detected part pose to see how a new vision result changes the final
+robot target in the base frame.
+
+```{=html}
+<div id="frames-pose-chain-demo" class="frames-demo"></div>
+<noscript><p>JavaScript is required to use the frame-chain demo.</p></noscript>
+```
+
+# Inverting a pose
+
+Sometimes the pose is known in the opposite direction from the one we need. If
+we know `${}^{base}T_{camera}$`, we can compute `${}^{camera}T_{base}$` by
+inverting the transform:
+
+$$
+{}^{camera}T_{base} =
+\left({}^{base}T_{camera}\right)^{-1}
+$$
+
+This is not just "put a minus sign on the position". The orientation must also
+be inverted, and the translation must be interpreted in the rotated frame. In
+practice, use the robot controller, simulation tool, or robotics library to
+invert poses. The main thing is to understand why an inverse is needed.
+
+Typical uses are:
+
+- expressing a measured point from the camera frame in the robot base frame,
+- converting a target from a fixture frame to the robot base frame,
+- calculating an offset relative to the tool frame,
+- checking where the robot base would appear from a camera or tool frame.
+
+# Practical mistakes to watch for
+
+- **Mixing frames:** A coordinate measured in the camera frame is sent directly
+  as a robot base target.
+- **Wrong multiplication order:** The right transforms are used, but chained in
+  the wrong order.
+- **Tool frame error:** The TCP calibration is wrong, so all poses look correct
+  in simulation but the real tool misses the part.
+- **Orientation convention error:** A pose is copied between systems that use
+  different angle conventions.
+- **Forgetting offsets:** The part pose is detected correctly, but the robot is
+  commanded to the part origin instead of to the required grasp, weld, or
+  process pose.
+
+When debugging frame problems, draw the frames and write the transform chain
+before changing robot targets. It is usually faster than guessing which number
+has the wrong sign.
+
+# Exercises
+
+1. In a robot cell with a camera, fixture, gripper, and robot base, list at
+   least four useful coordinate frames. What physical object is each frame
+   attached to?
+
+2. In the demo, select each step in the transform chain. Which frame is known by
+   calibration, which frame comes from vision, and which frame is a taught
+   offset?
+
+3. Move the detected part pose in the demo. What changes in the final
+   `${}^{base}T_{tcp}$` target? What stays fixed?
+
+4. Write a transform chain for a robot that should place a tool at a taught
+   process point on a part detected by a camera.
+
+5. A robot reaches every programmed target with the same position error, even
+   though the targets look correct in the offline program. Which frame would you
+   check first, and why?
+
+# Further reading
+
+For a deeper treatment of coordinate frames, transformations, and homogeneous
+matrices, see Corke [@Corke.2023, chap. 2]. Robot Academy also has a useful
+visual introduction to
+[3D geometry](https://robotacademy.net.au/masterclass/3d-geometry/).
+
+```{=html}
+<script src="../assets/frames-poses-demos.js"></script>
+```
