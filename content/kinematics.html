@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Kinematics – Industrial Robotics and PLCs</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/videojs/video.min.js"></script>
+<link href="../site_libs/quarto-contrib/videojs/video-js.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../content/kinematics.html">Kinematics</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Industrial Robotics and PLCs</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Robot Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/robots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automation with Robots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/kinematics.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Kinematics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../content/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Simulation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Simulation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../content/further_reading.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Further Reading</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-kinematics-matters" id="toc-why-kinematics-matters" class="nav-link active" data-scroll-target="#why-kinematics-matters">Why kinematics matters</a></li>
+  <li><a href="#joint-space-and-cartesian-space" id="toc-joint-space-and-cartesian-space" class="nav-link" data-scroll-target="#joint-space-and-cartesian-space">Joint space and Cartesian space</a></li>
+  <li><a href="#forward-kinematics" id="toc-forward-kinematics" class="nav-link" data-scroll-target="#forward-kinematics">Forward kinematics</a></li>
+  <li><a href="#robot-models-and-dh-parameters" id="toc-robot-models-and-dh-parameters" class="nav-link" data-scroll-target="#robot-models-and-dh-parameters">Robot models and DH parameters</a></li>
+  <li><a href="#inverse-kinematics" id="toc-inverse-kinematics" class="nav-link" data-scroll-target="#inverse-kinematics">Inverse kinematics</a>
+  <ul class="collapse">
+  <li><a href="#sec-redundancy-nullspace" id="toc-sec-redundancy-nullspace" class="nav-link" data-scroll-target="#sec-redundancy-nullspace">Redundancy and nullspace</a></li>
+  </ul></li>
+  <li><a href="#path-trajectory-and-movement-type" id="toc-path-trajectory-and-movement-type" class="nav-link" data-scroll-target="#path-trajectory-and-movement-type">Path, trajectory, and movement type</a></li>
+  <li><a href="#singularities-and-the-jacobian" id="toc-singularities-and-the-jacobian" class="nav-link" data-scroll-target="#singularities-and-the-jacobian">Singularities and the Jacobian</a>
+  <ul class="collapse">
+  <li><a href="#the-jacobian-view" id="toc-the-jacobian-view" class="nav-link" data-scroll-target="#the-jacobian-view">The Jacobian view</a></li>
+  <li><a href="#why-movement-type-matters" id="toc-why-movement-type-matters" class="nav-link" data-scroll-target="#why-movement-type-matters">Why movement type matters</a></li>
+  </ul></li>
+  <li><a href="#practical-rules-of-thumb" id="toc-practical-rules-of-thumb" class="nav-link" data-scroll-target="#practical-rules-of-thumb">Practical rules of thumb</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/content/kinematics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../content/kinematics.html">Kinematics</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Kinematics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="why-kinematics-matters" class="level1">
+<h1>Why kinematics matters</h1>
+<p>An industrial robot arm is a collection of joints and links. The controller commands the joints, but the production task usually cares about the tool: where is the TCP, which direction is the tool pointing, and how does it move through the workpiece?</p>
+<p>Kinematics is the connection between these two descriptions. It describes how joint positions create the position and orientation of the tool, and how a desired tool pose can be converted back into joint positions.</p>
+<p>Following the notation used by Corke, we use <code>q</code> for the robot’s joint coordinates and <code>T</code> for a pose represented as a homogeneous transformation matrix <span class="citation" data-cites="Corke.2023">(<a href="#ref-Corke.2023" role="doc-biblioref">Corke 2023</a>)</span>. In practical terms:</p>
+<ul>
+<li><code>q</code> describes the robot in joint space.</li>
+<li><code>T</code> describes the TCP in Cartesian space.</li>
+<li>forward kinematics computes <code>T</code> from <code>q</code>.</li>
+<li>inverse kinematics computes one possible <code>q</code> from a desired <code>T</code>.</li>
+</ul>
+<p>This page uses simple planar robot arms to explain the concepts. Real industrial robots move in 3D and usually have six axes, but the same ideas apply.</p>
+</section>
+<section id="joint-space-and-cartesian-space" class="level1">
+<h1>Joint space and Cartesian space</h1>
+<p>Joint space is the robot’s internal view of motion. A six-axis industrial robot has six joint coordinates: <code>q1</code> to <code>q6</code>. When the robot moves in joint space, each axis moves from one joint angle to another. The TCP path is whatever comes out of those coordinated joint motions.</p>
+<p>Cartesian space is the task view of motion. Here we describe the TCP by position and orientation relative to a frame, for example the robot base frame, a work object frame, or a tool frame. This is the view that matters when a welding torch must follow a seam, a gripper must approach a part, or a dispensing nozzle must stay normal to a surface.</p>
+<p>Industrial robot controllers expose both views. On Universal Robots, <code>MoveJ</code> is a joint-space move and <code>MoveL</code> is a linear Cartesian move. On KUKA robots, the corresponding terms are typically <code>PTP</code> and <code>LIN</code>. KUKA also uses <code>CIRC</code> for circular Cartesian motion, while Universal Robots has <code>MoveP</code> for process-style blended motion. The vendor names differ, but the underlying distinction is the same: either the controller prioritizes joint motion, or it prioritizes the TCP path.</p>
+</section>
+<section id="forward-kinematics" class="level1">
+<h1>Forward kinematics</h1>
+<p>Forward kinematics answers the question:</p>
+<blockquote class="blockquote">
+<p>If the joint positions are known, where is the TCP?</p>
+</blockquote>
+<p>The simplest case is a one-joint planar arm. This is like a pendulum with a known length. If the link length is <code>L1</code> and the joint angle is <code>q1</code>, the TCP position is just the conversion from polar coordinates to Cartesian coordinates:</p>
+<p><span class="math display">\[
+x = L_1 \cos(q_1)
+\]</span></p>
+<p><span class="math display">\[
+y = L_1 \sin(q_1)
+\]</span></p>
+<p>Adding more links repeats the same idea. Each link contributes an <code>x</code> component and a <code>y</code> component, but the angle of each link depends on all the previous joints. <code>L1</code>, <code>L2</code>, and <code>L3</code> are the link lengths, while <code>q1</code>, <code>q2</code>, and <code>q3</code> are the joint angles. For a three-link planar arm, the TCP position becomes:</p>
+<p><span class="math display">\[
+x = L_1 \cos(q_1) + L_2 \cos(q_1 + q_2) + L_3 \cos(q_1 + q_2 + q_3)
+\]</span></p>
+<p><span class="math display">\[
+y = L_1 \sin(q_1) + L_2 \sin(q_1 + q_2) + L_3 \sin(q_1 + q_2 + q_3)
+\]</span></p>
+<p>The exact equations for a real six-axis robot are more complex, but the principle is the same: the controller combines the geometry of all links and joints to compute the pose of the tool. For a full walkthrough of the 6DOF case, see <span class="citation" data-cites="Corke.2023">Corke (<a href="#ref-Corke.2023" role="doc-biblioref">2023, chap. 7</a>)</span>.</p>
+<div id="kinematics-fk-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the forward kinematics demo.</p></noscript>
+<p>In practice, this is often used like a function call. The robot model and tool data are already known to the controller or simulation software, so the joint positions are the input and the TCP pose is the output:</p>
+<pre class="text"><code>q = [q1, q2, q3, q4, q5, q6]       # joint positions
+
+T_base_tcp = forward_kinematics(q) # pose of the TCP in the base frame</code></pre>
+<p>The returned pose <code>T_base_tcp</code> describes the TCP position and orientation relative to the robot base frame. Different software packages use different names and data formats, but the idea is the same.</p>
+<p>Forward kinematics is used whenever the robot controller, simulation software, or offline programming system needs to know where the TCP is for a given robot configuration. It is also used when jogging individual joints, checking reach, simulating robot motion, and visualizing the robot in a digital model.</p>
+</section>
+<section id="robot-models-and-dh-parameters" class="level1">
+<h1>Robot models and DH parameters</h1>
+<p>To compute kinematics, the software needs a model of the robot geometry. This model describes how the joints and links are connected. Denavit-Hartenberg parameters, often called DH parameters, are one common way to write this model down.</p>
+<p>The planar arm above only needs link lengths and joint angles because all joints rotate in the same plane. A real industrial robot needs a richer description. Its joint axes can be offset from each other, twisted relative to each other, and arranged so that the arm can leave the plane and move in 3D. DH parameters capture these distances and angles between neighboring joint axes in a compact way.</p>
+<p>For this course, the important point is not how to derive DH parameters by hand. In normal industrial use, the model is already provided by the robot controller, the manufacturer, or the simulation software. In Visual Components, for example, we normally select a robot model that already contains the relevant geometry and joint limits. We use the model; we do not usually build it from scratch.</p>
+<p>If you want to see how DH parameters are derived for a particular robot, have a look at the following visual explanation, or see <span class="citation" data-cites="Corke.2023">Corke (<a href="#ref-Corke.2023" role="doc-biblioref">2023, 7.1.5</a>)</span>.</p>
+<div class="video-embed">
+  <iframe src="https://www.youtube.com/embed/rA9tm0gTln8?si=Ks_F64Wt7BV3fOuP" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
+</div>
+</section>
+<section id="inverse-kinematics" class="level1">
+<h1>Inverse kinematics</h1>
+<p>Inverse kinematics answers the opposite question:</p>
+<blockquote class="blockquote">
+<p>If the desired TCP pose is known, which joint positions should the robot use?</p>
+</blockquote>
+<p>This is the problem the controller solves when we teach a Cartesian target, jog the TCP in a tool frame, or command a linear move to a pose. It is also the problem behind offline programming, camera-guided picking, and simulation.</p>
+<p>For example, consider a machine-tending task (<a href="#fig-kuka-machine-tending" class="quarto-xref">Figure&nbsp;1</a>). The part is at a known position in the CNC machine, and the gripper must approach it with a known orientation. The task is naturally described as a desired TCP pose. The robot, however, can only be commanded through its joints. Inverse kinematics is the step that answers: which joint angles will put the gripper at that pose?</p>
+<div id="fig-kuka-machine-tending" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-kuka-machine-tending-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/kuka_agilus_machine_tending.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kuka-machine-tending-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Machine tending with a KUKA KR AGILUS robot. Image source: <a href="https://www.kuka.com/en-us/company/press/news/2016/07/dannoritzer">KUKA</a>.
+</figcaption>
+</figure>
+</div>
+<p>This problem has a different character than forward kinematics. Forward kinematics is a direct calculation: insert the joint angles into the robot model and compute the TCP pose. Inverse kinematics works backwards from a desired TCP pose. For some standard industrial robot geometries, the controller can use a specialized analytical solution. In more generic software tools, inverse kinematics is often solved numerically as a root-finding or optimization problem. The solver starts from a likely robot configuration, adjusts the joint angles, checks the resulting TCP pose using forward kinematics, and repeats until the pose error is small enough.</p>
+<p>Inverse kinematics is more complicated than forward kinematics for three practical reasons:</p>
+<ul>
+<li>There may be no solution because the target is outside the robot’s workspace.</li>
+<li>There may be several solutions for the same TCP pose.</li>
+<li>A mathematical solution may violate joint limits or collide with equipment.</li>
+</ul>
+<p>The second point is especially important in industrial robotics. A six-axis arm can often reach the same TCP pose with different shoulder, elbow, and wrist configurations. On a planar arm this appears as an elbow-up or elbow-down solution. On a real robot, the equivalent configuration choices can decide whether the robot avoids a fixture, stays away from a singularity, or approaches the part from the correct side.</p>
+<p>The demo below uses a three-joint planar arm to control a three-coordinate planar TCP pose: <code>x</code>, <code>y</code>, and tool angle. In that sense, the example is non-redundant: there are three joint variables available and three task coordinates to control. Still, non-redundant does not always mean unique. The geometry can give a small number of separate inverse kinematics solutions.</p>
+<p>In the demo, this appears as the <code>Elbow down</code> and <code>Elbow up</code> buttons. The TCP pose is the same, but the joint solution is different. This is a discrete switch between solution branches. It is different from redundancy and nullspace motion, which are discussed in <a href="#sec-redundancy-nullspace" class="quarto-xref">Section&nbsp;5.1</a>.</p>
+<p>The cross is the desired TCP pose. Drag it to a new position and the robot solves for joint angles that move the TCP toward that goal. The small delay is intentional: it shows that the robot is not being dragged directly; an inverse kinematics calculation is being performed between the target pose and the joint angles. Move the target toward the edge of the workspace and the demo will indicate when the requested pose is not reachable. The demo only checks reach and joint geometry; it does not check for self-collision or collision with external equipment.</p>
+<div id="kinematics-ik-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the inverse kinematics demo.</p></noscript>
+<p>In a production cell, inverse kinematics is usually hidden inside the robot controller. The programmer does not normally solve the equations manually. The important skill is to recognize when the controller is struggling: unreachable targets, awkward configurations, unexpected wrist flips, or paths that require the robot to pass too close to a singularity.</p>
+<p>As a function call, inverse kinematics has the opposite input and output from forward kinematics. In practice, we often also provide the current joint positions or a preferred configuration so the solver knows which solution branch to choose:</p>
+<pre class="text"><code>T_base_tcp_goal = desired_tcp_pose()
+q_current = current_joint_positions()
+
+q_solution, status = inverse_kinematics(
+    T_base_tcp_goal,
+    seed=q_current,
+    configuration="elbow_down"
+)</code></pre>
+<p>The returned <code>q_solution</code> is a set of joint positions. The <code>status</code> tells whether the solver found an acceptable solution.</p>
+<section id="sec-redundancy-nullspace" class="level2">
+<h2 class="anchored" data-anchor-id="sec-redundancy-nullspace">Redundancy and nullspace</h2>
+<p>It is useful to relate inverse kinematics to the number of independent joint motions available for the task:</p>
+<ul>
+<li>A robot is <strong>fully actuated</strong> for a task when it has enough independently controlled joints to control all required task coordinates. A typical six-axis industrial arm can control a full 3D TCP pose: three position coordinates and three orientation coordinates.</li>
+<li>A <strong>redundant robot</strong> has more joints than the task strictly requires. A seven-axis arm, or a six-axis arm mounted on a linear track, can often reach the same TCP pose in many more ways.</li>
+<li>An <strong>underactuated robot</strong> has fewer controllable joints than the desired task requires. For example, a simple four-axis palletizing robot can place boxes in many positions, but it cannot freely choose every possible tool orientation.</li>
+</ul>
+<p>The planar demo above is non-redundant for the selected task because it uses three joints to control <code>x</code>, <code>y</code>, and tool angle. If we removed the tool-angle requirement and only asked the TCP to reach an <code>x</code>,<code>y</code> position, the same arm would become redundant for that smaller task. It would have three joints for a two-coordinate task, so the same point could be reached with many different robot configurations. These configurations would place the TCP at the specified <code>x</code>,<code>y</code> coordinate, but with different tool angles.</p>
+<p>For redundant robots, the extra freedom is often described as nullspace motion. This means continuous joint motion that changes the robot posture without changing the task coordinate we care about. A common industrial example is a seven-axis robot that keeps the TCP fixed while moving its elbow away from an obstacle. The important word is continuous: the robot can move through a range of postures while the TCP task remains satisfied.</p>
+<p>This is different from the <code>Elbow down</code> / <code>Elbow up</code> switch for the fully actuated robot in the demo. That switch selects between separate inverse kinematics branches. It is a discrete configuration choice, not a continuous nullspace motion. Both ideas matter in industrial programming: configuration branches decide which posture family the robot uses, while redundancy gives the controller extra room inside a task.</p>
+<p><a href="#fig-fr3-nullspace" class="quarto-xref">Figure&nbsp;2</a> shows this idea on a Franka Research 3 robot. The end-effector pose is held fixed, while the body of the robot is made compliant enough that a person can push the elbow around.</p>
+<div id="fig-fr3-nullspace" class="video-embed-narrow quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-fr3-nullspace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-video"><video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-big-play-centered vjs-fluid" controls="" preload="auto" data-setup="{}" title="" aria-label="Nullspace motion on a Franka Research 3 robot"><source src="img/fr3_nullspace.mp4"></video></div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fr3-nullspace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Nullspace motion on a Franka Research 3: the end-effector pose remains fixed while the robot body is moved through compliant impedance behavior.
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="path-trajectory-and-movement-type" class="level1">
+<h1>Path, trajectory, and movement type</h1>
+<p>A <strong>path</strong> is the geometric route followed by the TCP. A <strong>trajectory</strong> is that path plus timing: for example the chosen velocity and acceleration profiles. Two robot programs can therefore have the same path but different trajectories. They can also have the same start and end poses but different paths, depending on the selected movement type.</p>
+<p>In industrial robot programming, motions are still often built from key poses of the TCP: home, approach, process start, process end, retreat, and so on. Once those poses have been taught or calculated, the programmer has to decide how the robot should connect them. The practical question is: does the TCP need to move through Cartesian space in a particular way to achieve the task, or is it enough that the robot reaches the next key point safely and efficiently?</p>
+<p>The movement type answers this connection question. It tells the controller whether to interpolate in joint space or in Cartesian space. This choice can change the geometric path of the TCP, even if the start and end poses are the same.</p>
+<p>A joint-space move, such as <code>MoveJ</code> on Universal Robots or <code>PTP</code> on KUKA, interpolates from one joint configuration to another. This is often the best choice for repositioning because it is robust and usually fast. The TCP path is not prescribed and is usually not a straight line, so this movement type should not be used when the tool must follow a process path.</p>
+<p>A Cartesian linear move, such as <code>MoveL</code> on Universal Robots or <code>LIN</code> on KUKA, interpolates the TCP along a straight line. This is the right choice for many process operations: welding, dispensing, inserting, scanning, or approaching a part along a known direction. The cost is that the controller must continuously solve inverse kinematics along the line. Near difficult configurations, a simple straight TCP path can require uncomfortable joint motion.</p>
+<p>In practice, these choices are usually made together in one motion command. For understanding what the command does, it is still useful to separate the ideas: the movement type mainly describes the geometric route, while speed and acceleration settings describe the timing.</p>
+<div id="kinematics-motion-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the motion type demo.</p></noscript>
+<p>In the demo, the orange dashed path represents a Cartesian linear move (<code>MoveL</code>/<code>LIN</code>) and the green path represents a joint-space move (<code>MoveJ</code>/<code>PTP</code>). The small graphs show how the TCP coordinates and joint angles change during the selected motion. For <code>MoveL</code>/<code>LIN</code>, the controller interpolates the TCP pose, so the TCP graph is the direct one and the joint angles are the result of inverse kinematics along the line. For <code>MoveJ</code>/<code>PTP</code>, the controller interpolates the joint angles directly, so the TCP path is a result of the joint motion and usually bends. A straight graph line means that quantity is being interpolated directly; a curved graph line is a consequence of the robot kinematics. The joint-travel bars show the accumulated motion of all joints combined. In this example, the Cartesian linear move needs more total joint travel because the controller must keep the TCP on the straight line. A joint-space move often gives simpler joint motion for free-space repositioning, even though the TCP path is no longer prescribed.</p>
+</section>
+<section id="singularities-and-the-jacobian" class="level1">
+<h1>Singularities and the Jacobian</h1>
+<p>A singularity is a robot posture where the robot loses a useful motion possibility. Because of the geometry of the posture, some joint motions no longer create independent TCP motions. The robot may therefore be unable to move the TCP freely in all the directions the task might ask for. A very small requested TCP motion can then require very large joint motion.</p>
+<p>Common practical examples include:</p>
+<ul>
+<li>a robot arm that is almost fully stretched,</li>
+<li>a wrist configuration where two wrist axes line up,</li>
+<li>a target orientation that forces the robot into an awkward posture,</li>
+<li>a linear move that passes through a difficult configuration.</li>
+</ul>
+<p>Many singularities are easy to recognize because joint axes line up or become parallel. This is a useful visual warning, especially for wrist singularities, but it is not the definition and not the only possible cause. The more general test is whether the current robot posture has lost an independent TCP motion direction.</p>
+<p>ISO 10218-1:2025 defines a singularity as the “occurrence whenever the rank of the Jacobian matrix becomes less than full rank” <span class="citation" data-cites="ISO10218-1.2025">(<a href="#ref-ISO10218-1.2025" role="doc-biblioref">International Organization for Standardization 2025</a>)</span>. That is a compact technical definition, but the practical meaning is simple enough:</p>
+<ul>
+<li>the <strong>Jacobian</strong> describes what TCP motion the current robot posture can create from joint motion,</li>
+<li>the <strong>rank</strong> says how many independent TCP motion directions are actually available,</li>
+<li><strong>less than full rank</strong> means that at least one required motion direction has been lost.</li>
+</ul>
+<p>For a typical six-axis robot doing a full 3D pose task, “full rank” means that the robot can create the six independent TCP velocity components: three for position and three for orientation. Not full rank means that the robot can only create fewer independent TCP velocity components in that posture.</p>
+<p>As the robot approaches a singularity, some Cartesian TCP motions require very large joint speeds. At the ideal mathematical singularity, the required joint speed can become theoretically infinite, or the requested Cartesian motion may not be possible in that direction at all. This is why singularities must be handled deliberately in the robot and in the task. A real industrial robot may slow down, limit motion, change behavior, or stop with a warning, but that is because the controller includes measures to deal with the singularity safely <span class="citation" data-cites="ISO10218-1.2025">(<a href="#ref-ISO10218-1.2025" role="doc-biblioref">International Organization for Standardization 2025, sec. 5.2.3</a>)</span>. The geometry itself does not politely make the problem harmless.</p>
+<section id="the-jacobian-view" class="level2">
+<h2 class="anchored" data-anchor-id="the-jacobian-view">The Jacobian view</h2>
+<p>Forward kinematics maps joint positions to the TCP pose:</p>
+<p><span class="math display">\[
+\text{TCP pose} = f(\text{joint angles})
+\]</span></p>
+<p>The Jacobian is the local motion version of that same idea. It tells how joint speeds create TCP speed at the current posture. In mathematics, a Jacobian is a matrix of derivatives. In robotics, the Jacobian we usually mean is the derivative of the forward kinematics function with respect to the joint coordinates. It answers a local question: if each joint moves a tiny amount, how does the TCP position and orientation change?</p>
+<p>For the planar arm above, the forward kinematics equations give <span class="math inline">\(x\)</span>, <span class="math inline">\(y\)</span>, and tool angle from <span class="math inline">\(q_1\)</span>, <span class="math inline">\(q_2\)</span>, and <span class="math inline">\(q_3\)</span>. The Jacobian contains the local slopes of those equations. For a six-axis industrial arm, the same idea applies to the full TCP velocity: three translational components and three rotational components. Corke writes this velocity relationship using the Jacobian matrix <span class="math inline">\(J(q)\)</span> <span class="citation" data-cites="Corke.2023">(<a href="#ref-Corke.2023" role="doc-biblioref">Corke 2023</a>)</span>:</p>
+<p><span class="math display">\[
+\dot{x} = J(q)\dot{q}
+\]</span></p>
+<p>Here, <span class="math inline">\(q\)</span> is the current joint position, <span class="math inline">\(\dot{q}\)</span> is joint speed, and <span class="math inline">\(\dot{x}\)</span> is TCP speed. The important point is that <span class="math inline">\(J(q)\)</span> depends on the current posture. As the robot moves, the Jacobian changes.</p>
+<p>When the Jacobian is healthy, the robot can create the requested TCP motion without excessive joint speeds. Near a singularity, the same TCP motion can require much larger joint speeds. At the singularity, one independent TCP motion direction is no longer available at all. Robot singularities are called singularities because the Jacobian matrix becomes singular: it loses full rank. Robot controllers, offline programming tools, and simulation systems can test the Jacobian rank, or use related numerical indicators, to check whether a Cartesian move is feasible and whether the robot is getting close to a difficult posture.</p>
+</section>
+<section id="why-movement-type-matters" class="level2">
+<h2 class="anchored" data-anchor-id="why-movement-type-matters">Why movement type matters</h2>
+<p>This connects directly to <code>MoveJ</code>/<code>PTP</code> and <code>MoveL</code>/<code>LIN</code>. In a joint-space move, the controller interpolates joint angles. The TCP path is not prescribed, so the controller is not forced to keep solving for a specific Cartesian path between the points. This is one reason joint moves are often preferred for free-space repositioning.</p>
+<p>In a Cartesian linear move, the TCP path is prescribed. The controller has to generate joint motion that keeps the TCP on the line, and the Jacobian is part of how the controller relates the requested TCP velocity to required joint velocities. If that line passes near a singular posture, the joint speeds needed to maintain the line can become very large. This does not mean that <code>MoveJ</code> avoids singularities in general. A joint move can still start, end, or pass near a singular posture. The difference is that a <code>LIN</code>/<code>MoveL</code> command makes the TCP path a hard requirement.</p>
+<p>The animation below uses the same 3DOF planar arm as before, and must move between two full planar TCP poses: <span class="math inline">\(x\)</span>, <span class="math inline">\(y\)</span>, and tool angle. The marked area is around a folded-elbow singularity. Near that posture, motion along the folded link direction is not available in the same way as sideways motion. The blue motion-ability ellipse at the TCP shows this: when it collapses into a thin shape, the Jacobian is losing rank and one TCP motion direction has become difficult or unavailable.</p>
+<p>The <code>LIN</code>/<code>MoveL</code> option forces the TCP through a straight Cartesian line while holding the tool angle fixed. In this example, that line passes close to the folded singularity. The <code>PTP</code>/<code>MoveJ</code> option interpolates the joint angles instead, so the TCP path bends around that posture. The horizontal status bar shows the relative joint-speed demand for the current part of the motion: it grows when a small TCP motion requires larger joint motion. This does not mean that <code>MoveJ</code> avoids singularities in general. It only shows that strict Cartesian path constraints can force the controller closer to a singular posture.</p>
+<div id="kinematics-singularity-demo" class="kinematics-demo"></div>
+<noscript><p>JavaScript is required to use the singularity animation.</p></noscript>
+<p>Real six-axis industrial robots have additional singularity families. For a typical wrist-partitioned arm such as a KUKA KR AGILUS, the common cases are:</p>
+<ul>
+<li>an <strong>extended position singularity</strong>, where the wrist center lies in the extension of the main arm links,</li>
+<li>a <strong>wrist-axis singularity</strong>, where wrist axes line up and two wrist rotations start to produce nearly the same tool motion,</li>
+<li>an <strong>overhead or shoulder singularity</strong>, where the wrist center is in an awkward relation to the base axis.</li>
+</ul>
+<p>The exact names and warning behavior depend on the robot vendor, but the underlying idea is the same: the current posture makes the Jacobian lose an independent motion direction. Robots with a different mechanical structure can have different singularity patterns. For example, many collaborative robots such as Universal Robots arms have a different axis arrangement than a KUKA AGILUS, so the practical singularity situations and controller warnings are not exactly the same.</p>
+<p>The video below shows typical singularities for a six-axis arm. Turn on captions if they are not shown automatically; the subtitles explain what happens in each case.</p>
+<div class="video-embed">
+  <iframe src="https://www.youtube.com/embed/lD2HQcxeNoA?cc_load_policy=1&amp;cc_lang_pref=en" title="Six-axis robot singularities" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
+  </iframe>
+</div>
+<p>In practice, singularity problems are usually solved by changing the task setup or the programmed motion. We avoid singularities by changing the target pose, changing the approach direction, using another robot configuration, moving the part or fixture, or using a joint move for repositioning before starting a process move.</p>
+</section>
+</section>
+<section id="practical-rules-of-thumb" class="level1">
+<h1>Practical rules of thumb</h1>
+<ul>
+<li>Use joint moves (<code>MoveJ</code>, <code>PTP</code>) for free-space repositioning.</li>
+<li>Use linear moves (<code>MoveL</code>, <code>LIN</code>) when the TCP path matters.</li>
+<li>Keep process paths away from fully stretched arm configurations.</li>
+<li>Avoid unnecessary tool orientations that force wrist axes to line up.</li>
+<li>Teach approach and retreat points so the robot enters the process posture gradually.</li>
+<li>Check that targets are reachable with the desired tool orientation, not only with the desired position.</li>
+<li>Be aware that the same TCP pose can have several robot configurations.</li>
+<li>In simulation, inspect both the TCP path and the joint motion.</li>
+</ul>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<ol type="1">
+<li><p>In the forward kinematics demo, set the arm to one, two, and three joints. Move only <code>q1</code>. What changes when more joints are added after <code>q1</code>, and why does the TCP move even though those later joints are not changed?</p></li>
+<li><p>In the inverse kinematics demo, drag the target near the edge of the workspace. What happens to the joint angles? Switch between elbow-up and elbow-down. Which parts of the robot configuration change while the TCP pose stays the same?</p></li>
+<li><p>In the motion type demo, compare <code>MoveJ</code>/<code>PTP</code> and <code>MoveL</code>/<code>LIN</code>. Which motion gives a straight TCP path? Which graph is interpolated directly in each case? Compare the total joint travel bars. What does this tell you about free-space repositioning versus process motion?</p></li>
+<li><p>In the singularity demo, select <code>MoveL</code>/<code>LIN</code> and move through the folded elbow region. What happens to the blue motion-ability ellipse and the joint speed demand bar? Switch to <code>MoveJ</code>/<code>PTP</code>. Does the robot still have the same singularity, or does the path simply avoid getting as close to it in this example?</p></li>
+<li><p>Watch the six-axis singularity video with captions enabled. Identify one example of an extended-position singularity and one wrist-axis singularity. What robot axes or parts appear to line up in each case?</p></li>
+<li><p>Choose a real task such as welding, dispensing, palletizing, or machine tending. List which parts should use joint moves and which should use linear moves. Then choose one target or approach direction you would adjust if the simulation showed a singularity warning.</p></li>
+</ol>
+</section>
+<section id="further-reading" class="level1">
+<h1>Further reading</h1>
+<p>For more detail, see Corke’s treatment of robot arm kinematics, inverse kinematics, velocity relationships, and the Jacobian <span class="citation" data-cites="Corke.2023">(<a href="#ref-Corke.2023" role="doc-biblioref">Corke 2023</a>)</span>. The mathematics is deeper than what we need in this course, but the notation is the same.</p>
+<script src="../assets/kinematics-demos.js"></script>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Corke.2023" class="csl-entry" role="listitem">
+Corke, Peter. 2023. <em>Robotics, Vision and Control</em>. Vol. 146. <span>Springer International Publishing</span>. <a href="https://doi.org/10.1007/978-3-031-06469-2">https://doi.org/10.1007/978-3-031-06469-2</a>.
+</div>
+<div id="ref-ISO10218-1.2025" class="csl-entry" role="listitem">
+International Organization for Standardization. 2025. <em><span class="nocase">ISO 10218-1:2025 Robotics – Safety requirements – Part 1: Industrial robots</span></em>. <a href="https://www.iso.org/standard/73933.html">https://www.iso.org/standard/73933.html</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/frdedynamics\.github\.io\/Industrial-Robotics-and-PLCs\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/content/kinematics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>videojs(video_shortcode_videojs_video1);</script>
+
+
+
+
+</body></html>
