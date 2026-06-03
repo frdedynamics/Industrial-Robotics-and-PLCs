@@ -1016,10 +1016,16 @@
   function initializeSingularityDemo(root) {
     const lengths = [115, 90, 45];
     const coordinates = createCoordinateSystem(560, 360);
-    const startPose = { target: [70, -130], phi: 0 };
-    const endPose = { target: [70, 130], phi: 0 };
-    const singularPose = { target: [lengths[0] - lengths[1] + lengths[2], 0], phi: 0 };
-    const elbowMode = "down";
+    const startPose = { target: [70, 130], phi: 12 };
+    const endPose = { target: [70, -130], phi: 12 };
+    const singularPose = {
+      target: [
+        (lengths[0] - lengths[1] + lengths[2]) * Math.cos(radians(startPose.phi)),
+        (lengths[0] - lengths[1] + lengths[2]) * Math.sin(radians(startPose.phi))
+      ],
+      phi: startPose.phi
+    };
+    const elbowMode = "up";
     const startSolution = inverseKinematics3R(startPose.target, startPose.phi, elbowMode, lengths);
     const endSolution = inverseKinematics3R(endPose.target, endPose.phi, elbowMode, lengths);
     const duration = 5600;
@@ -1050,6 +1056,7 @@
       "<input type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"0\" data-role=\"progress\">",
       "</label>",
       "<dl class=\"kinematics-readout\"></dl>",
+      "<div class=\"kinematics-health-label\">Joint speed demand</div>",
       "<div class=\"kinematics-health\" aria-label=\"Relative joint speed indicator\"><span class=\"kinematics-health__fill\"></span></div>",
       "</div>"
     ].join("");

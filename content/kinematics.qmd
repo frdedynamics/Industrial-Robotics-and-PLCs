@@ -448,12 +448,15 @@ available in the same way as sideways motion. The blue motion-ability ellipse at
 the TCP shows this: when it collapses into a thin shape, one TCP motion direction
 has become difficult or unavailable.
 
-The `LIN`/`MoveL` option forces the TCP through a straight Cartesian line that
-passes close to the folded singularity. The `PTP`/`MoveJ` option interpolates
-the joint angles instead, so the TCP path bends around that posture in this
-example. This does not mean that `MoveJ` avoids singularities in general. It
-only shows that strict Cartesian path constraints can force the controller
-closer to a singular posture.
+The `LIN`/`MoveL` option forces the TCP through a straight Cartesian line while
+holding the tool angle fixed. In this example, that line passes close to the
+folded singularity. The `PTP`/`MoveJ` option interpolates the joint angles
+instead, so the TCP path bends around that posture. The horizontal status bar
+shows the relative joint-speed demand for the current part of the motion: it
+grows when a small TCP motion requires larger joint motion. This does not mean
+that `MoveJ` avoids singularities in general. It only shows that strict
+Cartesian path constraints can force the controller closer to a singular
+posture.
 
 ```{=html}
 <div id="kinematics-singularity-demo" class="kinematics-demo"></div>

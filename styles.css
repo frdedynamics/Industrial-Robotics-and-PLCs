@@ -857,6 +857,13 @@
 	overflow: hidden;
 }
 
+.kinematics-health-label {
+	margin-bottom: -0.65rem;
+	color: #566578;
+	font-size: 0.84rem;
+	font-weight: 800;
+}
+
 .kinematics-health__fill {
 	display: block;
 	height: 100%;
