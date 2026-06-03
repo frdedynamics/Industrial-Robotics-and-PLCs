@@ -309,15 +309,6 @@
     return "<div class=\"kinematics-readout__row\"><dt>" + label + "</dt><dd>" + value + "</dd></div>";
   }
 
-  function buildInterpolationItem(label, value, className) {
-    return [
-      "<span class=\"kinematics-interpolation__item " + className + "\">",
-      "<span>" + label + "</span>",
-      "<strong>" + value + "</strong>",
-      "</span>"
-    ].join("");
-  }
-
   function initializeForwardDemo(root) {
     const lengths = [115, 90, 65];
     const coordinates = createCoordinateSystem(520, 360);
@@ -690,8 +681,8 @@
   function initializeMotionDemo(root) {
     const lengths = [115, 90, 45];
     const coordinates = createCoordinateSystem(520, 360);
-    const startPose = { target: [220, 100], phi: 0 };
-    const endPose = { target: [220, -100], phi: 0 };
+    const startPose = { target: [140, 130], phi: 0 };
+    const endPose = { target: [140, -100], phi: 0 };
     const elbowMode = "down";
     const startSolution = inverseKinematics3R(startPose.target, startPose.phi, elbowMode, lengths);
     const endSolution = inverseKinematics3R(endPose.target, endPose.phi, elbowMode, lengths);
@@ -713,7 +704,8 @@
       "<span class=\"kinematics-slider__header\"><span>Motion progress</span><span class=\"kinematics-slider__value\"></span></span>",
       "<input type=\"range\" min=\"0\" max=\"100\" step=\"1\" value=\"50\" data-role=\"progress\">",
       "</label>",
-      "<div class=\"kinematics-interpolation\" aria-label=\"Interpolated values\"></div>",
+      "<div class=\"kinematics-trace-graphs\" aria-label=\"Coordinate traces over the motion\"></div>",
+      "<div class=\"kinematics-joint-travel\" aria-label=\"Total joint travel comparison\"></div>",
       "<dl class=\"kinematics-readout\"></dl>",
       "</div>"
     ].join("");
@@ -722,7 +714,8 @@
     const buttons = Array.from(root.querySelectorAll("button[data-mode]"));
     const progressInput = root.querySelector("input[data-role='progress']");
     const progressValue = root.querySelector(".kinematics-slider__value");
-    const interpolation = root.querySelector(".kinematics-interpolation");
+    const traceGraphs = root.querySelector(".kinematics-trace-graphs");
+    const jointTravel = root.querySelector(".kinematics-joint-travel");
     const readout = root.querySelector(".kinematics-readout");
 
     buttons.forEach(function (button) {
@@ -757,8 +750,8 @@
       };
     }
 
-    function anglesAtProgress(t) {
-      if (state.mode === "movej") {
+    function anglesAtMode(mode, t) {
+      if (mode === "movej") {
         return interpolateAngles(startSolution.angles, endSolution.angles, t);
       }
 
@@ -766,18 +759,186 @@
       return inverseKinematics3R(pose.target, pose.phi, elbowMode, lengths).angles;
     }
 
+    function anglesAtProgress(t) {
+      return anglesAtMode(state.mode, t);
+    }
+
+    function sampleAtMode(mode, t) {
+      const angles = anglesAtMode(mode, t);
+      const result = forwardKinematics(angles, lengths);
+      return {
+        angles: angles,
+        tcp: result.points[result.points.length - 1],
+        orientation: result.orientation
+      };
+    }
+
     function tcpPathSamples(mode) {
       const samples = [];
       for (let i = 0; i <= 80; i += 1) {
         const t = i / 80;
         if (mode === "movej") {
-          const result = forwardKinematics(interpolateAngles(startSolution.angles, endSolution.angles, t), lengths);
-          samples.push(result.points[result.points.length - 1]);
+          samples.push(sampleAtMode(mode, t).tcp);
         } else {
           samples.push(poseAtLinear(t).target);
         }
       }
       return samples;
+    }
+
+    function unwrapValues(values) {
+      if (values.length < 2) {
+        return values;
+      }
+
+      const unwrapped = [values[0]];
+      for (let index = 1; index < values.length; index += 1) {
+        const previous = unwrapped[index - 1];
+        let value = values[index];
+        while (value - previous > 180) {
+          value -= 360;
+        }
+        while (value - previous < -180) {
+          value += 360;
+        }
+        unwrapped.push(value);
+      }
+      return unwrapped;
+    }
+
+    function buildTraceSeries(mode, kind) {
+      const definitions = kind === "tcp"
+        ? [
+          { label: "x", index: 0, className: "is-x" },
+          { label: "y", index: 1, className: "is-y" }
+        ]
+        : [
+          { label: "q1", index: 0, className: "is-q1" },
+          { label: "q2", index: 1, className: "is-q2" },
+          { label: "q3", index: 2, className: "is-q3" }
+        ];
+
+      const samples = [];
+      for (let i = 0; i <= 80; i += 1) {
+        const t = i / 80;
+        const sample = sampleAtMode(mode, t);
+        samples.push(kind === "tcp" ? sample.tcp : sample.angles);
+      }
+
+      return definitions.map(function (definition) {
+        const values = samples.map(function (sample) {
+          return sample[definition.index];
+        });
+        return {
+          label: definition.label,
+          className: definition.className,
+          values: kind === "joints" ? unwrapValues(values) : values
+        };
+      });
+    }
+
+    function buildTraceGraph(title, subtitle, series, t, active) {
+      const width = 260;
+      const height = 124;
+      const left = 28;
+      const right = 12;
+      const top = 14;
+      const bottom = 34;
+      const plotWidth = width - left - right;
+      const plotHeight = height - top - bottom;
+      const allValues = series.flatMap(function (entry) { return entry.values; });
+      let minValue = Math.min.apply(null, allValues);
+      let maxValue = Math.max.apply(null, allValues);
+
+      if (Math.abs(maxValue - minValue) < 0.001) {
+        minValue -= 1;
+        maxValue += 1;
+      }
+
+      const padding = (maxValue - minValue) * 0.12;
+      minValue -= padding;
+      maxValue += padding;
+
+      function pointFor(value, index, count) {
+        const x = left + (index / Math.max(count - 1, 1)) * plotWidth;
+        const normalized = (value - minValue) / (maxValue - minValue);
+        const y = top + ((1 - normalized) * plotHeight);
+        return [x, y];
+      }
+
+      const markerIndex = Math.round(t * 80);
+      const lines = series.map(function (entry) {
+        const points = entry.values.map(function (value, index) {
+          return pointFor(value, index, entry.values.length).join(",");
+        }).join(" ");
+        const marker = pointFor(entry.values[markerIndex], markerIndex, entry.values.length);
+        const startMarker = pointFor(entry.values[0], 0, entry.values.length);
+        const endMarker = pointFor(entry.values[entry.values.length - 1], entry.values.length - 1, entry.values.length);
+        return [
+          "<polyline class=\"kinematics-trace-graph__line " + entry.className + "\" points=\"" + points + "\"></polyline>",
+          "<circle class=\"kinematics-trace-graph__endpoint-marker " + entry.className + "\" cx=\"" + startMarker[0].toFixed(1) + "\" cy=\"" + startMarker[1].toFixed(1) + "\" r=\"4.5\"></circle>",
+          "<circle class=\"kinematics-trace-graph__endpoint-marker " + entry.className + "\" cx=\"" + endMarker[0].toFixed(1) + "\" cy=\"" + endMarker[1].toFixed(1) + "\" r=\"4.5\"></circle>",
+          "<circle class=\"kinematics-trace-graph__marker " + entry.className + "\" cx=\"" + marker[0].toFixed(1) + "\" cy=\"" + marker[1].toFixed(1) + "\" r=\"4\"></circle>"
+        ].join("");
+      }).join("");
+
+      const legend = series.map(function (entry) {
+        return "<span class=\"kinematics-trace-graph__legend-item " + entry.className + "\">" + entry.label + "</span>";
+      }).join("");
+
+      return [
+        "<div class=\"kinematics-trace-graph " + (active ? "is-active" : "is-derived") + "\">",
+        "<div class=\"kinematics-trace-graph__header\"><span>" + title + "</span><strong>" + subtitle + "</strong></div>",
+        "<svg viewBox=\"0 0 " + width + " " + height + "\" role=\"img\" aria-label=\"" + title + "\">",
+        "<line class=\"kinematics-trace-graph__axis\" x1=\"" + left + "\" y1=\"" + (height - bottom) + "\" x2=\"" + (width - right) + "\" y2=\"" + (height - bottom) + "\"></line>",
+        "<line class=\"kinematics-trace-graph__axis\" x1=\"" + left + "\" y1=\"" + top + "\" x2=\"" + left + "\" y2=\"" + (height - bottom) + "\"></line>",
+        lines,
+        "<text class=\"kinematics-trace-graph__axis-label\" x=\"" + left + "\" y=\"" + (height - 8) + "\" text-anchor=\"middle\">Start</text>",
+        "<text class=\"kinematics-trace-graph__axis-label\" x=\"" + (width - right) + "\" y=\"" + (height - 8) + "\" text-anchor=\"middle\">End</text>",
+        "</svg>",
+        "<div class=\"kinematics-trace-graph__legend\">" + legend + "</div>",
+        "</div>"
+      ].join("");
+    }
+
+    function jointTravelAt(mode, progress) {
+      let previous = anglesAtMode(mode, 0);
+      let total = 0;
+      const steps = Math.max(1, Math.round(120 * progress));
+      for (let i = 1; i <= steps; i += 1) {
+        const current = anglesAtMode(mode, progress * (i / steps));
+        total += current.reduce(function (sum, angle, index) {
+          return sum + Math.abs(wrapDegrees(angle - previous[index]));
+        }, 0);
+        previous = current;
+      }
+      return total;
+    }
+
+    function buildJointTravelComparison() {
+      const finalMoveJTravel = jointTravelAt("movej", 1);
+      const finalMoveLTravel = jointTravelAt("movel", 1);
+      const currentMoveJTravel = jointTravelAt("movej", state.progress);
+      const currentMoveLTravel = jointTravelAt("movel", state.progress);
+      const maxTravel = Math.max(finalMoveJTravel, finalMoveLTravel, 1);
+
+      function row(mode, label, currentValue, finalValue) {
+        const finalWidth = Math.round((finalValue / maxTravel) * 100);
+        const fillWidth = Math.round((currentValue / Math.max(finalValue, 1)) * 100);
+        return [
+          "<div class=\"kinematics-joint-travel__row " + (state.mode === mode ? "is-active" : "") + "\">",
+          "<span>" + label + "</span>",
+          "<div class=\"kinematics-joint-travel__bar\"><span class=\"kinematics-joint-travel__limit\" style=\"width: " + finalWidth + "%\"><span class=\"kinematics-joint-travel__fill\" style=\"width: " + fillWidth + "%\"></span></span></div>",
+          "<strong>" + currentValue.toFixed(0) + " / " + finalValue.toFixed(0) + "\u00b0</strong>",
+          "</div>"
+        ].join("");
+      }
+
+      return [
+        "<div class=\"kinematics-joint-travel__title\">Total joint travel</div>",
+        row("movej", "MoveJ / PTP", currentMoveJTravel, finalMoveJTravel),
+        row("movel", "MoveL / LIN", currentMoveLTravel, finalMoveLTravel)
+      ].join("");
     }
 
     function drawMarkers() {
@@ -805,7 +966,6 @@
       const angles = anglesAtProgress(state.progress);
       const result = forwardKinematics(angles, lengths);
       const tcp = result.points[result.points.length - 1];
-      const linearPose = poseAtLinear(state.progress);
 
       clear(svg);
       drawGrid(svg, coordinates, lengths.reduce(function (sum, value) { return sum + value; }, 0));
@@ -819,19 +979,23 @@
       });
       progressValue.textContent = Math.round(state.progress * 100) + "%";
 
-      if (state.mode === "movej") {
-        interpolation.innerHTML = [
-          buildInterpolationItem("q1", formatNumber(angles[0], 1) + "\u00b0", "is-joint"),
-          buildInterpolationItem("q2", formatNumber(angles[1], 1) + "\u00b0", "is-joint"),
-          buildInterpolationItem("q3", formatNumber(angles[2], 1) + "\u00b0", "is-joint")
-        ].join("");
-      } else {
-        interpolation.innerHTML = [
-          buildInterpolationItem("x", formatNumber(linearPose.target[0], 1), "is-cartesian"),
-          buildInterpolationItem("y", formatNumber(linearPose.target[1], 1), "is-cartesian"),
-          buildInterpolationItem("\u03c6", formatNumber(linearPose.phi, 1) + "\u00b0", "is-cartesian")
-        ].join("");
-      }
+      traceGraphs.innerHTML = [
+        buildTraceGraph(
+          "TCP coordinates",
+          state.mode === "movel" ? "interpolated" : "result",
+          buildTraceSeries(state.mode, "tcp"),
+          state.progress,
+          state.mode === "movel"
+        ),
+        buildTraceGraph(
+          "Joint angles",
+          state.mode === "movej" ? "interpolated" : "result",
+          buildTraceSeries(state.mode, "joints"),
+          state.progress,
+          state.mode === "movej"
+        )
+      ].join("");
+      jointTravel.innerHTML = buildJointTravelComparison();
 
       readout.innerHTML = [
         buildReadoutRow("Active motion", state.mode === "movej" ? "MoveJ / PTP" : "MoveL / LIN"),
