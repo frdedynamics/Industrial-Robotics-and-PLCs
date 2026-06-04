@@ -1027,6 +1027,112 @@
 	}
 }
 
+.cell-example-figure {
+	margin: 1.5rem 0;
+	padding: 1rem;
+	border: 1px solid rgba(31, 45, 61, 0.08);
+	border-radius: 0.75rem;
+	background: #f6f8fb;
+}
+
+.cell-example-figure__canvas {
+	position: relative;
+	overflow: hidden;
+	border: 1px solid rgba(31, 45, 61, 0.1);
+	border-radius: 0.5rem;
+	background: #ffffff;
+}
+
+.cell-example-figure img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.cell-example-figure svg {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.cell-example-figure figcaption {
+	margin-top: 0.7rem;
+	color: #566578;
+	font-size: 0.92rem;
+}
+
+.cell-frame__axis {
+	stroke-width: 4.5;
+	stroke-linecap: round;
+	paint-order: stroke;
+	stroke-linejoin: round;
+}
+
+#cell-frame-arrow-x path {
+	fill: #1d4f8e;
+}
+
+#cell-frame-arrow-y path {
+	fill: #2a9d8f;
+}
+
+#cell-frame-arrow-z path {
+	fill: #c2410c;
+}
+
+.cell-frame__axis--x {
+	stroke: #1d4f8e;
+}
+
+.cell-frame__axis--y {
+	stroke: #2a9d8f;
+}
+
+.cell-frame__axis--z {
+	stroke: #c2410c;
+}
+
+.cell-frame__origin {
+	fill: #ffffff;
+	stroke: #111827;
+	stroke-width: 2.4;
+}
+
+.cell-frame__label {
+	fill: #111827;
+	font-size: 22px;
+	font-weight: 850;
+	paint-order: stroke;
+	stroke: rgba(255, 255, 255, 0.94);
+	stroke-width: 7;
+}
+
+.cell-frame--camera .cell-frame__label {
+	fill: #1d4f8e;
+}
+
+.cell-frame--part .cell-frame__label {
+	fill: #0f766e;
+}
+
+.cell-frame--tcp .cell-frame__label {
+	fill: #c2410c;
+}
+
+@media (max-width: 700px) {
+	.cell-frame__axis {
+		stroke-width: 6;
+	}
+
+	.cell-frame__label {
+		font-size: 28px;
+		stroke-width: 9;
+	}
+}
+
 .frame-in-frame {
 	margin: 1.5rem 0;
 	padding: 1rem;
