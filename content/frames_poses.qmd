@@ -11,26 +11,11 @@ part, a gripper has to align with a handle, a camera has to measure a workpiece,
 or a pallet has to be placed relative to a fixture. To program and debug these
 tasks, we need tools for describing positions and orientations in space.
 
-On this page we use one running example: a camera-guided pick operation. A
-camera observes a workpiece, and the robot has to move its gripper to the right
-pick pose. To make that work, the cell needs to know where the camera is, where
-the workpiece is seen by the camera, and where the gripper should be relative to
-the workpiece. In the equations below, `part` is used as a short name for the
-workpiece frame.
-
-The two basic ideas are:
-
-- A **coordinate frame** is a local reference system with an origin and axis
-  directions.
-- A **pose** describes the position and orientation of one frame relative to
-  another frame.
-
-For robot tools, the important tool point is usually called the **TCP**: the
-tool center point.
-
-The figure below shows the running example. The robot, camera, workpiece, and
-gripper TCP each get their own coordinate frame. The axes of a frame tell us how
-to measure position and orientation locally at that object.
+Consider the cell in the figure below. A camera observes a tray of small
+objects, and the robot has to move its gripper to a pick pose for one selected
+cube. To make that work, the robot program needs answers to questions such as:
+Where is the camera relative to the robot? Where is the selected cube relative
+to the camera? Where should the gripper be relative to the cube?
 
 ```{=html}
 <figure class="cell-example-figure">
@@ -78,9 +63,21 @@ to measure position and orientation locally at that object.
       </g>
     </svg>
   </div>
-  <figcaption>Running example for this page: a camera observes a tray of small objects, and the robot moves the gripper TCP to pick one selected cube. The overlaid coordinate frames show the reference systems used in the transform chain.</figcaption>
+  <figcaption>A camera-guided pick cell. The overlaid coordinate frames show the reference systems attached to the robot base, camera, selected part, and gripper TCP.</figcaption>
 </figure>
 ```
+
+This example already contains the two basic ideas of the page:
+
+- A **coordinate frame** is a local reference system with an origin and axis
+  directions. In the figure, frames are attached to the robot base, camera,
+  selected part, and gripper.
+- A **pose** describes the position and orientation of one frame relative to
+  another frame. For example, the camera has a pose relative to the robot base.
+
+For robot tools, the important tool point is usually called the **TCP**: the
+tool center point. In the equations below, `part` is used as a short name for
+the selected workpiece frame.
 
 A **point** is only a position. It can describe where a hole, corner, or detected
 feature is. A **pose** is stronger: it describes both position and orientation.
@@ -88,10 +85,12 @@ A welding torch, gripper, camera, screwdriver, or dispensing nozzle must be at
 the right place and point in the right direction. Position is the "where".
 Orientation is the "which way".
 
-Different robot systems expose this in different formats. A KUKA target is often
-written with `X`, `Y`, `Z`, `A`, `B`, and `C`. Universal Robots uses poses such
-as `p[x, y, z, rx, ry, rz]`. The numbers and angle conventions differ, but the
-idea is the same: a robot target is a pose, not only a point.
+Different robot systems expose poses in different formats. A KUKA target is
+often written with `X`, `Y`, `Z`, `A`, `B`, and `C`. Universal Robots uses poses
+such as `p[x, y, z, rx, ry, rz]`. At this point, treat these as compact ways of
+writing a 3D position plus a 3D orientation. @sec-poses and
+@sec-3d-pose-representation explain what those numbers mean and how they
+represent a pose.
 
 In this page we use the notation from Corke [@Corke.2023]: `T` denotes a pose
 represented as a homogeneous transformation matrix. We will not derive all the
@@ -108,92 +107,118 @@ A coordinate frame is attached to something. In a robot cell, typical frames are
 - a **camera frame**,
 - a frame attached to a conveyor, pallet, table, or machine.
 
-In the camera-guided pick example, we need at least four frames: the robot base
-frame, the camera frame, the workpiece frame, and the TCP frame of the gripper.
-
-The figure below shows the basic idea. A local frame can sit inside another
-frame: its origin is shifted, and its axes are rotated. Points or poses attached
-to that local frame must be transformed before the robot can use them in the
-base frame.
+In the pick cell above, we need at least four frames: the robot base frame, the
+camera frame, the selected workpiece frame, and the TCP frame of the gripper.
+The same selected cube can be described in camera coordinates because the camera
+detected it, in part coordinates because the part has its own local frame, and
+in base coordinates because the robot motion target is usually executed relative
+to the robot base.
 
 ```{=html}
-<figure class="frame-in-frame">
-  <svg viewBox="0 0 680 330" role="img" aria-label="A local frame inside a robot base frame">
-    <defs>
-      <marker id="frame-arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M 0 0 L 8 3 L 0 6 z" fill="#1d4f8e"></path>
-      </marker>
-      <marker id="frame-arrow-green" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M 0 0 L 8 3 L 0 6 z" fill="#2a9d8f"></path>
-      </marker>
-      <marker id="frame-arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-        <path d="M 0 0 L 8 3 L 0 6 z" fill="#c2410c"></path>
-      </marker>
-    </defs>
-    <g class="frame-in-frame__grid">
-      <line x1="70" y1="265" x2="620" y2="265"></line>
-      <line x1="95" y1="290" x2="95" y2="55"></line>
-      <line x1="180" y1="290" x2="180" y2="55"></line>
-      <line x1="265" y1="290" x2="265" y2="55"></line>
-      <line x1="350" y1="290" x2="350" y2="55"></line>
-      <line x1="435" y1="290" x2="435" y2="55"></line>
-      <line x1="520" y1="290" x2="520" y2="55"></line>
-      <line x1="605" y1="290" x2="605" y2="55"></line>
-      <line x1="70" y1="220" x2="620" y2="220"></line>
-      <line x1="70" y1="175" x2="620" y2="175"></line>
-      <line x1="70" y1="130" x2="620" y2="130"></line>
-      <line x1="70" y1="85" x2="620" y2="85"></line>
-    </g>
-    <g class="frame-in-frame__base">
-      <line x1="95" y1="265" x2="245" y2="265" marker-end="url(#frame-arrow-blue)"></line>
-      <line x1="95" y1="265" x2="95" y2="105" marker-end="url(#frame-arrow-blue)"></line>
-      <circle cx="95" cy="265" r="5"></circle>
-      <text x="250" y="258">x_base</text>
-      <text x="106" y="108">y_base</text>
-      <text x="82" y="288">base frame</text>
-    </g>
-    <g class="frame-in-frame__local" transform="translate(375 185) rotate(-28)">
-      <line x1="0" y1="0" x2="135" y2="0" marker-end="url(#frame-arrow-green)"></line>
-      <line x1="0" y1="0" x2="0" y2="-120" marker-end="url(#frame-arrow-green)"></line>
-      <circle cx="0" cy="0" r="5"></circle>
-      <text x="140" y="-6">x_part</text>
-      <text x="8" y="-120">y_part</text>
-      <text x="-28" y="30">part frame</text>
-      <circle cx="82" cy="-48" r="7" class="frame-in-frame__point"></circle>
-      <text x="93" y="-52">same physical point</text>
-    </g>
-    <path class="frame-in-frame__pose-arrow" d="M 110 252 C 190 220, 275 190, 360 185" marker-end="url(#frame-arrow-orange)"></path>
-    <text class="frame-in-frame__pose-label" x="210" y="205">pose of part frame in base frame</text>
-  </svg>
-  <figcaption>A frame inside another frame. The local part frame has its own origin and axis directions, so coordinates attached to it must be interpreted relative to that frame.</figcaption>
+<figure class="cell-example-figure cell-coordinate-figure">
+  <div class="cell-example-figure__canvas">
+    <img src="img/camera_guided_pick_cell_v2.png" alt="Rendered camera-guided pick cell with one selected cube highlighted.">
+    <svg viewBox="0 0 1536 1024" aria-hidden="true">
+      <defs>
+        <marker id="cell-coordinate-arrow-x" markerWidth="7" markerHeight="7" refX="5.5" refY="2.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z" fill="#1d4f8e"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-y" markerWidth="7" markerHeight="7" refX="5.5" refY="2.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z" fill="#2a9d8f"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-z" markerWidth="7" markerHeight="7" refX="5.5" refY="2.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z" fill="#c2410c"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-base" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M 0 0 L 7 3.5 L 0 7 z" fill="#1d4f8e"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-camera" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M 0 0 L 7 3.5 L 0 7 z" fill="#0f766e"></path>
+        </marker>
+      </defs>
+      <circle class="cell-coordinate__highlight" cx="700" cy="628" r="45"></circle>
+      <path class="cell-coordinate__ray cell-coordinate__ray--base" d="M 430 420 C 510 505, 585 590, 700 628" marker-end="url(#cell-coordinate-arrow-base)"></path>
+      <path class="cell-coordinate__ray cell-coordinate__ray--camera" d="M 832 352 C 795 440, 750 535, 700 628" marker-end="url(#cell-coordinate-arrow-camera)"></path>
+      <g class="cell-frame cell-frame--base" transform="translate(430 420)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="78" y2="26" marker-end="url(#cell-coordinate-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-62" y2="35" marker-end="url(#cell-coordinate-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-86" marker-end="url(#cell-coordinate-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="7"></circle>
+        <text class="cell-frame__label" x="-58" y="-98">base frame</text>
+      </g>
+      <g class="cell-frame cell-frame--camera" transform="translate(832 352)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="56" y2="18" marker-end="url(#cell-coordinate-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-48" y2="28" marker-end="url(#cell-coordinate-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="62" marker-end="url(#cell-coordinate-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
+        <text class="cell-frame__label" x="22" y="-18">camera frame</text>
+      </g>
+      <g class="cell-frame cell-frame--part" transform="translate(700 628)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="64" y2="22" marker-end="url(#cell-coordinate-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-56" y2="30" marker-end="url(#cell-coordinate-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-66" marker-end="url(#cell-coordinate-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
+        <text class="cell-frame__label" x="24" y="-72">selected cube</text>
+      </g>
+      <g class="cell-coordinate__callout" transform="translate(900 500)">
+        <rect x="0" y="0" width="315" height="78" rx="10"></rect>
+        <text x="18" y="31">camera description</text>
+        <text x="18" y="60">part pose relative to camera</text>
+      </g>
+      <g class="cell-coordinate__callout cell-coordinate__callout--base" transform="translate(300 655)">
+        <rect x="0" y="0" width="300" height="78" rx="10"></rect>
+        <text x="18" y="31">robot description</text>
+        <text x="18" y="60">part pose relative to base</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption>The selected cube is one physical object, but it can be described relative to different frames. A vision system may report the cube relative to the camera frame, while the robot usually needs the target relative to the base frame. The frame relationship is what lets the program convert between those descriptions.</figcaption>
 </figure>
 ```
 
 Coordinates are only meaningful together with the frame they are expressed in.
 The point `(100, 50, 20)` in the robot base frame is not the same physical point
 as `(100, 50, 20)` in the camera frame or the tool frame. The numbers are the
-same, but the reference frame is different. In our example, a camera may report
-the workpiece position in camera coordinates. The robot cannot use those numbers
-as a base-frame target until the frame relationship has been accounted for.
+same, but the reference frame is different. The relationship between two frames
+is described by a pose, which is introduced in @sec-poses.
 
-The right-hand rule from the first figure is the convention used for these
-frames. When reading robot targets, camera calibration results, or simulation
-graphics, the axis labels tell you which direction each coordinate is measured
-in.
-
-In robot programming, frames are not just theory. They are often taught or
-calibrated:
+In robot programming, frames are not just theory. They are fundamental for
+programming robot motion, because a program is often written relative to selected
+frames: move relative to this tool, this fixture, this workobject, or this robot
+base. These frames are often taught or calibrated:
 
 - a tool frame is found by TCP calibration,
 - a fixture or workobject frame can be taught from points on the real fixture,
 - a camera frame is found by camera-to-robot calibration,
 - robot targets are stored relative to a selected base, tool, or workobject.
 
-In the running example, camera-to-robot calibration gives the camera frame
-relative to the robot base. TCP calibration gives the gripper frame. The vision
-system then reports a workpiece frame relative to the camera frame.
+In the pick cell, camera-to-robot calibration gives the camera frame relative to
+the robot base. TCP calibration gives the gripper frame. The vision system then
+reports a workpiece frame relative to the camera frame.
 
-# Poses
+Because frames are used directly in robot programs, the sign conventions must be
+unambiguous. If a camera system, robot controller, and simulation model disagree
+on what `+x`, `+z`, or a positive rotation means, the resulting target can be
+mirrored or rotated the wrong way. The standard convention in robotics is the
+right-hand convention, shown in @fig-right-hand-rules. The rule on the left fixes
+the positive axis directions of a 3D frame. The rule on the right fixes the
+positive rotation direction about an axis.
+
+::: {#fig-right-hand-rules layout-ncol=2}
+![Right-hand coordinate-frame convention. Image source: [SolisPLC](https://www.solisplc.com/tutorials/robot-coordinate-frames-and-points).](img/right_hand_cs.png){#fig-right-hand-cs fig-alt="Right-hand coordinate system rule"}
+
+![Positive rotation follows the right-hand grip rule. Image source: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Right-hand_grip_rule.svg).](img/right_hand_rot.svg){#fig-right-hand-rot fig-alt="Right-hand grip rule for positive rotation"}
+
+Right-hand conventions for reading coordinate-frame axes and positive rotation
+directions.
+:::
+
+After these conventions are fixed, axis labels tell you which direction each
+coordinate is measured in. The right-hand rules are also useful when standing in
+front of a physical setup and estimating what it means for a target to be
+`+50 mm` along an axis, or rotated positively about that axis.
+
+# Poses {#sec-poses}
 
 A pose is the relationship between two frames. The notation
 ${}^{A}\!T_B$ means:
@@ -242,7 +267,7 @@ The first two columns describe orientation. The last column describes position.
 The last row is bookkeeping that lets us combine rotations and translations
 using one matrix multiplication.
 
-## The 3D version used in robotics
+## The 3D version used in robotics {#sec-3d-pose-representation}
 
 In 3D, a pose is commonly represented as a 4 by 4 homogeneous transformation
 matrix:
@@ -283,7 +308,7 @@ $$
 The frame names behave like units: the adjacent `B` frames cancel in the middle.
 This is a useful way to check whether the multiplication order makes sense.
 
-In the camera-guided pick example:
+In the pick cell:
 
 1. Calibration gives the camera pose in the robot base frame:
    ${}^{base}\!T_{camera}$.
@@ -369,14 +394,14 @@ Typical uses are:
   process pose.
 
 When debugging frame problems, draw the frames and write the transform chain
-before changing robot targets. In the camera-guided pick example, this means
-checking the chain from base to camera, camera to workpiece, and workpiece to
-TCP before guessing which number has the wrong sign.
+before changing robot targets. In the pick cell, this means checking the chain
+from base to camera, camera to workpiece, and workpiece to TCP before guessing
+which number has the wrong sign.
 
 # Exercises
 
-1. In the camera-guided pick example, list at least four useful coordinate
-   frames. What physical object is each frame attached to?
+1. In the pick cell, list at least four useful coordinate frames. What physical
+   object is each frame attached to?
 
 2. In the demo, follow the highlighted arrows. Which transform is known by
    calibration, which transform comes from vision, and which transform is a

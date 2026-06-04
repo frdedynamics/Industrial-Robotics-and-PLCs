@@ -1122,6 +1122,55 @@
 	fill: #c2410c;
 }
 
+.cell-coordinate__highlight {
+	fill: rgba(255, 127, 80, 0.16);
+	stroke: #c2410c;
+	stroke-width: 5;
+	stroke-dasharray: 12 8;
+}
+
+.cell-coordinate__ray {
+	fill: none;
+	stroke-width: 5;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-dasharray: 12 9;
+	paint-order: stroke;
+}
+
+.cell-coordinate__ray--base {
+	stroke: #1d4f8e;
+}
+
+.cell-coordinate__ray--camera {
+	stroke: #0f766e;
+}
+
+.cell-coordinate__callout rect {
+	fill: rgba(255, 255, 255, 0.92);
+	stroke: rgba(31, 45, 61, 0.18);
+	stroke-width: 2;
+}
+
+.cell-coordinate__callout text {
+	fill: #0f766e;
+	font-size: 24px;
+	font-weight: 800;
+	paint-order: stroke;
+	stroke: rgba(255, 255, 255, 0.96);
+	stroke-width: 5;
+}
+
+.cell-coordinate__callout text + text {
+	fill: #566578;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.cell-coordinate__callout--base text {
+	fill: #1d4f8e;
+}
+
 @media (max-width: 700px) {
 	.cell-frame__axis {
 		stroke-width: 6;
@@ -1131,98 +1180,6 @@
 		font-size: 28px;
 		stroke-width: 9;
 	}
-}
-
-.frame-in-frame {
-	margin: 1.5rem 0;
-	padding: 1rem;
-	border: 1px solid rgba(31, 45, 61, 0.08);
-	border-radius: 0.75rem;
-	background: #f6f8fb;
-}
-
-.frame-in-frame svg {
-	display: block;
-	width: 100%;
-	height: auto;
-	border: 1px solid rgba(31, 45, 61, 0.1);
-	border-radius: 0.5rem;
-	background: #ffffff;
-}
-
-.frame-in-frame figcaption {
-	margin-top: 0.7rem;
-	color: #566578;
-	font-size: 0.92rem;
-}
-
-.frame-in-frame__grid line {
-	stroke: rgba(31, 45, 61, 0.08);
-	stroke-width: 1;
-}
-
-.frame-in-frame__base line {
-	stroke: #1d4f8e;
-	stroke-width: 4;
-	stroke-linecap: round;
-}
-
-.frame-in-frame__base circle {
-	fill: #ffffff;
-	stroke: #1d4f8e;
-	stroke-width: 3;
-}
-
-.frame-in-frame__base text {
-	fill: #1d4f8e;
-	font-size: 14px;
-	font-weight: 800;
-	paint-order: stroke;
-	stroke: #ffffff;
-	stroke-width: 3;
-}
-
-.frame-in-frame__local line {
-	stroke: #2a9d8f;
-	stroke-width: 4;
-	stroke-linecap: round;
-}
-
-.frame-in-frame__local circle {
-	fill: #ffffff;
-	stroke: #2a9d8f;
-	stroke-width: 3;
-}
-
-.frame-in-frame__local text {
-	fill: #0f766e;
-	font-size: 14px;
-	font-weight: 800;
-	paint-order: stroke;
-	stroke: #ffffff;
-	stroke-width: 3;
-}
-
-.frame-in-frame__point {
-	fill: #ff7f50 !important;
-	stroke: #7a2f14 !important;
-}
-
-.frame-in-frame__pose-arrow {
-	fill: none;
-	stroke: #c2410c;
-	stroke-width: 3;
-	stroke-linecap: round;
-	stroke-dasharray: 7 6;
-}
-
-.frame-in-frame__pose-label {
-	fill: #7c2d12;
-	font-size: 13px;
-	font-weight: 800;
-	paint-order: stroke;
-	stroke: #ffffff;
-	stroke-width: 3;
 }
 
 .frames-demo {
