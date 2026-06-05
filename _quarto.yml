@@ -20,16 +20,16 @@ website:
 
       - section: Robot Foundations
         contents: 
-          - content/robots.qmd
-          - content/frames_poses.qmd
-          - content/kinematics.qmd
+          - pages/robots.qmd
+          - pages/frames_poses.qmd
+          - pages/kinematics.qmd
           
       - section: Simulation
         contents: 
-          - content/simulation.qmd
+          - pages/simulation.qmd
           
       - text: "Further Reading"
-        href: content/further_reading.qmd
+        href: pages/further_reading.qmd
 
       
 
