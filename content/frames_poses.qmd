@@ -17,6 +17,12 @@ cube. To make that work, the robot program needs answers to questions such as:
 Where is the camera relative to the robot? Where is the selected cube relative
 to the camera? Where should the gripper be relative to the cube?
 
+The concrete problem is that the robot does not directly know where the part is:
+the camera detects the part, but the camera and the robot do not use the same
+coordinate system. The robot expects TCP motion targets in its base frame, so
+the part pose reported in the camera frame must be converted into the robot base
+frame.
+
 ```{=html}
 <figure class="cell-example-figure">
   <div class="cell-example-figure__canvas">
@@ -109,10 +115,11 @@ A coordinate frame is attached to something. In a robot cell, typical frames are
 
 In the pick cell above, we need at least four frames: the robot base frame, the
 camera frame, the selected workpiece frame, and the TCP frame of the gripper.
-The same selected cube can be described in camera coordinates because the camera
+The same selected part can be described in camera coordinates because the camera
 detected it, in part coordinates because the part has its own local frame, and
 in base coordinates because the robot motion target is usually executed relative
-to the robot base.
+to the robot base. A common way to think about robot motion is therefore: the
+controller plans or executes the TCP frame moving in the robot base frame.
 
 ```{=html}
 <figure class="cell-example-figure cell-coordinate-figure">
@@ -158,21 +165,19 @@ to the robot base.
         <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-56" y2="30" marker-end="url(#cell-coordinate-arrow-y)"></line>
         <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-66" marker-end="url(#cell-coordinate-arrow-z)"></line>
         <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
-        <text class="cell-frame__label" x="24" y="-72">selected cube</text>
+        <text class="cell-frame__label" x="-138" y="-88">part frame</text>
       </g>
       <g class="cell-coordinate__callout" transform="translate(900 500)">
-        <rect x="0" y="0" width="315" height="78" rx="10"></rect>
-        <text x="18" y="31">camera description</text>
-        <text x="18" y="60">part pose relative to camera</text>
+        <rect x="0" y="0" width="390" height="56" rx="10"></rect>
+        <text x="18" y="36">part pose relative to camera</text>
       </g>
       <g class="cell-coordinate__callout cell-coordinate__callout--base" transform="translate(300 655)">
-        <rect x="0" y="0" width="300" height="78" rx="10"></rect>
-        <text x="18" y="31">robot description</text>
-        <text x="18" y="60">part pose relative to base</text>
+        <rect x="0" y="0" width="350" height="56" rx="10"></rect>
+        <text x="18" y="36">part pose relative to base</text>
       </g>
     </svg>
   </div>
-  <figcaption>The selected cube is one physical object, but it can be described relative to different frames. A vision system may report the cube relative to the camera frame, while the robot usually needs the target relative to the base frame. The frame relationship is what lets the program convert between those descriptions.</figcaption>
+  <figcaption>The selected part is one physical object, but it can be described relative to different frames. A vision system may report the part relative to the camera frame, while the robot usually needs the target relative to the base frame. The frame relationship is what lets the program convert between those descriptions.</figcaption>
 </figure>
 ```
 
@@ -196,13 +201,15 @@ In the pick cell, camera-to-robot calibration gives the camera frame relative to
 the robot base. TCP calibration gives the gripper frame. The vision system then
 reports a workpiece frame relative to the camera frame.
 
-Because frames are used directly in robot programs, the sign conventions must be
-unambiguous. If a camera system, robot controller, and simulation model disagree
-on what `+x`, `+z`, or a positive rotation means, the resulting target can be
-mirrored or rotated the wrong way. The standard convention in robotics is the
-right-hand convention, shown in @fig-right-hand-rules. The rule on the left fixes
-the positive axis directions of a 3D frame. The rule on the right fixes the
-positive rotation direction about an axis.
+Because frames are essential for communicating position, orientation, and
+motion, the sign conventions must be unambiguous. Different robots, programs,
+simulators, and machines need to speak the same geometric language. If a camera
+system, robot controller, and simulation model disagree on what `+x`, `+z`, or a
+positive rotation means, the resulting target can be mirrored or rotated the
+wrong way. The standard convention in robotics is the right-hand convention,
+shown in @fig-right-hand-rules. The rule on the left fixes the positive axis
+directions of a 3D frame. The rule on the right fixes the positive rotation
+direction about an axis.
 
 ::: {#fig-right-hand-rules layout-ncol=2}
 ![Right-hand coordinate-frame convention. Image source: [SolisPLC](https://www.solisplc.com/tutorials/robot-coordinate-frames-and-points).](img/right_hand_cs.png){#fig-right-hand-cs fig-alt="Right-hand coordinate system rule"}
@@ -214,9 +221,10 @@ directions.
 :::
 
 After these conventions are fixed, axis labels tell you which direction each
-coordinate is measured in. The right-hand rules are also useful when standing in
-front of a physical setup and estimating what it means for a target to be
-`+50 mm` along an axis, or rotated positively about that axis.
+coordinate is measured in. The right-hand rules become especially useful when
+setting up a task in simulation or standing in front of a physical setup and
+trying to grasp what it means for a target to be `+50 mm` along an axis, or
+rotated positively about that axis.
 
 # Poses {#sec-poses}
 
