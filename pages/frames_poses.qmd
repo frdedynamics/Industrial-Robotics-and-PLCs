@@ -91,12 +91,11 @@ A welding torch, gripper, camera, screwdriver, or dispensing nozzle must be at
 the right place and point in the right direction. Position is the "where".
 Orientation is the "which way".
 
-Different robot systems expose poses in different formats. A KUKA target is
-often written with `X`, `Y`, `Z`, `A`, `B`, and `C`. Universal Robots uses poses
-such as `p[x, y, z, rx, ry, rz]`. At this point, treat these as compact ways of
-writing a 3D position plus a 3D orientation. @sec-poses and
-@sec-3d-pose-representation explain what those numbers mean and how they
-represent a pose.
+Different robot systems expose poses in different formats. At this point, treat
+these formats as compact ways of writing a 3D position plus a 3D orientation.
+@sec-poses explains the idea of a pose, and @sec-3d-pose-representation returns
+to the practical difference between matrix notation, KUKA target values, and
+Universal Robots pose values.
 
 In this page we use the notation from Corke [@Corke.2023]: `T` denotes a pose
 represented as a homogeneous transformation matrix. We will not derive all the
@@ -115,11 +114,14 @@ A coordinate frame is attached to something. In a robot cell, typical frames are
 
 In the pick cell above, we need at least four frames: the robot base frame, the
 camera frame, the selected workpiece frame, and the TCP frame of the gripper.
-The same selected part can be described in camera coordinates because the camera
-detected it, in part coordinates because the part has its own local frame, and
-in base coordinates because the robot motion target is usually executed relative
-to the robot base. A common way to think about robot motion is therefore: the
-controller plans or executes the TCP frame moving in the robot base frame.
+This section first highlights one basic point: the selected part is one physical
+object, but its pose can be described relative to different reference frames.
+The camera detects the part relative to the camera frame, while the robot usually
+needs the target relative to the robot base. Later, in the chaining section, we
+also add the taught offset from the part frame to the TCP frame, because the
+robot should not move to the part origin itself but to a useful grasp pose. A
+common way to think about robot motion is therefore: the controller plans or
+executes the TCP frame moving in the robot base frame.
 
 ```{=html}
 <figure class="cell-example-figure cell-coordinate-figure">
@@ -165,14 +167,12 @@ controller plans or executes the TCP frame moving in the robot base frame.
         <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-56" y2="30" marker-end="url(#cell-coordinate-arrow-y)"></line>
         <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-66" marker-end="url(#cell-coordinate-arrow-z)"></line>
         <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
-        <text class="cell-frame__label" x="-138" y="-88">part frame</text>
+        <text class="cell-frame__label cell-frame__label--part-local" x="-28" y="82">part frame</text>
       </g>
-      <g class="cell-coordinate__callout" transform="translate(900 500)">
-        <rect x="0" y="0" width="390" height="56" rx="10"></rect>
+      <g class="cell-coordinate__callout" transform="translate(800 465)">
         <text x="18" y="36">part pose relative to camera</text>
       </g>
-      <g class="cell-coordinate__callout cell-coordinate__callout--base" transform="translate(300 655)">
-        <rect x="0" y="0" width="350" height="56" rx="10"></rect>
+      <g class="cell-coordinate__callout cell-coordinate__callout--base" transform="translate(375 565)">
         <text x="18" y="36">part pose relative to base</text>
       </g>
     </svg>
@@ -248,6 +248,28 @@ This is also why the order of the frame names matters. ${}^{base}\!T_{camera}$
 and ${}^{camera}\!T_{base}$ describe the same two physical frames, but in
 opposite directions. They are not the same matrix.
 
+## Inverting the direction of a pose
+
+Sometimes the pose is known in the opposite direction from the one we need. If
+we know ${}^{base}\!T_{camera}$, we can compute ${}^{camera}\!T_{base}$ by
+inverting the transform:
+
+$$
+{}^{camera}T_{base} =
+\left({}^{base}T_{camera}\right)^{-1}
+$$
+
+This is not just "put a minus sign on the position". The orientation must also
+be inverted, and the translation must be interpreted in the rotated frame. The
+matrix form in @sec-3d-pose-representation shows why. In practice, use the robot
+controller, simulation tool, or robotics library to invert poses. The important
+point is to recognize when the pose direction you have is not the pose direction
+you need.
+
+Typical uses include converting a camera detection into the robot base frame,
+converting between fixture or workobject frames and the base frame, and checking
+where the robot base would appear from a camera or tool frame.
+
 ## A short 2D version
 
 Real industrial robots move in 3D. Still, a 2D top-view example is a useful
@@ -265,43 +287,121 @@ the frame. The corresponding homogeneous transformation matrix is:
 $$
 {}^{A}T_B =
 \begin{bmatrix}
-\cos \theta & -\sin \theta & x \\
-\sin \theta &  \cos \theta & y \\
+{\color{#c2410c}\cos \theta} & {\color{#c2410c}-\sin \theta} & {\color{#1d4f8e}x} \\
+{\color{#c2410c}\sin \theta} & {\color{#c2410c}\cos \theta} & {\color{#2a9d8f}y} \\
 0           &  0           & 1
 \end{bmatrix}
 $$
 
 The first two columns describe orientation. The last column describes position.
-The last row is bookkeeping that lets us combine rotations and translations
-using one matrix multiplication.
+The last row is a mathematical trick used by homogeneous coordinates: it is
+always zeros followed by a `1`, and it lets rotations and translations be
+combined in one matrix multiplication. For this course, you can use that last
+row as a fixed pattern without worrying too much about its derivation.
+
+The demo below lets you explore the same matrix directly. Frame `A` stays fixed,
+while frame `B` is moved by changing `x`, `y`, and `theta`. The matrix shows how
+those three pose coordinates enter the transform. Use the direction buttons to
+switch between ${}^{A}T_B$ and the inverse pose ${}^{B}T_A$.
+
+```{=html}
+<div id="frames-transform-2d-demo" class="frames-demo frames-transform-demo"></div>
+<noscript><p>JavaScript is required to use the 2D transform demo.</p></noscript>
+```
 
 ## The 3D version used in robotics {#sec-3d-pose-representation}
 
-In 3D, a pose is commonly represented as a 4 by 4 homogeneous transformation
-matrix:
+In 3D, the same idea becomes a 4 by 4 homogeneous transformation matrix. A pose
+of frame `B` expressed in frame `A` is commonly written as:
 
 $$
-T =
+{}^{A}T_B =
 \begin{bmatrix}
-R & t \\
-0 & 1
+{\color{#0f766e}r_{11}} & {\color{#0f766e}r_{12}} & {\color{#0f766e}r_{13}} & {\color{#7c2d12}x} \\
+{\color{#0f766e}r_{21}} & {\color{#0f766e}r_{22}} & {\color{#0f766e}r_{23}} & {\color{#7c2d12}y} \\
+{\color{#0f766e}r_{31}} & {\color{#0f766e}r_{32}} & {\color{#0f766e}r_{33}} & {\color{#7c2d12}z} \\
+0 & 0 & 0 & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+{\color{#0f766e}R} & {\color{#7c2d12}t} \\
+0\;0\;0 & 1
 \end{bmatrix}
 $$
 
 Here:
 
-- `R` is a 3 by 3 rotation matrix,
-- `t` is a 3 by 1 translation vector,
-- the bottom row is again bookkeeping for homogeneous coordinates.
+- the brown vector `t = [x, y, z]^T` is the position of the origin of frame `B`,
+  measured in frame `A`,
+- the teal block `R` is a 3 by 3 rotation matrix that describes the orientation
+  of frame `B`, measured in frame `A`,
+- the bottom row is the same homogeneous-coordinate trick: zeros followed by a `1`.
 
-The translation part `t` gives the position of the moving frame origin. The
-rotation part `R` gives the orientation of the moving frame axes. In practical
-terms, the matrix says: if an object is described in one frame, this is how to
-express it in another frame.
+A useful way to read the rotation matrix is column by column:
 
-Robot controllers often show orientation with three angles or a rotation vector
-instead of a rotation matrix, because that is easier to display and edit. The
-controller or software library can convert between these representations.
+$$
+R =
+\begin{bmatrix}
+| & | & | \\
+{}^{A}\hat{x}_{B} & {}^{A}\hat{y}_{B} & {}^{A}\hat{z}_{B} \\
+| & | & |
+\end{bmatrix}
+$$
+
+The first column tells where the `x` axis of frame `B` points, expressed using
+frame `A` coordinates. The second and third columns do the same for the `y` and
+`z` axes. These three axis directions must be perpendicular and have unit length;
+otherwise the matrix no longer represents a valid rigid-body orientation.
+
+Rotation is the part where formats differ most. Position is straightforward:
+three distances along three axes. Orientation is harder because a 3D rotation is
+not just three independent distances. The order of rotations matters, different
+parameter sets can describe the same physical orientation, and some
+representations become awkward near certain orientations. This is why robot
+controllers, simulation tools, and vision systems do not all display orientation
+in the same way.
+
+Common representations include:
+
+- **Rotation matrix:** good for calculation and frame chaining, but it uses nine
+  numbers for only three rotational degrees of freedom. The columns also have to
+  remain perpendicular unit vectors, so it is not a convenient format to type by
+  hand.
+- **Euler, roll-pitch-yaw, or `ABC` angles:** compact and often easier to read on
+  a teach pendant, but the result depends on the chosen rotation order. These
+  formats can also have singular cases and angle wraparound, for example near
+  `+180` and `-180` degrees.
+- **Rotation vector / axis-angle:** compact and useful in robot software. The
+  vector direction gives the rotation axis and the vector length gives the
+  rotation angle, usually in radians. The three numbers are not separate
+  rotations about `x`, `y`, and `z`, so they are less intuitive to edit by hand.
+- **Unit quaternion:** common in simulation, 3D graphics, and interpolation, but
+  it uses four numbers with a unit-length constraint, and `q` and `-q` describe
+  the same orientation.
+
+This is also why KUKA and Universal Robots do not just use different names for
+the same thing. KUKA targets commonly use `X`, `Y`, `Z`, `A`, `B`, `C`, where
+`A`, `B`, and `C` are angle-sequence orientation values. Universal Robots uses
+`p[x, y, z, rx, ry, rz]`, where `rx`, `ry`, and `rz` form a rotation vector. In
+this page we write poses as transformation matrices because matrices make frame
+chaining and inversion easy to see. In a real robot program, the same pose may
+be shown as `ABC` angles, a rotation vector, or another orientation format, and
+the controller or software library converts between these representations.
+
+With the matrix blocks above, the inverse pose from the previous section is:
+
+$$
+{}^{B}T_A = \left({}^{A}T_B\right)^{-1}
+=
+\begin{bmatrix}
+R^T & -R^T t \\
+0\;0\;0 & 1
+\end{bmatrix}
+$$
+
+This is the matrix reason why inverting a pose is not just changing the sign of
+the translation. The translation also has to be expressed in the inverted
+orientation.
 
 # Combining poses
 
@@ -313,8 +413,42 @@ $$
 {}^{A}T_C = {}^{A}T_B \; {}^{B}T_C
 $$
 
-The frame names behave like units: the adjacent `B` frames cancel in the middle.
-This is a useful way to check whether the multiplication order makes sense.
+The superscript tells which frame the answer is expressed in. The subscript
+tells which frame is being described. When transforms are chained, the inside
+frame names must match. In the example above, the `B` at the end of
+${}^{A}T_B$ matches the `B` at the start of ${}^{B}T_C$, leaving the outer frame
+names `A` and `C`. This is a practical rule for checking the multiplication
+order before sending a target to the robot.
+
+If the two poses are written with rotation and translation blocks,
+
+$$
+{}^{A}T_B =
+\begin{bmatrix}
+R_{AB} & t_{AB} \\
+0\;0\;0 & 1
+\end{bmatrix},
+\qquad
+{}^{B}T_C =
+\begin{bmatrix}
+R_{BC} & t_{BC} \\
+0\;0\;0 & 1
+\end{bmatrix},
+$$
+
+then the chained pose is:
+
+$$
+{}^{A}T_C =
+\begin{bmatrix}
+R_{AB}R_{BC} & t_{AB} + R_{AB}t_{BC} \\
+0\;0\;0 & 1
+\end{bmatrix}
+$$
+
+The formula shows why pose chaining is more than adding positions. The second
+translation `t_{BC}` is first rotated into frame `A` before it is added to
+`t_{AB}`.
 
 In the pick cell:
 
@@ -362,31 +496,6 @@ connected.
 <noscript><p>JavaScript is required to use the frame-chain demo.</p></noscript>
 ```
 
-# Inverting a pose
-
-Sometimes the pose is known in the opposite direction from the one we need. If
-we know ${}^{base}\!T_{camera}$, we can compute ${}^{camera}\!T_{base}$ by
-inverting the transform:
-
-$$
-{}^{camera}T_{base} =
-\left({}^{base}T_{camera}\right)^{-1}
-$$
-
-This is not just "put a minus sign on the position". The orientation must also
-be inverted, and the translation must be interpreted in the rotated frame. In
-practice, use the robot controller, simulation tool, or robotics library to
-invert poses. The main thing is to understand why an inverse is needed.
-
-Typical uses are:
-
-- expressing the detected workpiece pose from the camera frame in the robot
-  base frame,
-- converting a target from a fixture or workobject frame to the robot base
-  frame,
-- calculating a pick or process offset relative to the tool or workpiece frame,
-- checking where the robot base would appear from a camera or tool frame.
-
 # Practical mistakes to watch for
 
 - **Mixing frames:** A coordinate measured in the camera frame is sent directly
@@ -421,7 +530,11 @@ which number has the wrong sign.
 4. Write a transform chain for a robot that should place its gripper at a taught
    pick pose on a part detected by a camera.
 
-5. A robot reaches every programmed target with the same position error, even
+5. If calibration gives ${}^{base}\!T_{camera}$ but a calculation needs
+   ${}^{camera}\!T_{base}$, what operation is required? Why is it not enough to
+   only change the sign of the translation?
+
+6. A robot reaches every programmed target with the same position error, even
    though the targets look correct in the offline program. Which frame would you
    check first, and why?
 

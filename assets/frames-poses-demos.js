@@ -57,6 +57,360 @@
     }
   }
 
+  function initializeTransform2dDemo(root) {
+    const colors = {
+      x: "#1d4f8e",
+      y: "#2a9d8f",
+      theta: "#c2410c",
+      translation: "#7c2d12"
+    };
+    const state = {
+      x: 1.2,
+      y: 0.8,
+      theta: 35,
+      direction: "ab"
+    };
+    const sliders = [
+      { id: "x", label: "x position", min: -2.4, max: 2.4, step: 0.1 },
+      { id: "y", label: "y position", min: -1.6, max: 1.6, step: 0.1 },
+      { id: "theta", label: "theta rotation", min: -180, max: 180, step: 5 }
+    ];
+    const plot = {
+      width: 680,
+      height: 420,
+      originX: 315,
+      originY: 250,
+      scale: 112
+    };
+
+    root.innerHTML = [
+      "<div class=\"frames-demo__stage\">",
+      "<svg class=\"frames-transform-svg\" viewBox=\"0 0 680 420\" role=\"img\" aria-label=\"2D homogeneous transform with a fixed reference frame and a moving local frame\"></svg>",
+      "</div>",
+      "<div class=\"frames-demo__panel\">",
+      "<div class=\"frames-demo__buttons frames-transform-direction\" aria-label=\"Select pose direction\">",
+      "<button type=\"button\" data-direction=\"ab\">A -> B</button>",
+      "<button type=\"button\" data-direction=\"ba\">B -> A</button>",
+      "</div>",
+      "<div class=\"frames-demo__sliders\">",
+      sliders.map(function (slider) {
+        return [
+          "<label class=\"frames-slider frames-transform-slider--" + slider.id + "\" data-parameter=\"" + slider.id + "\">",
+          "<span class=\"frames-slider__header\"><span>" + slider.label + "</span><span class=\"frames-slider__value\" data-value=\"" + slider.id + "\"></span></span>",
+          "<input type=\"range\" min=\"" + slider.min + "\" max=\"" + slider.max + "\" step=\"" + slider.step + "\" value=\"" + state[slider.id] + "\" aria-label=\"" + slider.label + "\">",
+          "</label>"
+        ].join("");
+      }).join(""),
+      "</div>",
+      "<button type=\"button\" class=\"frames-demo__play\" data-role=\"reset\">Reset pose</button>",
+      "<p class=\"frames-demo__status\" aria-live=\"polite\"></p>",
+      "</div>",
+      "<div class=\"frames-equation frames-transform-equation\" aria-live=\"polite\"></div>"
+    ].join("");
+
+    const svg = root.querySelector("svg");
+    const equation = root.querySelector(".frames-transform-equation");
+    const resetButton = root.querySelector("button[data-role='reset']");
+    const status = root.querySelector(".frames-demo__status");
+    const directionButtons = Array.from(root.querySelectorAll("button[data-direction]"));
+    const inputs = {};
+    const valueLabels = {};
+
+    sliders.forEach(function (slider) {
+      const control = root.querySelector("[data-parameter='" + slider.id + "']");
+      inputs[slider.id] = control.querySelector("input");
+      valueLabels[slider.id] = control.querySelector("[data-value]");
+    });
+
+    function worldToSvg(x, y) {
+      return {
+        x: plot.originX + x * plot.scale,
+        y: plot.originY - y * plot.scale
+      };
+    }
+
+    function appendLine(parent, x1, y1, x2, y2, className, markerEnd) {
+      const p1 = worldToSvg(x1, y1);
+      const p2 = worldToSvg(x2, y2);
+      const line = createSvgElement("line", {
+        x1: p1.x,
+        y1: p1.y,
+        x2: p2.x,
+        y2: p2.y,
+        class: className
+      });
+      if (markerEnd) {
+        line.setAttribute("marker-end", markerEnd);
+      }
+      parent.appendChild(line);
+      return line;
+    }
+
+    function appendText(parent, text, x, y, className) {
+      const point = worldToSvg(x, y);
+      const label = createSvgElement("text", {
+        x: point.x,
+        y: point.y,
+        class: className
+      });
+      label.textContent = text;
+      parent.appendChild(label);
+      return label;
+    }
+
+    function drawMarkerDefinitions() {
+      const defs = createSvgElement("defs");
+      [
+        ["x", colors.x],
+        ["y", colors.y],
+        ["theta", colors.theta],
+        ["translation", colors.translation]
+      ].forEach(function (entry) {
+        const marker = createSvgElement("marker", {
+          id: "frames-transform-arrow-" + entry[0],
+          markerWidth: 9,
+          markerHeight: 9,
+          refX: 7,
+          refY: 3,
+          orient: "auto",
+          markerUnits: "strokeWidth"
+        });
+        marker.appendChild(createSvgElement("path", {
+          d: "M 0 0 L 7 3 L 0 6 z",
+          fill: entry[1]
+        }));
+        defs.appendChild(marker);
+      });
+      svg.appendChild(defs);
+    }
+
+    function drawGrid() {
+      const grid = createSvgElement("g", { class: "frames-transform__grid" });
+      for (let x = -3; x <= 3.001; x += 0.5) {
+        appendLine(grid, x, -2, x, 2, Math.abs(x) < 0.001 ? "frames-transform__grid-axis" : "");
+      }
+      for (let y = -2; y <= 2.001; y += 0.5) {
+        appendLine(grid, -3, y, 3, y, Math.abs(y) < 0.001 ? "frames-transform__grid-axis" : "");
+      }
+      svg.appendChild(grid);
+    }
+
+    function drawFrame(parent, name, x, y, thetaRad, axisLength, labelOffsetY) {
+      const origin = worldToSvg(x, y);
+      const group = createSvgElement("g", { class: "frames-transform__frame frames-transform__frame--" + name });
+      const xEnd = {
+        x: x + axisLength * Math.cos(thetaRad),
+        y: y + axisLength * Math.sin(thetaRad)
+      };
+      const yEnd = {
+        x: x - axisLength * Math.sin(thetaRad),
+        y: y + axisLength * Math.cos(thetaRad)
+      };
+      appendLine(group, x, y, xEnd.x, xEnd.y, "frames-transform__frame-axis frames-transform__frame-axis--x", "url(#frames-transform-arrow-x)");
+      appendLine(group, x, y, yEnd.x, yEnd.y, "frames-transform__frame-axis frames-transform__frame-axis--y", "url(#frames-transform-arrow-y)");
+      group.appendChild(createSvgElement("circle", {
+        cx: origin.x,
+        cy: origin.y,
+        r: name === "a" ? 5 : 6,
+        class: "frames-transform__origin"
+      }));
+      appendText(group, "x_" + name.toUpperCase(), xEnd.x + 0.12, xEnd.y - 0.05, "frames-transform__axis-label frames-transform__axis-label--x");
+      appendText(group, "y_" + name.toUpperCase(), yEnd.x + 0.06, yEnd.y + 0.12, "frames-transform__axis-label frames-transform__axis-label--y");
+      appendText(group, "frame " + name.toUpperCase(), x + 0.08, y + labelOffsetY, "frames-transform__frame-label");
+      parent.appendChild(group);
+    }
+
+    function appendTransformLabel(parent, x, y, fromFrame, toFrame) {
+      const point = worldToSvg(x, y);
+      const label = createSvgElement("text", {
+        x: point.x,
+        y: point.y,
+        class: "frames-transform__pose-label"
+      });
+      const superscript = createSvgElement("tspan", {
+        class: "frames-transform__pose-label-sup",
+        "baseline-shift": "super"
+      });
+      superscript.textContent = fromFrame;
+      const main = createSvgElement("tspan");
+      main.textContent = "T";
+      const subscript = createSvgElement("tspan", {
+        class: "frames-transform__pose-label-sub",
+        "baseline-shift": "sub"
+      });
+      subscript.textContent = toFrame;
+      label.appendChild(superscript);
+      label.appendChild(main);
+      label.appendChild(subscript);
+      parent.appendChild(label);
+      return label;
+    }
+
+    function drawThetaArc(thetaRad) {
+      if (Math.abs(thetaRad) < 0.04) {
+        return;
+      }
+      const center = worldToSvg(state.x, state.y);
+      const radius = 42;
+      const start = { x: center.x + radius, y: center.y };
+      const end = {
+        x: center.x + radius * Math.cos(thetaRad),
+        y: center.y - radius * Math.sin(thetaRad)
+      };
+      const largeArc = Math.abs(thetaRad) > Math.PI ? 1 : 0;
+      const sweep = thetaRad > 0 ? 0 : 1;
+      const path = createSvgElement("path", {
+        d: "M " + start.x + " " + start.y + " A " + radius + " " + radius + " 0 " + largeArc + " " + sweep + " " + end.x + " " + end.y,
+        class: "frames-transform__theta-arc",
+        "marker-end": "url(#frames-transform-arrow-theta)"
+      });
+      svg.appendChild(path);
+      const midAngle = thetaRad / 2;
+      const labelPoint = {
+        x: center.x + (radius + 20) * Math.cos(midAngle),
+        y: center.y - (radius + 20) * Math.sin(midAngle)
+      };
+      const label = createSvgElement("text", {
+        x: labelPoint.x,
+        y: labelPoint.y,
+        class: "frames-transform__theta-label"
+      });
+      label.textContent = "theta";
+      svg.appendChild(label);
+    }
+
+    function formatNumber(value) {
+      const clean = Math.abs(value) < 0.0001 ? 0 : value;
+      return clean.toFixed(1);
+    }
+
+    function formatDegree(value) {
+      const clean = Math.abs(value) < 0.0001 ? 0 : value;
+      return Math.round(clean).toString();
+    }
+
+    function colorTex(id, tex) {
+      return "\\color{" + colors[id] + "}{" + tex + "}";
+    }
+
+    function inversePose() {
+      const thetaRad = state.theta * Math.PI / 180;
+      const c = Math.cos(thetaRad);
+      const s = Math.sin(thetaRad);
+      return {
+        x: -(c * state.x + s * state.y),
+        y: s * state.x - c * state.y,
+        theta: -state.theta
+      };
+    }
+
+    function renderEquation() {
+      const thetaValue = colorTex("theta", formatDegree(state.theta) + "^{\\circ}");
+      const xValue = colorTex("x", formatNumber(state.x));
+      const yValue = colorTex("y", formatNumber(state.y));
+      const inverse = inversePose();
+      const inverseThetaValue = colorTex("theta", formatDegree(inverse.theta) + "^{\\circ}");
+      const inverseXValue = colorTex("x", formatNumber(inverse.x));
+      const inverseYValue = colorTex("y", formatNumber(inverse.y));
+      const equationTex = state.direction === "ab" ? [
+        "\\[",
+        "{}^{A}T_B =",
+        "\\begin{bmatrix}",
+        "\\cos(" + thetaValue + ") & -\\sin(" + thetaValue + ") & " + xValue + " \\\\",
+        "\\sin(" + thetaValue + ") & \\cos(" + thetaValue + ") & " + yValue + " \\\\",
+        "0 & 0 & 1",
+        "\\end{bmatrix}",
+        "\\]"
+      ].join("\n") : [
+        "\\[",
+        "{}^{B}T_A = \\left({}^{A}T_B\\right)^{-1} =",
+        "\\begin{bmatrix}",
+        "\\cos(" + inverseThetaValue + ") & -\\sin(" + inverseThetaValue + ") & " + inverseXValue + " \\\\",
+        "\\sin(" + inverseThetaValue + ") & \\cos(" + inverseThetaValue + ") & " + inverseYValue + " \\\\",
+        "0 & 0 & 1",
+        "\\end{bmatrix}",
+        "\\]"
+      ].join("\n");
+      equation.innerHTML = "<div class=\"frames-equation__math\">" + equationTex + "</div>";
+      typesetMath(equation, 0);
+    }
+
+    function updateControls() {
+      valueLabels.x.textContent = formatNumber(state.x);
+      valueLabels.y.textContent = formatNumber(state.y);
+      valueLabels.theta.textContent = formatDegree(state.theta) + "\u00b0";
+    }
+
+    function render() {
+      clear(svg);
+      drawMarkerDefinitions();
+      drawGrid();
+
+      const thetaRad = state.theta * Math.PI / 180;
+      const helperGroup = createSvgElement("g", { class: "frames-transform__helpers" });
+      if (Math.abs(state.x) > 0.001) {
+        appendLine(helperGroup, 0, 0, state.x, 0, "frames-transform__projection frames-transform__projection--x");
+        appendText(helperGroup, "x", state.x / 2, -0.08, "frames-transform__component-label frames-transform__component-label--x");
+      }
+      if (Math.abs(state.y) > 0.001) {
+        appendLine(helperGroup, state.x, 0, state.x, state.y, "frames-transform__projection frames-transform__projection--y");
+        appendText(helperGroup, "y", state.x + 0.08, state.y / 2, "frames-transform__component-label frames-transform__component-label--y");
+      }
+      const poseDistance = Math.hypot(state.x, state.y);
+      if (poseDistance > 0.05) {
+        const labelOffsetX = -state.y / poseDistance * 0.18;
+        const labelOffsetY = state.x / poseDistance * 0.18;
+        if (state.direction === "ab") {
+          appendLine(helperGroup, 0, 0, state.x, state.y, "frames-transform__translation", "url(#frames-transform-arrow-translation)");
+          appendTransformLabel(helperGroup, state.x / 2 + labelOffsetX, state.y / 2 + labelOffsetY, "A", "B");
+        } else {
+          appendLine(helperGroup, state.x, state.y, 0, 0, "frames-transform__translation frames-transform__translation--inverse", "url(#frames-transform-arrow-translation)");
+          appendTransformLabel(helperGroup, state.x / 2 + labelOffsetX, state.y / 2 + labelOffsetY, "B", "A");
+        }
+      }
+      svg.appendChild(helperGroup);
+
+      drawFrame(svg, "a", 0, 0, 0, 1.35, -0.22);
+      appendLine(svg, state.x, state.y, state.x + 0.95, state.y, "frames-transform__theta-reference");
+      drawFrame(svg, "b", state.x, state.y, thetaRad, 1.05, 0.42);
+      drawThetaArc(thetaRad);
+      directionButtons.forEach(function (button) {
+        button.classList.toggle("is-active", button.getAttribute("data-direction") === state.direction);
+      });
+      status.textContent = state.direction === "ab" ?
+        "Showing the pose of frame B expressed in frame A." :
+        "Showing the inverse pose: frame A expressed in frame B.";
+      updateControls();
+      renderEquation();
+    }
+
+    Object.keys(inputs).forEach(function (id) {
+      inputs[id].addEventListener("input", function () {
+        state[id] = Number(inputs[id].value);
+        render();
+      });
+    });
+
+    directionButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        state.direction = button.getAttribute("data-direction");
+        render();
+      });
+    });
+
+    resetButton.addEventListener("click", function () {
+      state.x = 1.2;
+      state.y = 0.8;
+      state.theta = 35;
+      state.direction = "ab";
+      Object.keys(inputs).forEach(function (id) {
+        inputs[id].value = state[id];
+      });
+      render();
+    });
+
+    render();
+  }
   function initializePoseChainDemo(root) {
     const nodes = {
       base: { x: 110, y: 178, label: "robot base", shortLabel: "B" },
@@ -313,9 +667,14 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    const root = document.getElementById("frames-pose-chain-demo");
-    if (root) {
-      initializePoseChainDemo(root);
+    const transformRoot = document.getElementById("frames-transform-2d-demo");
+    if (transformRoot) {
+      initializeTransform2dDemo(transformRoot);
+    }
+
+    const chainRoot = document.getElementById("frames-pose-chain-demo");
+    if (chainRoot) {
+      initializePoseChainDemo(chainRoot);
     }
   });
 })();
