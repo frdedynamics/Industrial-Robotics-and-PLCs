@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Frames and Poses – Industrial Robotics and PLCs</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/frames_poses.html">Frames and Poses</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Industrial Robotics and PLCs</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Robot Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automation with Robots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/frames_poses.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Frames and Poses</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/kinematics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinematics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Simulation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Simulation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/further_reading.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Further Reading</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-frames-and-poses-matter" id="toc-why-frames-and-poses-matter" class="nav-link active" data-scroll-target="#why-frames-and-poses-matter">Why frames and poses matter</a></li>
+  <li><a href="#coordinate-frames" id="toc-coordinate-frames" class="nav-link" data-scroll-target="#coordinate-frames">Coordinate frames</a></li>
+  <li><a href="#sec-poses" id="toc-sec-poses" class="nav-link" data-scroll-target="#sec-poses">Poses</a>
+  <ul class="collapse">
+  <li><a href="#inverting-the-direction-of-a-pose" id="toc-inverting-the-direction-of-a-pose" class="nav-link" data-scroll-target="#inverting-the-direction-of-a-pose">Inverting the direction of a pose</a></li>
+  <li><a href="#a-short-2d-version" id="toc-a-short-2d-version" class="nav-link" data-scroll-target="#a-short-2d-version">A short 2D version</a></li>
+  <li><a href="#sec-3d-pose-representation" id="toc-sec-3d-pose-representation" class="nav-link" data-scroll-target="#sec-3d-pose-representation">The 3D version used in robotics</a></li>
+  </ul></li>
+  <li><a href="#combining-poses" id="toc-combining-poses" class="nav-link" data-scroll-target="#combining-poses">Combining poses</a></li>
+  <li><a href="#practical-mistakes-to-watch-for" id="toc-practical-mistakes-to-watch-for" class="nav-link" data-scroll-target="#practical-mistakes-to-watch-for">Practical mistakes to watch for</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/frames_poses.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/frames_poses.html">Frames and Poses</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Frames and Poses</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="why-frames-and-poses-matter" class="level1">
+<h1>Why frames and poses matter</h1>
+<p>Many robot tasks are about motion and positioning. A tool has to approach a part, a gripper has to align with a handle, a camera has to measure a workpiece, or a pallet has to be placed relative to a fixture. To program and debug these tasks, we need tools for describing positions and orientations in space.</p>
+<p>Consider the cell in the figure below. A camera observes a tray of small objects, and the robot has to move its gripper to a pick pose for one selected cube. To make that work, the robot program needs answers to questions such as: Where is the camera relative to the robot? Where is the selected cube relative to the camera? Where should the gripper be relative to the cube?</p>
+<p>The concrete problem is that the robot does not directly know where the part is: the camera detects the part, but the camera and the robot do not use the same coordinate system. The robot expects TCP motion targets in its base frame, so the part pose reported in the camera frame must be converted into the robot base frame.</p>
+<figure class="cell-example-figure figure">
+  <div class="cell-example-figure__canvas">
+    <img src="img/camera_guided_pick_cell_v2.png" alt="Rendered camera-guided pick cell with robot arm, camera, tray of small objects, and gripper." class="figure-img">
+    <svg viewbox="0 0 1536 1024" aria-hidden="true">
+      <defs>
+        <marker id="cell-frame-arrow-x" markerwidth="7" markerheight="7" refx="5.5" refy="2.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z"></path>
+        </marker>
+        <marker id="cell-frame-arrow-y" markerwidth="7" markerheight="7" refx="5.5" refy="2.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z"></path>
+        </marker>
+        <marker id="cell-frame-arrow-z" markerwidth="7" markerheight="7" refx="5.5" refy="2.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z"></path>
+        </marker>
+      </defs>
+      <g class="cell-frame cell-frame--base" transform="translate(430 420)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="78" y2="26" marker-end="url(#cell-frame-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-62" y2="35" marker-end="url(#cell-frame-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-86" marker-end="url(#cell-frame-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="7"></circle>
+        <text class="cell-frame__label" x="-58" y="-98">base frame</text>
+      </g>
+      <g class="cell-frame cell-frame--tcp" transform="translate(682 392)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="52" y2="18" marker-end="url(#cell-frame-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-44" y2="24" marker-end="url(#cell-frame-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="58" marker-end="url(#cell-frame-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
+        <text class="cell-frame__label" x="20" y="82">TCP frame</text>
+      </g>
+      <g class="cell-frame cell-frame--camera" transform="translate(832 352)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="56" y2="18" marker-end="url(#cell-frame-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-48" y2="28" marker-end="url(#cell-frame-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="62" marker-end="url(#cell-frame-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
+        <text class="cell-frame__label" x="22" y="-18">camera frame</text>
+      </g>
+      <g class="cell-frame cell-frame--part" transform="translate(700 628)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="64" y2="22" marker-end="url(#cell-frame-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-56" y2="30" marker-end="url(#cell-frame-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-66" marker-end="url(#cell-frame-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
+        <text class="cell-frame__label" x="20" y="-72">part frame</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption>A camera-guided pick cell. The overlaid coordinate frames show the reference systems attached to the robot base, camera, selected part, and gripper TCP.</figcaption>
+</figure>
+<p>This example already contains the two basic ideas of the page:</p>
+<ul>
+<li>A <strong>coordinate frame</strong> is a local reference system with an origin and axis directions. In the figure, frames are attached to the robot base, camera, selected part, and gripper.</li>
+<li>A <strong>pose</strong> describes the position and orientation of one frame relative to another frame. For example, the camera has a pose relative to the robot base.</li>
+</ul>
+<p>For robot tools, the important tool point is usually called the <strong>TCP</strong>: the tool center point. In the equations below, <code>part</code> is used as a short name for the selected workpiece frame.</p>
+<p>A <strong>point</strong> is only a position. It can describe where a hole, corner, or detected feature is. A <strong>pose</strong> is stronger: it describes both position and orientation. A welding torch, gripper, camera, screwdriver, or dispensing nozzle must be at the right place and point in the right direction. Position is the “where”. Orientation is the “which way”.</p>
+<p>Different robot systems expose poses in different formats. At this point, treat these formats as compact ways of writing a 3D position plus a 3D orientation. <a href="#sec-poses" class="quarto-xref">Section&nbsp;3</a> explains the idea of a pose, and <a href="#sec-3d-pose-representation" class="quarto-xref">Section&nbsp;3.3</a> returns to the practical difference between matrix notation, KUKA target values, and Universal Robots pose values.</p>
+<p>In this page we use the notation from Corke <span class="citation" data-cites="Corke.2023">(<a href="#ref-Corke.2023" role="doc-biblioref">Corke 2023</a>)</span>: <code>T</code> denotes a pose represented as a homogeneous transformation matrix. We will not derive all the matrix equations. The goal is to understand what the matrices mean and how they are used in practical robot programs.</p>
+</section>
+<section id="coordinate-frames" class="level1">
+<h1>Coordinate frames</h1>
+<p>A coordinate frame is attached to something. In a robot cell, typical frames are:</p>
+<ul>
+<li>the robot <strong>base frame</strong>,</li>
+<li>the <strong>tool frame</strong> or <strong>TCP frame</strong>,</li>
+<li>a <strong>fixture</strong>, <strong>part</strong>, or <strong>workobject frame</strong>,</li>
+<li>a <strong>camera frame</strong>,</li>
+<li>a frame attached to a conveyor, pallet, table, or machine.</li>
+</ul>
+<p>In the pick cell above, we need at least four frames: the robot base frame, the camera frame, the selected workpiece frame, and the TCP frame of the gripper. This section first highlights one basic point: the selected part is one physical object, but its pose can be described relative to different reference frames. The camera detects the part relative to the camera frame, while the robot usually needs the target relative to the robot base. Later, in the chaining section, we also add the taught offset from the part frame to the TCP frame, because the robot should not move to the part origin itself but to a useful grasp pose. A common way to think about robot motion is therefore: the controller plans or executes the TCP frame moving in the robot base frame.</p>
+<figure class="cell-example-figure cell-coordinate-figure figure">
+  <div class="cell-example-figure__canvas">
+    <img src="img/camera_guided_pick_cell_v2.png" alt="Rendered camera-guided pick cell with one selected cube highlighted." class="figure-img">
+    <svg viewbox="0 0 1536 1024" aria-hidden="true">
+      <defs>
+        <marker id="cell-coordinate-arrow-x" markerwidth="7" markerheight="7" refx="5.5" refy="2.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z" fill="#1d4f8e"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-y" markerwidth="7" markerheight="7" refx="5.5" refy="2.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z" fill="#2a9d8f"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-z" markerwidth="7" markerheight="7" refx="5.5" refy="2.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 5.5 2.5 L 0 5 z" fill="#c2410c"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-base" markerwidth="9" markerheight="9" refx="7" refy="3.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 7 3.5 L 0 7 z" fill="#1d4f8e"></path>
+        </marker>
+        <marker id="cell-coordinate-arrow-camera" markerwidth="9" markerheight="9" refx="7" refy="3.5" orient="auto" markerunits="strokeWidth">
+          <path d="M 0 0 L 7 3.5 L 0 7 z" fill="#0f766e"></path>
+        </marker>
+      </defs>
+      <circle class="cell-coordinate__highlight" cx="700" cy="628" r="45"></circle>
+      <path class="cell-coordinate__ray cell-coordinate__ray--base" d="M 430 420 C 510 505, 585 590, 700 628" marker-end="url(#cell-coordinate-arrow-base)"></path>
+      <path class="cell-coordinate__ray cell-coordinate__ray--camera" d="M 832 352 C 795 440, 750 535, 700 628" marker-end="url(#cell-coordinate-arrow-camera)"></path>
+      <g class="cell-frame cell-frame--base" transform="translate(430 420)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="78" y2="26" marker-end="url(#cell-coordinate-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-62" y2="35" marker-end="url(#cell-coordinate-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-86" marker-end="url(#cell-coordinate-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="7"></circle>
+        <text class="cell-frame__label" x="-58" y="-98">base frame</text>
+      </g>
+      <g class="cell-frame cell-frame--camera" transform="translate(832 352)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="56" y2="18" marker-end="url(#cell-coordinate-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-48" y2="28" marker-end="url(#cell-coordinate-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="62" marker-end="url(#cell-coordinate-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
+        <text class="cell-frame__label" x="22" y="-18">camera frame</text>
+      </g>
+      <g class="cell-frame cell-frame--part" transform="translate(700 628)">
+        <line class="cell-frame__axis cell-frame__axis--x" x1="0" y1="0" x2="64" y2="22" marker-end="url(#cell-coordinate-arrow-x)"></line>
+        <line class="cell-frame__axis cell-frame__axis--y" x1="0" y1="0" x2="-56" y2="30" marker-end="url(#cell-coordinate-arrow-y)"></line>
+        <line class="cell-frame__axis cell-frame__axis--z" x1="0" y1="0" x2="0" y2="-66" marker-end="url(#cell-coordinate-arrow-z)"></line>
+        <circle class="cell-frame__origin" cx="0" cy="0" r="6"></circle>
+        <text class="cell-frame__label cell-frame__label--part-local" x="-28" y="82">part frame</text>
+      </g>
+      <g class="cell-coordinate__callout" transform="translate(800 465)">
+        <text x="18" y="36">part pose relative to camera</text>
+      </g>
+      <g class="cell-coordinate__callout cell-coordinate__callout--base" transform="translate(375 565)">
+        <text x="18" y="36">part pose relative to base</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption>The selected part is one physical object, but it can be described relative to different frames. A vision system may report the part relative to the camera frame, while the robot usually needs the target relative to the base frame. The frame relationship is what lets the program convert between those descriptions.</figcaption>
+</figure>
+<p>Coordinates are only meaningful together with the frame they are expressed in. The point <code>(100, 50, 20)</code> in the robot base frame is not the same physical point as <code>(100, 50, 20)</code> in the camera frame or the tool frame. The numbers are the same, but the reference frame is different. The relationship between two frames is described by a pose, which is introduced in <a href="#sec-poses" class="quarto-xref">Section&nbsp;3</a>.</p>
+<p>In robot programming, frames are not just theory. They are fundamental for programming robot motion, because a program is often written relative to selected frames: move relative to this tool, this fixture, this workobject, or this robot base. These frames are often taught or calibrated:</p>
+<ul>
+<li>a tool frame is found by TCP calibration,</li>
+<li>a fixture or workobject frame can be taught from points on the real fixture,</li>
+<li>a camera frame is found by camera-to-robot calibration,</li>
+<li>robot targets are stored relative to a selected base, tool, or workobject.</li>
+</ul>
+<p>In the pick cell, camera-to-robot calibration gives the camera frame relative to the robot base. TCP calibration gives the gripper frame. The vision system then reports a workpiece frame relative to the camera frame.</p>
+<p>Because frames are essential for communicating position, orientation, and motion, the sign conventions must be unambiguous. Different robots, programs, simulators, and machines need to speak the same geometric language. If a camera system, robot controller, and simulation model disagree on what <code>+x</code>, <code>+z</code>, or a positive rotation means, the resulting target can be mirrored or rotated the wrong way. The standard convention in robotics is the right-hand convention, shown in <a href="#fig-right-hand-rules" class="quarto-xref">Figure&nbsp;1</a>. The rule on the left fixes the positive axis directions of a 3D frame. The rule on the right fixes the positive rotation direction about an axis.</p>
+<div id="fig-right-hand-rules" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-right-hand-rules-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-right-hand-rules" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-right-hand-cs" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Right-hand coordinate system rule">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-right-hand-cs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/right_hand_cs.png" class="img-fluid figure-img" data-ref-parent="fig-right-hand-rules" alt="Right-hand coordinate system rule">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-right-hand-cs-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Right-hand coordinate-frame convention. Image source: <a href="https://www.solisplc.com/tutorials/robot-coordinate-frames-and-points">SolisPLC</a>.
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-right-hand-rules" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-right-hand-rot" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Right-hand grip rule for positive rotation">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-right-hand-rot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/right_hand_rot.svg" class="img-fluid figure-img" data-ref-parent="fig-right-hand-rules" alt="Right-hand grip rule for positive rotation">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-right-hand-rot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Positive rotation follows the right-hand grip rule. Image source: <a href="https://commons.wikimedia.org/wiki/File:Right-hand_grip_rule.svg">Wikimedia Commons</a>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-right-hand-rules-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Right-hand conventions for reading coordinate-frame axes and positive rotation directions.
+</figcaption>
+</figure>
+</div>
+<p>After these conventions are fixed, axis labels tell you which direction each coordinate is measured in. The right-hand rules become especially useful when setting up a task in simulation or standing in front of a physical setup and trying to grasp what it means for a target to be <code>+50 mm</code> along an axis, or rotated positively about that axis.</p>
+</section>
+<section id="sec-poses" class="level1">
+<h1>Poses</h1>
+<p>A pose is the relationship between two frames. The notation <span class="math inline">\({}^{A}\!T_B\)</span> means:</p>
+<blockquote class="blockquote">
+<p>the pose of frame <code>B</code>, expressed in frame <code>A</code>.</p>
+</blockquote>
+<p>For example, <span class="math inline">\({}^{base}\!T_{camera}\)</span> describes where the camera frame is relative to the robot base frame. <span class="math inline">\({}^{camera}\!T_{part}\)</span> describes where the detected workpiece frame is relative to the camera frame. <span class="math inline">\({}^{part}\!T_{tcp}\)</span> describes where the gripper TCP should be relative to the workpiece when the robot picks it.</p>
+<p>The pose contains both:</p>
+<ul>
+<li>the position of the moving frame origin,</li>
+<li>the orientation of the moving frame axes.</li>
+</ul>
+<p>This is also why the order of the frame names matters. <span class="math inline">\({}^{base}\!T_{camera}\)</span> and <span class="math inline">\({}^{camera}\!T_{base}\)</span> describe the same two physical frames, but in opposite directions. They are not the same matrix.</p>
+<section id="inverting-the-direction-of-a-pose" class="level2">
+<h2 class="anchored" data-anchor-id="inverting-the-direction-of-a-pose">Inverting the direction of a pose</h2>
+<p>Sometimes the pose is known in the opposite direction from the one we need. If we know <span class="math inline">\({}^{base}\!T_{camera}\)</span>, we can compute <span class="math inline">\({}^{camera}\!T_{base}\)</span> by inverting the transform:</p>
+<p><span class="math display">\[
+{}^{camera}T_{base} =
+\left({}^{base}T_{camera}\right)^{-1}
+\]</span></p>
+<p>This is not just “put a minus sign on the position”. The orientation must also be inverted, and the translation must be interpreted in the rotated frame. The matrix form in <a href="#sec-3d-pose-representation" class="quarto-xref">Section&nbsp;3.3</a> shows why. In practice, use the robot controller, simulation tool, or robotics library to invert poses. The important point is to recognize when the pose direction you have is not the pose direction you need.</p>
+<p>Typical uses include converting a camera detection into the robot base frame, converting between fixture or workobject frames and the base frame, and checking where the robot base would appear from a camera or tool frame.</p>
+</section>
+<section id="a-short-2d-version" class="level2">
+<h2 class="anchored" data-anchor-id="a-short-2d-version">A short 2D version</h2>
+<p>Real industrial robots move in 3D. Still, a 2D top-view example is a useful training step because it keeps the same logic with fewer numbers.</p>
+<p>In 2D, a pose has three coordinates:</p>
+<p><span class="math display">\[
+x, \quad y, \quad \theta
+\]</span></p>
+<p>where <code>x</code> and <code>y</code> describe the position and <code>theta</code> describes the rotation of the frame. The corresponding homogeneous transformation matrix is:</p>
+<p><span class="math display">\[
+{}^{A}T_B =
+\begin{bmatrix}
+{\color{#c2410c}\cos \theta} &amp; {\color{#c2410c}-\sin \theta} &amp; {\color{#1d4f8e}x} \\
+{\color{#c2410c}\sin \theta} &amp; {\color{#c2410c}\cos \theta} &amp; {\color{#2a9d8f}y} \\
+0           &amp;  0           &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>The first two columns describe orientation. The last column describes position. The last row is a mathematical trick used by homogeneous coordinates: it is always zeros followed by a <code>1</code>, and it lets rotations and translations be combined in one matrix multiplication. For this course, you can use that last row as a fixed pattern without worrying too much about its derivation.</p>
+<p>The demo below lets you explore the same matrix directly. Frame <code>A</code> stays fixed, while frame <code>B</code> is moved by changing <code>x</code>, <code>y</code>, and <code>theta</code>. The matrix shows how those three pose coordinates enter the transform. Use the direction buttons to switch between <span class="math inline">\({}^{A}T_B\)</span> and the inverse pose <span class="math inline">\({}^{B}T_A\)</span>.</p>
+<div id="frames-transform-2d-demo" class="frames-demo frames-transform-demo"></div>
+<noscript><p>JavaScript is required to use the 2D transform demo.</p></noscript>
+</section>
+<section id="sec-3d-pose-representation" class="level2">
+<h2 class="anchored" data-anchor-id="sec-3d-pose-representation">The 3D version used in robotics</h2>
+<p>In 3D, the same idea becomes a 4 by 4 homogeneous transformation matrix. A pose of frame <code>B</code> expressed in frame <code>A</code> is commonly written as:</p>
+<p><span class="math display">\[
+{}^{A}T_B =
+\begin{bmatrix}
+{\color{#0f766e}r_{11}} &amp; {\color{#0f766e}r_{12}} &amp; {\color{#0f766e}r_{13}} &amp; {\color{#7c2d12}x} \\
+{\color{#0f766e}r_{21}} &amp; {\color{#0f766e}r_{22}} &amp; {\color{#0f766e}r_{23}} &amp; {\color{#7c2d12}y} \\
+{\color{#0f766e}r_{31}} &amp; {\color{#0f766e}r_{32}} &amp; {\color{#0f766e}r_{33}} &amp; {\color{#7c2d12}z} \\
+0 &amp; 0 &amp; 0 &amp; 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+{\color{#0f766e}R} &amp; {\color{#7c2d12}t} \\
+0\;0\;0 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>Here:</p>
+<ul>
+<li>the brown vector <code>t = [x, y, z]^T</code> is the position of the origin of frame <code>B</code>, measured in frame <code>A</code>,</li>
+<li>the teal block <code>R</code> is a 3 by 3 rotation matrix that describes the orientation of frame <code>B</code>, measured in frame <code>A</code>,</li>
+<li>the bottom row is the same homogeneous-coordinate trick: zeros followed by a <code>1</code>.</li>
+</ul>
+<p>A useful way to read the rotation matrix is column by column:</p>
+<p><span class="math display">\[
+R =
+\begin{bmatrix}
+| &amp; | &amp; | \\
+{}^{A}\hat{x}_{B} &amp; {}^{A}\hat{y}_{B} &amp; {}^{A}\hat{z}_{B} \\
+| &amp; | &amp; |
+\end{bmatrix}
+\]</span></p>
+<p>The first column tells where the <code>x</code> axis of frame <code>B</code> points, expressed using frame <code>A</code> coordinates. The second and third columns do the same for the <code>y</code> and <code>z</code> axes. These three axis directions must be perpendicular and have unit length; otherwise the matrix no longer represents a valid rigid-body orientation.</p>
+<p>Rotation is the part where formats differ most. Position is straightforward: three distances along three axes. Orientation is harder because a 3D rotation is not just three independent distances. The order of rotations matters, different parameter sets can describe the same physical orientation, and some representations become awkward near certain orientations. This is why robot controllers, simulation tools, and vision systems do not all display orientation in the same way.</p>
+<p>Common representations include:</p>
+<ul>
+<li><strong>Rotation matrix:</strong> good for calculation and frame chaining, but it uses nine numbers for only three rotational degrees of freedom. The columns also have to remain perpendicular unit vectors, so it is not a convenient format to type by hand.</li>
+<li><strong>Euler, roll-pitch-yaw, or <code>ABC</code> angles:</strong> compact and often easier to read on a teach pendant, but the result depends on the chosen rotation order. These formats can also have singular cases and angle wraparound, for example near <code>+180</code> and <code>-180</code> degrees.</li>
+<li><strong>Rotation vector / axis-angle:</strong> compact and useful in robot software. The vector direction gives the rotation axis and the vector length gives the rotation angle, usually in radians. The three numbers are not separate rotations about <code>x</code>, <code>y</code>, and <code>z</code>, so they are less intuitive to edit by hand.</li>
+<li><strong>Unit quaternion:</strong> common in simulation, 3D graphics, and interpolation, but it uses four numbers with a unit-length constraint, and <code>q</code> and <code>-q</code> describe the same orientation.</li>
+</ul>
+<p>This is also why KUKA and Universal Robots do not just use different names for the same thing. KUKA targets commonly use <code>X</code>, <code>Y</code>, <code>Z</code>, <code>A</code>, <code>B</code>, <code>C</code>, where <code>A</code>, <code>B</code>, and <code>C</code> are angle-sequence orientation values. Universal Robots uses <code>p[x, y, z, rx, ry, rz]</code>, where <code>rx</code>, <code>ry</code>, and <code>rz</code> form a rotation vector. In this page we write poses as transformation matrices because matrices make frame chaining and inversion easy to see. In a real robot program, the same pose may be shown as <code>ABC</code> angles, a rotation vector, or another orientation format, and the controller or software library converts between these representations.</p>
+<p>With the matrix blocks above, the inverse pose from the previous section is:</p>
+<p><span class="math display">\[
+{}^{B}T_A = \left({}^{A}T_B\right)^{-1}
+=
+\begin{bmatrix}
+R^T &amp; -R^T t \\
+0\;0\;0 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>This is the matrix reason why inverting a pose is not just changing the sign of the translation. The translation also has to be expressed in the inverted orientation.</p>
+<p>The demo below shows the same pose idea in 3D. Frame <code>A</code> stays fixed, while frame <code>B</code> is moved with position sliders and roll-pitch-yaw sliders. Use the direction buttons to switch between <span class="math inline">\({}^{A}T_B\)</span> and the inverse pose <span class="math inline">\({}^{B}T_A\)</span>. The sliders are only one convenient display format for orientation; the matrix below the plot is the pose representation used for chaining and inversion.</p>
+<div id="frames-transform-3d-demo" class="frames-demo frames-transform3d-demo"></div>
+<noscript><p>JavaScript is required to use the 3D transform demo.</p></noscript>
+</section>
+</section>
+<section id="combining-poses" class="level1">
+<h1>Combining poses</h1>
+<p>The most important operation with poses is chaining. If we know the pose of frame <code>B</code> relative to <code>A</code>, and the pose of frame <code>C</code> relative to <code>B</code>, then we can find the pose of <code>C</code> relative to <code>A</code>:</p>
+<p><span class="math display">\[
+{}^{A}T_C = {}^{A}T_B \; {}^{B}T_C
+\]</span></p>
+<p>The superscript tells which frame the answer is expressed in. The subscript tells which frame is being described. When transforms are chained, the inside frame names must match. In the example above, the <code>B</code> at the end of <span class="math inline">\({}^{A}T_B\)</span> matches the <code>B</code> at the start of <span class="math inline">\({}^{B}T_C\)</span>, leaving the outer frame names <code>A</code> and <code>C</code>. This is a practical rule for checking the multiplication order before sending a target to the robot.</p>
+<p>If the two poses are written with rotation and translation blocks,</p>
+<p><span class="math display">\[
+{}^{A}T_B =
+\begin{bmatrix}
+R_{AB} &amp; t_{AB} \\
+0\;0\;0 &amp; 1
+\end{bmatrix},
+\qquad
+{}^{B}T_C =
+\begin{bmatrix}
+R_{BC} &amp; t_{BC} \\
+0\;0\;0 &amp; 1
+\end{bmatrix},
+\]</span></p>
+<p>then the chained pose is:</p>
+<p><span class="math display">\[
+{}^{A}T_C =
+\begin{bmatrix}
+R_{AB}R_{BC} &amp; t_{AB} + R_{AB}t_{BC} \\
+0\;0\;0 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>The formula shows why pose chaining is more than adding positions. The second translation <span class="math inline">\(t_{BC}\)</span> is first rotated into frame <code>A</code> before it is added to <span class="math inline">\(t_{AB}\)</span>.</p>
+<p>In the pick cell:</p>
+<ol type="1">
+<li>Calibration gives the camera pose in the robot base frame: <span class="math inline">\({}^{base}\!T_{camera}\)</span>.</li>
+<li>The camera detects the part pose in the camera frame: <span class="math inline">\({}^{camera}\!T_{part}\)</span>.</li>
+<li>A taught grasp offset describes the TCP pose relative to the part: <span class="math inline">\({}^{part}\!T_{tcp}\)</span>.</li>
+</ol>
+<p>The robot target in the base frame is then:</p>
+<p><span class="math display">\[
+{}^{base}T_{tcp}
+=
+{}^{base}T_{camera}
+\;{}^{camera}T_{part}
+\;{}^{part}T_{tcp}
+\]</span></p>
+<p>In code, the operation often looks like this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>T_base_camera <span class="op">=</span> calibrated_camera_pose()</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>T_camera_part <span class="op">=</span> vision_detect_part()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>T_part_tcp <span class="op">=</span> taught_grasp_offset()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>T_base_tcp_goal <span class="op">=</span> T_base_camera <span class="op">@</span> T_camera_part <span class="op">@</span> T_part_tcp</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>move_l(T_base_tcp_goal)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The exact syntax depends on the software environment. The important idea is the chain of frames. Each transform answers one local question, and the product answers the question the robot controller needs: where should the TCP go in the robot base frame?</p>
+<p>The demo below shows the same idea as a pose graph. The nodes are frames, and the arrows are poses between frames. The animation highlights one arrow after another and highlights the corresponding transform in the equation. The point is not the numerical value of each pose, but the order in which the transforms are connected.</p>
+<div id="frames-pose-chain-demo" class="frames-demo"></div>
+<noscript><p>JavaScript is required to use the frame-chain demo.</p></noscript>
+</section>
+<section id="practical-mistakes-to-watch-for" class="level1">
+<h1>Practical mistakes to watch for</h1>
+<ul>
+<li><strong>Mixing frames:</strong> A coordinate measured in the camera frame is sent directly as a robot base target.</li>
+<li><strong>Wrong multiplication order:</strong> The right transforms are used, but chained in the wrong order.</li>
+<li><strong>Tool frame error:</strong> The TCP calibration is wrong, so all poses look correct in simulation but the real tool misses the part.</li>
+<li><strong>Orientation convention error:</strong> A pose is copied between systems that use different angle conventions.</li>
+<li><strong>Forgetting offsets:</strong> The part pose is detected correctly, but the robot is commanded to the part origin instead of to the required grasp, weld, or process pose.</li>
+</ul>
+<p>When debugging frame problems, draw the frames and write the transform chain before changing robot targets. In the pick cell, this means checking the chain from base to camera, camera to workpiece, and workpiece to TCP before guessing which number has the wrong sign.</p>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<ol type="1">
+<li><p>In the pick cell, list at least four useful coordinate frames. What physical object is each frame attached to?</p></li>
+<li><p>In the demo, follow the highlighted arrows. Which transform is known by calibration, which transform comes from vision, and which transform is a taught offset?</p></li>
+<li><p>In the equation, why does <span class="math inline">\({}^{camera}\!T_{part}\)</span> have to be placed after <span class="math inline">\({}^{base}\!T_{camera}\)</span>, not before it?</p></li>
+<li><p>Write a transform chain for a robot that should place its gripper at a taught pick pose on a part detected by a camera.</p></li>
+<li><p>If calibration gives <span class="math inline">\({}^{base}\!T_{camera}\)</span> but a calculation needs <span class="math inline">\({}^{camera}\!T_{base}\)</span>, what operation is required? Why is it not enough to only change the sign of the translation?</p></li>
+<li><p>A robot reaches every programmed target with the same position error, even though the targets look correct in the offline program. Which frame would you check first, and why?</p></li>
+</ol>
+</section>
+<section id="further-reading" class="level1">
+<h1>Further reading</h1>
+<p>For a deeper treatment of coordinate frames, transformations, and homogeneous matrices, see Corke <span class="citation" data-cites="Corke.2023">(<a href="#ref-Corke.2023" role="doc-biblioref">Corke 2023, chap. 2</a>)</span>. Robot Academy also has a useful visual introduction to <a href="https://robotacademy.net.au/masterclass/3d-geometry/">3D geometry</a>.</p>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="../assets/frames-poses-demos.js"></script>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Corke.2023" class="csl-entry" role="listitem">
+Corke, Peter. 2023. <em>Robotics, Vision and Control</em>. Vol. 146. <span>Springer International Publishing</span>. <a href="https://doi.org/10.1007/978-3-031-06469-2">https://doi.org/10.1007/978-3-031-06469-2</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/frdedynamics\.github\.io\/Industrial-Robotics-and-PLCs\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/frames_poses.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

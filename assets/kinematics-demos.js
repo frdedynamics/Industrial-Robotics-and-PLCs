@@ -309,6 +309,250 @@
     return "<div class=\"kinematics-readout__row\"><dt>" + label + "</dt><dd>" + value + "</dd></div>";
   }
 
+  function initializeTrigFigure(root) {
+    const svg = root.querySelector("svg");
+    const buttons = Array.from(root.querySelectorAll("button[data-joints]"));
+    const origin = [105, 282];
+    const lengths = [220, 135];
+    const angles = [28, 38];
+    const colors = ["#1d4f8e", "#2a9d8f"];
+    const state = { joints: 1 };
+
+    function toSvg(point) {
+      return [origin[0] + point[0], origin[1] - point[1]];
+    }
+
+    function polarPoint(start, length, angleDegrees) {
+      const angle = radians(angleDegrees);
+      return [
+        start[0] + (length * Math.cos(angle)),
+        start[1] + (length * Math.sin(angle))
+      ];
+    }
+
+    function drawDefs() {
+      const defs = createSvgElement("defs");
+      const axisMarker = createSvgElement("marker", {
+        id: "fk-trig-axis-arrow",
+        markerWidth: 7,
+        markerHeight: 7,
+        refX: 5.6,
+        refY: 2.1,
+        orient: "auto",
+        markerUnits: "strokeWidth"
+      });
+      axisMarker.appendChild(createSvgElement("path", {
+        d: "M 0 0 L 5.6 2.1 L 0 4.2 z",
+        fill: "#566578"
+      }));
+      defs.appendChild(axisMarker);
+
+      colors.forEach(function (color, index) {
+        const marker = createSvgElement("marker", {
+          id: "fk-trig-link-arrow-" + (index + 1),
+          markerWidth: 8,
+          markerHeight: 8,
+          refX: 6.8,
+          refY: 2.8,
+          orient: "auto",
+          markerUnits: "strokeWidth"
+        });
+        marker.appendChild(createSvgElement("path", {
+          d: "M 0 0 L 6.8 2.8 L 0 5.6 z",
+          fill: color
+        }));
+        defs.appendChild(marker);
+      });
+
+      svg.appendChild(defs);
+    }
+
+    function drawAxes() {
+      const group = createSvgElement("g", { class: "fk-trig-figure__axes" });
+      group.appendChild(createSvgElement("line", {
+        x1: 82,
+        y1: origin[1],
+        x2: 618,
+        y2: origin[1],
+        "marker-end": "url(#fk-trig-axis-arrow)"
+      }));
+      group.appendChild(createSvgElement("line", {
+        x1: origin[0],
+        y1: 306,
+        x2: origin[0],
+        y2: 42,
+        "marker-end": "url(#fk-trig-axis-arrow)"
+      }));
+      group.appendChild(createSvgElement("text", { x: 624, y: origin[1] - 7 }));
+      group.lastChild.textContent = "x";
+      group.appendChild(createSvgElement("text", { x: origin[0] + 11, y: 51 }));
+      group.lastChild.textContent = "y";
+      svg.appendChild(group);
+    }
+
+    function drawRightAngle(corner) {
+      const size = 17;
+      const point = toSvg(corner);
+      const polyline = createSvgElement("polyline", {
+        points: [
+          [point[0] - size, point[1]],
+          [point[0] - size, point[1] - size],
+          [point[0], point[1] - size]
+        ].map(function (pair) { return pair.join(","); }).join(" "),
+        class: "fk-trig-figure__right-angle"
+      });
+      svg.appendChild(polyline);
+    }
+
+    function drawTriangle(start, end, index, angleLabel) {
+      const startSvg = toSvg(start);
+      const endSvg = toSvg(end);
+      const horizontal = [end[0], start[1]];
+      const horizontalSvg = toSvg(horizontal);
+      const componentClass = " component-" + (index + 1);
+
+      svg.appendChild(createSvgElement("polygon", {
+        points: [
+          startSvg,
+          horizontalSvg,
+          endSvg
+        ].map(function (point) { return point[0].toFixed(1) + "," + point[1].toFixed(1); }).join(" "),
+        class: "fk-trig-figure__triangle" + componentClass
+      }));
+      svg.appendChild(createSvgElement("line", {
+        x1: endSvg[0],
+        y1: endSvg[1],
+        x2: horizontalSvg[0],
+        y2: horizontalSvg[1],
+        class: "fk-trig-figure__projection" + componentClass
+      }));
+      svg.appendChild(createSvgElement("line", {
+        x1: startSvg[0],
+        y1: startSvg[1],
+        x2: horizontalSvg[0],
+        y2: horizontalSvg[1],
+        class: "fk-trig-figure__horizontal" + componentClass
+      }));
+      drawRightAngle(horizontal);
+
+      const link = createSvgElement("line", {
+        x1: startSvg[0],
+        y1: startSvg[1],
+        x2: endSvg[0],
+        y2: endSvg[1],
+        class: "fk-trig-figure__link" + componentClass,
+        "marker-end": "url(#fk-trig-link-arrow-" + (index + 1) + ")"
+      });
+      svg.appendChild(link);
+
+      const mid = [(startSvg[0] + endSvg[0]) / 2, (startSvg[1] + endSvg[1]) / 2];
+      const linkLabel = createSvgElement("text", {
+        x: mid[0] + 9,
+        y: mid[1] - 12,
+        class: "fk-trig-figure__label fk-trig-figure__label--link" + componentClass
+      });
+      linkLabel.textContent = "L" + (index + 1);
+      svg.appendChild(linkLabel);
+
+      const xLabel = createSvgElement("text", {
+        x: (startSvg[0] + horizontalSvg[0]) / 2 - 48,
+        y: horizontalSvg[1] + 27,
+        class: "fk-trig-figure__label" + componentClass
+      });
+      xLabel.textContent = "L" + (index + 1) + " cos(" + angleLabel + ")";
+      svg.appendChild(xLabel);
+
+      const yLabel = createSvgElement("text", {
+        x: horizontalSvg[0] + 12,
+        y: (horizontalSvg[1] + endSvg[1]) / 2,
+        class: "fk-trig-figure__label" + componentClass
+      });
+      yLabel.textContent = "L" + (index + 1) + " sin(" + angleLabel + ")";
+      svg.appendChild(yLabel);
+    }
+
+    function drawAngleArc(center, radius, angleDegrees, label) {
+      const start = toSvg([center[0] + radius, center[1]]);
+      const end = toSvg([
+        center[0] + radius * Math.cos(radians(angleDegrees)),
+        center[1] + radius * Math.sin(radians(angleDegrees))
+      ]);
+      const largeArc = angleDegrees > 180 ? 1 : 0;
+      svg.appendChild(createSvgElement("path", {
+        d: "M " + start[0].toFixed(1) + " " + start[1].toFixed(1) +
+          " A " + radius + " " + radius + " 0 " + largeArc + " 0 " +
+          end[0].toFixed(1) + " " + end[1].toFixed(1),
+        class: "fk-trig-figure__angle"
+      }));
+      const labelPoint = toSvg([
+        center[0] + (radius + 16) * Math.cos(radians(angleDegrees / 2)),
+        center[1] + (radius + 16) * Math.sin(radians(angleDegrees / 2))
+      ]);
+      const text = createSvgElement("text", {
+        x: labelPoint[0],
+        y: labelPoint[1],
+        class: "fk-trig-figure__label"
+      });
+      text.textContent = label;
+      svg.appendChild(text);
+    }
+
+    function drawJoint(point, label, isTcp, labelOffset) {
+      const svgPoint = toSvg(point);
+      const offset = labelOffset || [isTcp ? 10 : -32, isTcp ? -10 : 25];
+      svg.appendChild(createSvgElement("circle", {
+        cx: svgPoint[0],
+        cy: svgPoint[1],
+        r: isTcp ? 8 : 7,
+        class: isTcp ? "fk-trig-figure__tcp" : "fk-trig-figure__joint"
+      }));
+      const text = createSvgElement("text", {
+        x: svgPoint[0] + offset[0],
+        y: svgPoint[1] + offset[1],
+        class: "fk-trig-figure__label"
+      });
+      text.textContent = label;
+      svg.appendChild(text);
+    }
+
+    function render() {
+      clear(svg);
+      drawDefs();
+      drawAxes();
+
+      const base = [0, 0];
+      const joint2 = polarPoint(base, lengths[0], angles[0]);
+      const tcp = state.joints === 1 ?
+        joint2 :
+        polarPoint(joint2, lengths[1], angles[0] + angles[1]);
+
+      drawTriangle(base, joint2, 0, "q1");
+      drawAngleArc(base, 58, angles[0], "q1");
+      drawJoint(base, "joint 1", false);
+
+      if (state.joints === 2) {
+        drawTriangle(joint2, tcp, 1, "q1+q2");
+        drawAngleArc(joint2, 42, angles[0] + angles[1], "q1+q2");
+        drawJoint(joint2, "joint 2", false, [-55, -18]);
+      }
+
+      drawJoint(tcp, "TCP", true);
+
+      buttons.forEach(function (button) {
+        button.classList.toggle("is-active", Number(button.dataset.joints) === state.joints);
+      });
+    }
+
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        state.joints = Number(button.dataset.joints);
+        render();
+      });
+    });
+
+    render();
+  }
+
   function initializeForwardDemo(root) {
     const lengths = [115, 90, 65];
     const coordinates = createCoordinateSystem(520, 360);
@@ -1731,11 +1975,15 @@
   }
 
   function initializeAll() {
+    const trigRoot = document.getElementById("fk-trig-figure");
     const fkRoot = document.getElementById("kinematics-fk-demo");
     const ikRoot = document.getElementById("kinematics-ik-demo");
     const motionRoot = document.getElementById("kinematics-motion-demo");
     const singularityRoot = document.getElementById("kinematics-singularity-demo");
 
+    if (trigRoot) {
+      initializeTrigFigure(trigRoot);
+    }
     if (fkRoot) {
       initializeForwardDemo(fkRoot);
     }

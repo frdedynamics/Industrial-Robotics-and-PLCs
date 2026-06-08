@@ -135,7 +135,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../content/kinematics.html">Kinematics</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/kinematics.html">Kinematics</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -177,13 +177,19 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/robots.html" class="sidebar-item-text sidebar-link">
+  <a href="../pages/robots.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Automation with Robots</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/kinematics.html" class="sidebar-item-text sidebar-link active">
+  <a href="../pages/frames_poses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Frames and Poses</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/kinematics.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Kinematics</span></a>
   </div>
 </li>
@@ -191,7 +197,7 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="../content/simulation.html" class="sidebar-item-text sidebar-link">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">Simulation</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -200,7 +206,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/simulation.html" class="sidebar-item-text sidebar-link">
+  <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Simulation</span></a>
   </div>
 </li>
@@ -208,7 +214,7 @@ window.Quarto = {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../content/further_reading.html" class="sidebar-item-text sidebar-link">
+  <a href="../pages/further_reading.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Further Reading</span></a>
   </div>
 </li>
@@ -240,12 +246,12 @@ window.Quarto = {
   <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
   <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/content/kinematics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/kinematics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../content/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../content/kinematics.html">Kinematics</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/kinematics.html">Kinematics</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Kinematics</h1>
 </div>
@@ -289,13 +295,21 @@ window.Quarto = {
 <blockquote class="blockquote">
 <p>If the joint positions are known, where is the TCP?</p>
 </blockquote>
-<p>The simplest case is a one-joint planar arm. This is like a pendulum with a known length. If the link length is <code>L1</code> and the joint angle is <code>q1</code>, the TCP position is just the conversion from polar coordinates to Cartesian coordinates:</p>
+<p>The simplest case is a one-joint planar arm. This is like a pendulum with a known length. The basic tool we use here is trigonometry. If the link length is <code>L1</code> and the joint angle is <code>q1</code>, the link forms the hypotenuse of a right triangle. The horizontal part of the link is the adjacent side, so it is found with cosine. The vertical part is the opposite side, so it is found with sine:</p>
 <p><span class="math display">\[
 x = L_1 \cos(q_1)
 \]</span></p>
 <p><span class="math display">\[
 y = L_1 \sin(q_1)
 \]</span></p>
+<figure id="fk-trig-figure" class="fk-trig-figure figure">
+  <div class="fk-trig-figure__buttons" aria-label="Select arm example">
+    <button type="button" data-joints="1">1 joint</button>
+    <button type="button" data-joints="2">2 joints</button>
+  </div>
+  <svg viewbox="0 0 680 360" role="img" aria-label="Trigonometry of a planar robot arm"></svg>
+  <figcaption>For a planar arm, sine and cosine give the horizontal and vertical projections of each link. In the two-joint view, the second link uses <code>q1 + q2</code> because joint 2 is mounted on a link that is already rotated by <code>q1</code>.</figcaption>
+</figure>
 <p>Adding more links repeats the same idea. Each link contributes an <code>x</code> component and a <code>y</code> component, but the angle of each link depends on all the previous joints. <code>L1</code>, <code>L2</code>, and <code>L3</code> are the link lengths, while <code>q1</code>, <code>q2</code>, and <code>q3</code> are the joint angles. For a three-link planar arm, the TCP position becomes:</p>
 <p><span class="math display">\[
 x = L_1 \cos(q_1) + L_2 \cos(q_1 + q_2) + L_3 \cos(q_1 + q_2 + q_3)
@@ -899,7 +913,7 @@ International Organization for Standardization. 2025. <em><span class="nocase">I
   });
   </script>
 </div> <!-- /content -->
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/content/kinematics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>videojs(video_shortcode_videojs_video1);</script>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/kinematics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>videojs(video_shortcode_videojs_video1);</script>
 
 
 
