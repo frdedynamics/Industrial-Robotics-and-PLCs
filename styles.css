@@ -1569,6 +1569,50 @@
 .frames-transform-slider--theta .frames-slider__value {
 	color: #c2410c;
 }
+
+.frames-transform3d-demo {
+	grid-template-columns: minmax(0, 1.45fr) minmax(15rem, 0.6fr);
+}
+
+.frames-transform3d-demo .frames-demo__stage {
+	grid-column: auto;
+	min-height: 31rem;
+}
+
+.frames-transform3d-demo .frames-demo__panel {
+	grid-column: auto;
+	grid-template-columns: 1fr;
+}
+
+.frames-transform3d-demo .frames-equation {
+	grid-column: 1 / -1;
+	min-height: 8rem;
+	overflow-x: auto;
+}
+
+.frames-transform3d-plot {
+	width: 100%;
+	height: 100%;
+	min-height: 31rem;
+}
+
+.frames-transform3d-slider--x .frames-slider__value {
+	color: #1d4f8e;
+}
+
+.frames-transform3d-slider--y .frames-slider__value {
+	color: #2a9d8f;
+}
+
+.frames-transform3d-slider--z .frames-slider__value {
+	color: #c2410c;
+}
+
+.frames-transform3d-slider--roll .frames-slider__value,
+.frames-transform3d-slider--pitch .frames-slider__value,
+.frames-transform3d-slider--yaw .frames-slider__value {
+	color: #0f766e;
+}
 @media (max-width: 860px) {
 	.frames-demo {
 		grid-template-columns: 1fr;

@@ -411,6 +411,412 @@
 
     render();
   }
+  function initializeTransform3dDemo(root) {
+    const axisColors = {
+      x: "#1d4f8e",
+      y: "#2a9d8f",
+      z: "#c2410c",
+      rotation: "#0f766e",
+      translation: "#7c2d12",
+      frameA: "#566578",
+      frameB: "#111827"
+    };
+    const state = {
+      x: 0.9,
+      y: 0.7,
+      z: 0.75,
+      roll: 25,
+      pitch: -20,
+      yaw: 35,
+      direction: "ab"
+    };
+    const sliders = [
+      { id: "x", label: "x position", min: -1.2, max: 1.6, step: 0.1, unit: " m" },
+      { id: "y", label: "y position", min: -1.2, max: 1.6, step: 0.1, unit: " m" },
+      { id: "z", label: "z position", min: 0, max: 1.8, step: 0.1, unit: " m" },
+      { id: "roll", label: "roll Rx", min: -180, max: 180, step: 5, unit: "\u00b0" },
+      { id: "pitch", label: "pitch Ry", min: -90, max: 90, step: 5, unit: "\u00b0" },
+      { id: "yaw", label: "yaw Rz", min: -180, max: 180, step: 5, unit: "\u00b0" }
+    ];
+    let plotInitialized = false;
+
+    root.innerHTML = [
+      "<div class=\"frames-demo__stage\">",
+      "<div class=\"frames-transform3d-plot\" role=\"img\" aria-label=\"Interactive 3D pose with fixed frame A and movable frame B\"></div>",
+      "</div>",
+      "<div class=\"frames-demo__panel\">",
+      "<div class=\"frames-demo__buttons frames-transform-direction\" aria-label=\"Select 3D pose direction\">",
+      "<button type=\"button\" data-direction=\"ab\">A -> B</button>",
+      "<button type=\"button\" data-direction=\"ba\">B -> A</button>",
+      "</div>",
+      "<div class=\"frames-demo__sliders\">",
+      sliders.map(function (slider) {
+        return [
+          "<label class=\"frames-slider frames-transform3d-slider--" + slider.id + "\" data-parameter=\"" + slider.id + "\">",
+          "<span class=\"frames-slider__header\"><span>" + slider.label + "</span><span class=\"frames-slider__value\" data-value=\"" + slider.id + "\"></span></span>",
+          "<input type=\"range\" min=\"" + slider.min + "\" max=\"" + slider.max + "\" step=\"" + slider.step + "\" value=\"" + state[slider.id] + "\" aria-label=\"" + slider.label + "\">",
+          "</label>"
+        ].join("");
+      }).join(""),
+      "</div>",
+      "<button type=\"button\" class=\"frames-demo__play\" data-role=\"reset\">Reset pose</button>",
+      "<p class=\"frames-demo__status\" aria-live=\"polite\"></p>",
+      "</div>",
+      "<div class=\"frames-equation frames-transform3d-equation\" aria-live=\"polite\"></div>"
+    ].join("");
+
+    const plotRoot = root.querySelector(".frames-transform3d-plot");
+    const equation = root.querySelector(".frames-transform3d-equation");
+    const resetButton = root.querySelector("button[data-role='reset']");
+    const status = root.querySelector(".frames-demo__status");
+    const directionButtons = Array.from(root.querySelectorAll("button[data-direction]"));
+    const inputs = {};
+    const valueLabels = {};
+
+    sliders.forEach(function (slider) {
+      const control = root.querySelector("[data-parameter='" + slider.id + "']");
+      inputs[slider.id] = control.querySelector("input");
+      valueLabels[slider.id] = control.querySelector("[data-value]");
+    });
+
+    function degToRad(value) {
+      return value * Math.PI / 180;
+    }
+
+    function multiplyMatrices(a, b) {
+      return a.map(function (row) {
+        return b[0].map(function (_, columnIndex) {
+          return row.reduce(function (sum, cell, rowIndex) {
+            return sum + cell * b[rowIndex][columnIndex];
+          }, 0);
+        });
+      });
+    }
+
+    function rotationMatrix() {
+      const roll = degToRad(state.roll);
+      const pitch = degToRad(state.pitch);
+      const yaw = degToRad(state.yaw);
+      const cr = Math.cos(roll);
+      const sr = Math.sin(roll);
+      const cp = Math.cos(pitch);
+      const sp = Math.sin(pitch);
+      const cy = Math.cos(yaw);
+      const sy = Math.sin(yaw);
+      const rx = [
+        [1, 0, 0],
+        [0, cr, -sr],
+        [0, sr, cr]
+      ];
+      const ry = [
+        [cp, 0, sp],
+        [0, 1, 0],
+        [-sp, 0, cp]
+      ];
+      const rz = [
+        [cy, -sy, 0],
+        [sy, cy, 0],
+        [0, 0, 1]
+      ];
+      return multiplyMatrices(multiplyMatrices(rz, ry), rx);
+    }
+
+    function transposeMatrix(matrix) {
+      return matrix[0].map(function (_, columnIndex) {
+        return matrix.map(function (row) {
+          return row[columnIndex];
+        });
+      });
+    }
+
+    function multiplyMatrixVector(matrix, vector) {
+      return matrix.map(function (row) {
+        return row.reduce(function (sum, value, index) {
+          return sum + value * vector[index];
+        }, 0);
+      });
+    }
+
+    function inverseTransform(matrix) {
+      const inverseRotation = transposeMatrix(matrix);
+      const inverseTranslation = multiplyMatrixVector(inverseRotation, [state.x, state.y, state.z]).map(function (value) {
+        return -value;
+      });
+      return {
+        matrix: inverseRotation,
+        translation: inverseTranslation
+      };
+    }
+
+    function column(matrix, index) {
+      return [matrix[0][index], matrix[1][index], matrix[2][index]];
+    }
+
+    function scaledAdd(origin, direction, scale) {
+      return [
+        origin[0] + direction[0] * scale,
+        origin[1] + direction[1] * scale,
+        origin[2] + direction[2] * scale
+      ];
+    }
+
+    function lineTrace(name, start, end, color, width, showLegend) {
+      return {
+        type: "scatter3d",
+        mode: "lines",
+        name: name,
+        showlegend: showLegend,
+        x: [start[0], end[0]],
+        y: [start[1], end[1]],
+        z: [start[2], end[2]],
+        line: {
+          color: color,
+          width: width
+        },
+        hoverinfo: "skip"
+      };
+    }
+
+    function labelTrace(label, position, color) {
+      return {
+        type: "scatter3d",
+        mode: "text",
+        showlegend: false,
+        x: [position[0]],
+        y: [position[1]],
+        z: [position[2]],
+        text: [label],
+        textfont: {
+          color: color,
+          size: 13
+        },
+        hoverinfo: "skip"
+      };
+    }
+
+    function originTrace(name, origin, color) {
+      return {
+        type: "scatter3d",
+        mode: "markers+text",
+        name: name,
+        showlegend: false,
+        x: [origin[0]],
+        y: [origin[1]],
+        z: [origin[2]],
+        text: [name],
+        textposition: "top center",
+        textfont: {
+          color: color,
+          size: 13
+        },
+        marker: {
+          color: "#ffffff",
+          line: {
+            color: color,
+            width: 3
+          },
+          size: 5
+        },
+        hoverinfo: "skip"
+      };
+    }
+
+    function gridTrace() {
+      const values = [-1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2];
+      const x = [];
+      const y = [];
+      const z = [];
+      values.forEach(function (value) {
+        x.push(-1.5, 2, null, value, value, null);
+        y.push(value, value, null, -1.5, 2, null);
+        z.push(0, 0, null, 0, 0, null);
+      });
+      return {
+        type: "scatter3d",
+        mode: "lines",
+        showlegend: false,
+        x: x,
+        y: y,
+        z: z,
+        line: {
+          color: "rgba(86, 101, 120, 0.16)",
+          width: 2
+        },
+        hoverinfo: "skip"
+      };
+    }
+
+    function frameTraces(name, origin, matrix, length, muted) {
+      const axes = [
+        { id: "x", label: "x_" + name, color: axisColors.x },
+        { id: "y", label: "y_" + name, color: axisColors.y },
+        { id: "z", label: "z_" + name, color: axisColors.z }
+      ];
+      const traces = [originTrace("frame " + name, origin, muted ? axisColors.frameA : axisColors.frameB)];
+      axes.forEach(function (axis, index) {
+        const direction = matrix ? column(matrix, index) : [index === 0 ? 1 : 0, index === 1 ? 1 : 0, index === 2 ? 1 : 0];
+        const end = scaledAdd(origin, direction, length);
+        const labelPosition = scaledAdd(origin, direction, length + 0.12);
+        traces.push(lineTrace(axis.label, origin, end, axis.color, muted ? 5 : 7, false));
+        traces.push(labelTrace(axis.label, labelPosition, axis.color));
+      });
+      return traces;
+    }
+
+    function buildFigure() {
+      const matrix = rotationMatrix();
+      const originA = [0, 0, 0];
+      const originB = [state.x, state.y, state.z];
+      const arrowStart = state.direction === "ab" ? originA : originB;
+      const arrowEnd = state.direction === "ab" ? originB : originA;
+      const arrowLabel = state.direction === "ab" ? "<sup>A</sup>T<sub>B</sub>" : "<sup>B</sup>T<sub>A</sub>";
+      const data = [gridTrace()]
+        .concat(frameTraces("A", originA, null, 0.78, true))
+        .concat(frameTraces("B", originB, matrix, 0.68, false));
+      data.push(lineTrace("pose " + (state.direction === "ab" ? "A to B" : "B to A"), arrowStart, arrowEnd, axisColors.translation, 5, false));
+      data.push(labelTrace(arrowLabel, [(state.x) / 2, (state.y) / 2, (state.z) / 2 + 0.08], axisColors.translation));
+      const layout = {
+        margin: { l: 0, r: 0, t: 0, b: 0 },
+        paper_bgcolor: "rgba(0,0,0,0)",
+        plot_bgcolor: "rgba(0,0,0,0)",
+        showlegend: false,
+        uirevision: "frames-transform-3d-demo",
+        scene: {
+          xaxis: axisLayout("x_A"),
+          yaxis: axisLayout("y_A"),
+          zaxis: axisLayout("z_A"),
+          aspectmode: "cube",
+          camera: {
+            eye: { x: 1.55, y: 1.45, z: 1.1 }
+          }
+        }
+      };
+      const config = {
+        displaylogo: false,
+        responsive: true
+      };
+      return { data: data, layout: layout, config: config };
+    }
+
+    function axisLayout(title) {
+      return {
+        title: title,
+        range: title === "z_A" ? [-0.15, 2] : [-1.5, 2],
+        backgroundcolor: "rgba(255,255,255,0)",
+        gridcolor: "rgba(86, 101, 120, 0.16)",
+        zerolinecolor: "rgba(31, 45, 61, 0.28)",
+        showspikes: false
+      };
+    }
+
+    function formatNumber(value) {
+      const clean = Math.abs(value) < 0.0005 ? 0 : value;
+      return clean.toFixed(2);
+    }
+
+    function formatControlValue(slider) {
+      const value = state[slider.id];
+      if (slider.unit === "\u00b0") {
+        return Math.round(value) + slider.unit;
+      }
+      return formatNumber(value) + slider.unit;
+    }
+
+    function colorTex(color, tex) {
+      return "\\color{" + color + "}{" + tex + "}";
+    }
+
+    function renderEquation() {
+      const forwardMatrix = rotationMatrix();
+      const inverse = inverseTransform(forwardMatrix);
+      const matrix = state.direction === "ab" ? forwardMatrix : inverse.matrix;
+      const translation = state.direction === "ab" ? [state.x, state.y, state.z] : inverse.translation;
+      const equationLabel = state.direction === "ab" ?
+        "{}^{A}T_B =" :
+        "{}^{B}T_A = \\left({}^{A}T_B\\right)^{-1} =";
+      const r = function (row, col) {
+        return colorTex(axisColors.rotation, formatNumber(matrix[row][col]));
+      };
+      const t = function (value) {
+        return colorTex(axisColors.translation, formatNumber(value));
+      };
+      const equationTex = [
+        "\\[",
+        equationLabel,
+        "\\begin{bmatrix}",
+        r(0, 0) + " & " + r(0, 1) + " & " + r(0, 2) + " & " + t(translation[0]) + " \\\\",
+        r(1, 0) + " & " + r(1, 1) + " & " + r(1, 2) + " & " + t(translation[1]) + " \\\\",
+        r(2, 0) + " & " + r(2, 1) + " & " + r(2, 2) + " & " + t(translation[2]) + " \\\\",
+        "0 & 0 & 0 & 1",
+        "\\end{bmatrix}",
+        "\\]"
+      ].join("\n");
+      equation.innerHTML = "<div class=\"frames-equation__math\">" + equationTex + "</div>";
+      typesetMath(equation, 0);
+    }
+
+    function updateControls() {
+      sliders.forEach(function (slider) {
+        valueLabels[slider.id].textContent = formatControlValue(slider);
+      });
+    }
+
+    function renderPlot() {
+      if (typeof Plotly === "undefined") {
+        plotRoot.innerHTML = "<p class=\"robot-widget__fallback\">The 3D pose demo could not load because Plotly.js is unavailable.</p>";
+        return;
+      }
+      const figure = buildFigure();
+      if (!plotInitialized) {
+        Plotly.newPlot(plotRoot, figure.data, figure.layout, figure.config);
+        plotInitialized = true;
+      } else {
+        Plotly.react(plotRoot, figure.data, figure.layout, figure.config);
+      }
+    }
+
+    function render() {
+      directionButtons.forEach(function (button) {
+        button.classList.toggle("is-active", button.getAttribute("data-direction") === state.direction);
+      });
+      updateControls();
+      renderPlot();
+      renderEquation();
+      status.textContent = state.direction === "ab" ?
+        "Showing the pose of frame B expressed in frame A. Roll, pitch, and yaw are only display controls; the pose used for frame operations is the matrix below." :
+        "Showing the inverse pose: frame A expressed in frame B. The sliders still define the forward pose.";
+    }
+
+    Object.keys(inputs).forEach(function (id) {
+      inputs[id].addEventListener("input", function () {
+        state[id] = Number(inputs[id].value);
+        render();
+      });
+    });
+
+    directionButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        state.direction = button.getAttribute("data-direction");
+        render();
+      });
+    });
+
+    resetButton.addEventListener("click", function () {
+      state.x = 0.9;
+      state.y = 0.7;
+      state.z = 0.75;
+      state.roll = 25;
+      state.pitch = -20;
+      state.yaw = 35;
+      state.direction = "ab";
+      Object.keys(inputs).forEach(function (id) {
+        inputs[id].value = state[id];
+      });
+      render();
+    });
+
+    render();
+  }
   function initializePoseChainDemo(root) {
     const nodes = {
       base: { x: 110, y: 178, label: "robot base", shortLabel: "B" },
@@ -670,6 +1076,11 @@
     const transformRoot = document.getElementById("frames-transform-2d-demo");
     if (transformRoot) {
       initializeTransform2dDemo(transformRoot);
+    }
+
+    const transform3dRoot = document.getElementById("frames-transform-3d-demo");
+    if (transform3dRoot) {
+      initializeTransform3dDemo(transform3dRoot);
     }
 
     const chainRoot = document.getElementById("frames-pose-chain-demo");

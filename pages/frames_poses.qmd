@@ -403,6 +403,18 @@ This is the matrix reason why inverting a pose is not just changing the sign of
 the translation. The translation also has to be expressed in the inverted
 orientation.
 
+The demo below shows the same pose idea in 3D. Frame `A` stays fixed, while
+frame `B` is moved with position sliders and roll-pitch-yaw sliders. Use the
+direction buttons to switch between ${}^{A}T_B$ and the inverse pose
+${}^{B}T_A$. The sliders are only one convenient display format for
+orientation; the matrix below the plot is the pose representation used for
+chaining and inversion.
+
+```{=html}
+<div id="frames-transform-3d-demo" class="frames-demo frames-transform3d-demo"></div>
+<noscript><p>JavaScript is required to use the 3D transform demo.</p></noscript>
+```
+
 # Combining poses
 
 The most important operation with poses is chaining. If we know the pose of
@@ -447,8 +459,8 @@ R_{AB}R_{BC} & t_{AB} + R_{AB}t_{BC} \\
 $$
 
 The formula shows why pose chaining is more than adding positions. The second
-translation `t_{BC}` is first rotated into frame `A` before it is added to
-`t_{AB}`.
+translation $t_{BC}$ is first rotated into frame `A` before it is added to
+$t_{AB}$.
 
 In the pick cell:
 
@@ -546,5 +558,6 @@ visual introduction to
 [3D geometry](https://robotacademy.net.au/masterclass/3d-geometry/).
 
 ```{=html}
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script src="../assets/frames-poses-demos.js"></script>
 ```
