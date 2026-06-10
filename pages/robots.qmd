@@ -58,6 +58,12 @@ collaborative operation, conventional industrial robots, or fixed automation can
 all solve the same production problem, but with different investment costs,
 cycle times, flexibility, and safety requirements.
 
+Robot automation is already widely used in industry. The IFR World Robotics
+2025 report states that 542,000 industrial robots were installed worldwide in
+2024, with a global operational stock of about 4.66 million units [@IFR.2025].
+The important engineering question is therefore where robots are technically and
+economically the right automation strategy.
+
 ![Break even points for different automation strategies. Based on @Matthias.2013.](img/automation_break_even_points.png){#fig-breakeven}
 
 @fig-breakeven shows this trade-off in a simplified way. The horizontal axis is

@@ -257,6 +257,17 @@
 	margin-right: auto;
 }
 
+.video-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+	gap: 1rem;
+	margin: 1rem auto 1.5rem;
+}
+
+.video-grid .video-embed {
+	margin: 0;
+}
+
 .fk-trig-figure {
 	margin: 1.5rem 0;
 	padding: 1rem;

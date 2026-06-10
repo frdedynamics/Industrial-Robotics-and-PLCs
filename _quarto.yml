@@ -21,6 +21,7 @@ website:
       - section: Robot Foundations
         contents: 
           - pages/robots.qmd
+          - pages/robot_programming.qmd
           - pages/frames_poses.qmd
           - pages/kinematics.qmd
           

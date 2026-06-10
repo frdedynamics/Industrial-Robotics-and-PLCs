@@ -24,4 +24,6 @@ draft: true
 
 
 TODO:
-- on robotics page put a foto of a robot, with lables for joints and ee frame and base frame etc
+- on robotics page put a foto of a robot, with lables for joints and ee frame and base frame, Define TCP etc
+- also introduce difference between industrial manipulator and cobot.
+- Introduce the iso standards, and say why they are importatn for practice and that we have acess to them by logging in with the student account on standard norge

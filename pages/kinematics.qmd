@@ -143,9 +143,16 @@ If you want to see how DH parameters are derived for a particular robot, have a
 look at the following visual explanation, or see @Corke.2023 [chap. 7.1.5].
 
 ```{=html}
-<div class="video-embed">
-  <iframe src="https://www.youtube.com/embed/rA9tm0gTln8?si=Ks_F64Wt7BV3fOuP" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</div>
+<figure class="video-embed" id="fig-dh-video">
+  <iframe
+    src="https://www.youtube.com/embed/rA9tm0gTln8?si=Ks_F64Wt7BV3fOuP"
+    title="Visual explanation of Denavit-Hartenberg parameters"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+  <figcaption>Visual explanation of Denavit-Hartenberg parameters. Source: <a href="https://www.youtube.com/watch?v=rA9tm0gTln8">YouTube</a>.</figcaption>
+</figure>
 ```
 
 
@@ -499,14 +506,16 @@ if they are not shown automatically; the subtitles explain what happens in each
 case.
 
 ```{=html}
-<div class="video-embed">
+<figure class="video-embed" id="fig-six-axis-singularities">
   <iframe
-    src="https://www.youtube.com/embed/lD2HQcxeNoA?cc_load_policy=1&cc_lang_pref=en"
+    src="https://www.youtube.com/embed/lD2HQcxeNoA?cc_load_policy=1&amp;cc_lang_pref=en"
     title="Six-axis robot singularities"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
     allowfullscreen>
   </iframe>
-</div>
+  <figcaption>Typical singularities for a six-axis industrial robot arm. Turn on captions if they are not shown automatically. Source: <a href="https://www.youtube.com/watch?v=lD2HQcxeNoA">YouTube</a>.</figcaption>
+</figure>
 ```
 
 In practice, singularity problems are usually solved by changing the task setup
