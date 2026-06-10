@@ -183,6 +183,12 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/robot_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot Programming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/frames_poses.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Frames and Poses</span></a>
   </div>
@@ -333,9 +339,11 @@ T_base_tcp = forward_kinematics(q) # pose of the TCP in the base frame</code></p
 <p>The planar arm above only needs link lengths and joint angles because all joints rotate in the same plane. A real industrial robot needs a richer description. Its joint axes can be offset from each other, twisted relative to each other, and arranged so that the arm can leave the plane and move in 3D. DH parameters capture these distances and angles between neighboring joint axes in a compact way.</p>
 <p>For this course, the important point is not how to derive DH parameters by hand. In normal industrial use, the model is already provided by the robot controller, the manufacturer, or the simulation software. In Visual Components, for example, we normally select a robot model that already contains the relevant geometry and joint limits. We use the model; we do not usually build it from scratch.</p>
 <p>If you want to see how DH parameters are derived for a particular robot, have a look at the following visual explanation, or see <span class="citation" data-cites="Corke.2023">Corke (<a href="#ref-Corke.2023" role="doc-biblioref">2023, 7.1.5</a>)</span>.</p>
-<div class="video-embed">
-  <iframe src="https://www.youtube.com/embed/rA9tm0gTln8?si=Ks_F64Wt7BV3fOuP" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
-</div>
+<figure class="video-embed figure" id="fig-dh-video">
+  <iframe src="https://www.youtube.com/embed/rA9tm0gTln8?si=Ks_F64Wt7BV3fOuP" title="Visual explanation of Denavit-Hartenberg parameters" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+  </iframe>
+  <figcaption>Visual explanation of Denavit-Hartenberg parameters. Source: <a href="https://www.youtube.com/watch?v=rA9tm0gTln8">YouTube</a>.</figcaption>
+</figure>
 </section>
 <section id="inverse-kinematics" class="level1">
 <h1>Inverse kinematics</h1>
@@ -464,10 +472,11 @@ Figure&nbsp;2: Nullspace motion on a Franka Research 3: the end-effector pose re
 </ul>
 <p>The exact names and warning behavior depend on the robot vendor, but the underlying idea is the same: the current posture makes the Jacobian lose an independent motion direction. Robots with a different mechanical structure can have different singularity patterns. For example, many collaborative robots such as Universal Robots arms have a different axis arrangement than a KUKA AGILUS, so the practical singularity situations and controller warnings are not exactly the same.</p>
 <p>The video below shows typical singularities for a six-axis arm. Turn on captions if they are not shown automatically; the subtitles explain what happens in each case.</p>
-<div class="video-embed">
-  <iframe src="https://www.youtube.com/embed/lD2HQcxeNoA?cc_load_policy=1&amp;cc_lang_pref=en" title="Six-axis robot singularities" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
+<figure class="video-embed figure" id="fig-six-axis-singularities">
+  <iframe src="https://www.youtube.com/embed/lD2HQcxeNoA?cc_load_policy=1&amp;cc_lang_pref=en" title="Six-axis robot singularities" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
   </iframe>
-</div>
+  <figcaption>Typical singularities for a six-axis industrial robot arm. Turn on captions if they are not shown automatically. Source: <a href="https://www.youtube.com/watch?v=lD2HQcxeNoA">YouTube</a>.</figcaption>
+</figure>
 <p>In practice, singularity problems are usually solved by changing the task setup or the programmed motion. We avoid singularities by changing the target pose, changing the approach direction, using another robot configuration, moving the part or fixture, or using a joint move for repositioning before starting a process move.</p>
 </section>
 </section>
