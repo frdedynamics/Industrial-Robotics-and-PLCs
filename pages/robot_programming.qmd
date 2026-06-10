@@ -105,7 +105,8 @@ The core idea is that the operator must somehow define the robot's target poses
 or motions using the real cell. This can be done by typing coordinates, jogging
 the robot with a teach pendant, moving the arm by hand on a suitable robot, or
 using another input device. The result is stored in the robot's task program as
-poses, motion commands, tool actions, and logic.
+poses, motion commands, tool actions, and logic. A typical pendant-based online
+programming interface is shown in @fig-online-programming.
 
 ![Online programming with a Universal Robots teach pendant. Image source: [Universal Robots](https://www.universal-robots.com/news-and-media/news-center/universal-robots-launches-heavy-duty-payload-cobot-for-collaborative-automation/).](img/online_programming_ur.png){#fig-online-programming fig-alt="Universal Robots teach pendant used for online programming"}
 
@@ -146,7 +147,7 @@ including enabling functions, 3-position enabling devices, communication loss an
 cable handling [@ISO10218-1.2025,
 secs. 5.2.8.4 and 5.2.8.5]. With pendant jogging, the operator moves the robot
 axis by axis or in Cartesian directions, then stores the current robot pose as a
-program point.
+program point. A KUKA teach pendant example is shown in @fig-kuka-smartpad.
 
 ![KUKA smartPAD 2 teach pendant. Image source: [Red Dot Design Award](https://www.red-dot.org/project/kuka-smartpad-2-24200-24199).](<img/teach pendant.jpg>){#fig-kuka-smartpad fig-alt="KUKA smartPAD 2 teach pendant"}
 
@@ -163,20 +164,22 @@ control are installed.
 
 In many modern cobot systems, the teaching interface can also be physical hand
 guiding. The operator activates a suitable mode and moves the robot by hand to
-important poses or along a path.
+important poses or along a path. The short example in @fig-hand-guiding-video
+shows this type of interaction.
 
+::: {#fig-hand-guiding-video .video-embed}
 ```{=html}
-<figure class="video-embed" id="fig-hand-guiding-video">
-  <iframe
-    src="https://www.youtube.com/embed/hCfn0mzHLyM?start=56&amp;end=89&amp;rel=0"
-    title="Hand-guided robot teaching example"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    referrerpolicy="strict-origin-when-cross-origin"
-    allowfullscreen>
-  </iframe>
-  <figcaption>Example of hand-guided teaching from 0:56 to 1:29. The full video is available on <a href="https://www.youtube.com/watch?v=hCfn0mzHLyM">YouTube</a>.</figcaption>
-</figure>
+<iframe
+  src="https://www.youtube.com/embed/hCfn0mzHLyM?start=56&amp;end=89&amp;rel=0"
+  title="Hand-guided robot teaching example"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen>
+</iframe>
 ```
+
+Example of hand-guided teaching from 0:56 to 1:29. The full video is available on [YouTube](https://www.youtube.com/watch?v=hCfn0mzHLyM).
+:::
 
 Hand-guided control is common on cobots because they are often designed with
 interfaces and safety functions that support physical guidance. For conventional
@@ -258,7 +261,8 @@ understand both the robot language and the physical meaning of the commands.
 
 **Offline programming** means developing and testing a robot program away from
 the real robot, usually in a 3D simulation model of the cell. The real robot can
-continue producing while the next program version is prepared.
+continue producing while the next program version is prepared. A typical
+simulation-based OLP environment is shown in @fig-olp-simulation.
 
 ![Offline robot programming and simulation environment. Image source: [Visual Components](https://www.visualcomponents.com/blog/steps-of-the-olp-process/).](img/visual_components_olp5-2.png){#fig-olp-simulation fig-alt="Offline robot programming and simulation software showing a robot cell"}
 
@@ -288,9 +292,10 @@ commissioning tests.
 **Computer-aided manufacturing (CAM)** starts from part geometry and process
 knowledge. Instead of manually teaching each point, the programmer selects a
 manufacturing operation and the CAM software generates a toolpath. The toolpath
-is then translated into machine or robot instructions by a postprocessor.
+is then translated into machine or robot instructions by a postprocessor. The
+example in @fig-cam-toolpath shows this idea for a milling operation.
 
-![CAM-style programming converts part geometry and process settings into a toolpath, then into robot-specific commands.](img/cam_toolpath_schematic.svg){#fig-cam-toolpath fig-alt="Schematic CAM workflow from CAD model to toolpath to robot program"}
+![A milling toolpath created in Autodesk Fusion based on 3D modelled part geometry. The toolpath can then be translated into vendor-specific machine or robot commands using a postprocessor. Image source: [Autodesk Fusion for manufacturing](https://www.autodesk.com/uk/products/fusion-360/fusion-360-for-manufacturing).](img/cam_fusion.jpg){#fig-cam-toolpath fig-alt="Autodesk Fusion CAM view showing a milling toolpath generated from 3D part geometry"}
 
 CAM comes from CNC machining, where it is often the main workflow: a CAD model is
 used to generate machining operations, toolpaths, and machine-specific code. In
@@ -351,35 +356,41 @@ Examples:
 - A sensor detects whether a component has reached a process position before the
   next robot action is allowed to start.
 
-The two seam-tracking examples below show why the path may need to be corrected
-while the robot is moving. In the optical example, an external sensor measures
-where the seam is. In the second example, the correction is based on welding
-process data instead of an external optical seam sensor.
+The two seam-tracking examples in @fig-optical-seam-tracking and
+@fig-weld-data-seam-tracking show why the path may need to be corrected while
+the robot is moving. In the optical example, an external sensor measures where
+the seam is. In the second example, the correction is based on welding process
+data instead of an external optical seam sensor.
 
+::: {.video-grid}
+::: {#fig-optical-seam-tracking .video-embed}
 ```{=html}
-<div class="video-grid">
-  <figure class="video-embed" id="fig-optical-seam-tracking">
-    <iframe
-      src="https://www.youtube.com/embed/pZlhQDYey08?rel=0"
-      title="Optical seam tracking example"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen>
-    </iframe>
-    <figcaption>Optical seam tracking example. Source: <a href="https://www.youtube.com/watch?v=pZlhQDYey08">YouTube</a>.</figcaption>
-  </figure>
-  <figure class="video-embed" id="fig-weld-data-seam-tracking">
-    <iframe
-      src="https://www.youtube.com/embed/SO0GmVYE_4U?rel=0"
-      title="Seam tracking example using welding process data"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen>
-    </iframe>
-    <figcaption>Seam tracking example using welding process data instead of a separate optical seam sensor. Source: <a href="https://www.youtube.com/watch?v=SO0GmVYE_4U">YouTube</a>.</figcaption>
-  </figure>
-</div>
+<iframe
+  src="https://www.youtube.com/embed/pZlhQDYey08?rel=0"
+  title="Optical seam tracking example"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen>
+</iframe>
 ```
+
+Optical seam tracking example. Source: [YouTube](https://www.youtube.com/watch?v=pZlhQDYey08).
+:::
+
+::: {#fig-weld-data-seam-tracking .video-embed}
+```{=html}
+<iframe
+  src="https://www.youtube.com/embed/SO0GmVYE_4U?rel=0"
+  title="Seam tracking example using welding process data"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  referrerpolicy="strict-origin-when-cross-origin"
+  allowfullscreen>
+</iframe>
+```
+
+Seam tracking example using welding process data instead of a separate optical seam sensor. Source: [YouTube](https://www.youtube.com/watch?v=SO0GmVYE_4U).
+:::
+:::
 
 Visual Components OLP includes search functionality for robot welding. The
 Auto Search function can generate weld searches automatically, and search types
@@ -433,14 +444,24 @@ or branches based on measured or selected input values.
 
 ## Robot learning and programming by demonstration {#sec-robot-learning}
 
-Robot learning tries to move beyond fixed instruction sequences. Instead of
-programming every detail, the robot learns a behavior from data, interaction, or
-demonstrations.
+Sensor-guided and parametric programs already move away from a completely fixed
+command list. Some parts of the sequence are left open during programming and
+are only filled in shortly before or during execution, for example from a camera
+measurement, force signal, PLC value, or product parameter.
 
-A common industrially relevant idea is **learning from demonstration** or
+Robot learning takes this idea further. Instead of defining most of the command
+sequence explicitly, the robot learns a behavior from data, interaction, or
+demonstrations. In robot learning this behavior is often called a **policy**: a
+rule or model that maps the current task state to the next robot action. The
+program is therefore not only adjusted by a few parameters; larger parts of the
+behavior can adapt to the current state of the task and environment.
+
+A common industrially relevant form is **learning from demonstration** or
 **programming by demonstration**. A human provides examples of the task, for
 example by kinesthetic teaching, teleoperation, or motion capture. The robot then
-uses those examples to reproduce or generalize the behavior [@Argall.2009].
+uses those examples to reproduce or generalize the behavior [@Argall.2009]. The
+kinesthetic teaching example in @fig-lfd-example can therefore be understood both
+as direct path teaching and as a way to collect demonstration data.
 
 ![Kinesthetic teaching can be used either for direct path teaching or as demonstration data for learning-based approaches.](img/lfd_example.jpg){#fig-lfd-example fig-alt="Person physically guiding a robot during a demonstration"}
 
@@ -448,6 +469,52 @@ This is different from ordinary hand-guided teaching. In hand-guided record and
 replay, the robot mainly repeats the shown path. In learning from demonstration,
 the goal is to extract something more general, such as a movement pattern, a
 contact behavior, or a policy that adapts to variations.
+
+A modern example is a **diffusion policy**. Here the robot learns from
+expert demonstrations and generates short sequences of actions from the current
+visual observation. This is still learning from examples, but the result is not a
+single recorded path. It is a policy that can choose actions for the situation it
+currently sees [@Chi.2024].
+
+At the current research frontier are **robot foundation models** and
+**vision-language-action (VLA) models**. These models try to do for robot control
+what large foundation models do for text and images: train on broad data, then
+adapt to many tasks. A VLA combines camera observations, language instructions,
+and robot action data, so a prompt such as place the cup in the bin can be
+mapped directly to robot actions. Physical Intelligence's pi0 family is one
+example. Their recent pi0.7 model is trained with diverse prompts and data from
+many sources, and is intended to generalize across robots, scenes, and tasks
+[@Black.2024; @PhysicalIntelligence.2026]. The examples in
+@fig-diffusion-policy-video and @fig-pi-foundation-model-video show how far this
+is from replaying a fixed path.
+
+::: {.video-grid}
+::: {#fig-diffusion-policy-video .video-embed}
+```{=html}
+<video controls muted playsinline preload="metadata">
+  <source src="https://diffusion-policy.cs.columbia.edu/videos/mug_flipping_20_web.mp4" type="video/mp4">
+</video>
+```
+
+Diffusion Policy mug flipping experiment: a learned visuomotor policy generates robot actions from visual observations. Source: [Diffusion Policy project page](https://diffusion-policy.cs.columbia.edu/).
+:::
+
+::: {#fig-pi-foundation-model-video .video-embed}
+```{=html}
+<video controls muted playsinline preload="metadata">
+  <source src="https://website.pi-asset.com/pi07/Pi07VFINAL.mp4" type="video/mp4">
+</video>
+```
+
+Physical Intelligence pi0.7 example: a robot foundation model demonstrated on several dexterous tasks. Source: [Physical Intelligence](https://www.pi.website/blog/pi07).
+:::
+:::
+
+These approaches are among the most powerful current directions in robot
+learning, but they are not yet a normal replacement for conventional industrial
+robot programming. For production use, the open questions are still serious:
+validation, safety, failure handling, data collection, cycle time, certification,
+and integration with PLCs, tools, fixtures, and existing robot controllers.
 
 The promise is clear: easier programming for tasks that are hard to describe in
 rules, especially tasks involving contact, variation, or expert manual skill.
@@ -470,70 +537,85 @@ the people who will maintain the cell.
 |---|---|---|---|
 | Online programming with teach pendant or hand guiding | Simple handling tasks, final corrections, commissioning | Direct feedback, no cell model needed | Robot downtime, slower for complex paths |
 | Text-based / structured programming | Variants, loops, PLC handshakes, recovery logic | Flexible and explicit | Requires programming and robot knowledge |
-| Offline programming / simulation | Complex cells, expensive downtime, virtual commissioning | Test before hardware, collision checks, cycle-time estimates | Needs accurate models and calibration |
+| Offline programming / simulation | Complex cells, expensive downtime, virtual commissioning | Test before hardware, minimized downtime, collision checks, cycle-time estimates | Needs accurate models and calibration |
 | CAM-style programming | Path-heavy manufacturing operations | Efficient generation of complex toolpaths | Needs process formalization, postprocessing, calibration |
 | Sensor-guided programming | Variable part poses, adaptive handling, inspection | Adapts to real conditions | Adds sensor calibration, data handling, failure cases |
 | Learning from demonstration | Hard-to-model tasks, demonstrations of expert skill | Potentially intuitive and adaptive | Validation, safety, and reliability are challenging |
+| Robot foundation models / VLAs | Research frontier, general-purpose robot behavior | Can combine vision, language, and action data across tasks | Not yet mature for ordinary industrial deployment |
 
-A useful rule of thumb is to separate **where the path comes from** from **how
-the cell is controlled**. A path can be taught online, generated in CAM, or
-computed from a camera measurement. But the full cell still needs frames, robot
-motions, I/O, safety behavior, error handling, and PLC coordination.
+The table only compares how robot motions are created. In a real robot cell,
+this is only one part of the program. The robot still has to coordinate with
+workpieces, grippers, fixtures, sensors, safety functions, the PLC, error
+handling, and recovery behavior. For example, a weld path may be generated by
+CAM, but the cell program must still decide when the part is clamped, when
+welding starts, what happens if the arc fails, and when the robot is allowed to
+move to the next step.
 
-# Practical workflow for this course
+Many practical systems therefore use mixed approaches. A learned routine may be
+called from a structured robot program, while PLC signals still decide when the
+routine is allowed to start and what should happen afterwards. Similarly, a
+camera may compute a pick pose, but the surrounding program still handles tool
+commands, checks, and recovery. Future foundation-model systems may process more
+of these signals directly, but ordinary industrial cells still usually separate
+motion generation from cell coordination.
 
-For the simulation and programming parts of the course, a practical workflow is:
+The robot controller is also a real constraint. In production, the feasible
+programming approach must fit what the vendor controller, safety functions,
+fieldbus interfaces, and offline programming tools support. ROS 2 offers another
+path because it gives more freedom to design controllers, perception pipelines,
+and programming interfaces, but not all industrial robots support ROS 2 natively,
+and it is still less common in everyday industrial deployment than its technical
+capabilities would suggest.
 
-1. Define the task in plain language: what must be moved, processed, or
-   inspected?
-2. Identify the relevant frames: robot base, tool/TCP, workpiece, fixture,
-   camera, or conveyor.
-3. Decide which targets are fixed and which targets are computed from product data or
-   sensors.
-4. Choose movement types: joint moves for repositioning, linear or circular
-   moves for process paths.
-5. Build the sequence: wait conditions, robot motions, tool actions, and PLC
-   handshakes.
-6. Test reachability, collisions, singularities, and cycle time in simulation.
-7. Generate or export the robot program if the workflow supports it.
-8. Plan what must be checked on the real cell: calibration, payload, speeds,
-   safety zones, I/O signals, and recovery behavior.
+# Practical checklist
 
-This mirrors how industrial robot work is usually done. The exact software and
-vendor language may change, but the engineering questions are stable.
+Instead of following one fixed workflow, use the programming approach as an
+engineering choice. For any robot task, ask the same practical questions:
 
-# Common mistakes
+- What must the robot physically do: move a part, follow a process path, inspect
+  something, or react to contact?
+- Which information is known when the program is written, and which information
+  is only known shortly before or during execution?
+- Which poses and frames are needed, and how will they be calibrated or checked?
+- Where should the motion come from: online teaching, structured code, offline
+  simulation, CAM, sensor measurements, parameters, or learning?
+- What does the robot controller actually support: vendor language, motion
+  types, postprocessors, fieldbus communication, sensor interfaces, hand-guided
+  control, external control, or ROS 2?
+- How does the robot coordinate with the rest of the cell: grippers, tools,
+  fixtures, PLC signals, safety functions, and recovery behavior?
+- How will the program be validated: in simulation, on the real robot, for edge
+  cases, and after calibration changes?
 
-Typical beginner mistakes are:
-
-- storing targets in the wrong frame,
-- teaching points that work only for one exact fixture position,
-- using linear motion where a joint move would be safer and simpler,
-- forgetting approach and retreat poses,
-- testing only the happy path and not missing-part or failed-grip cases,
-- trusting an offline model without checking calibration,
-- treating the robot program separately from the PLC and safety system.
-
-Good robot programming is therefore partly about syntax, but mostly about
-systematic thinking. The robot should not only move correctly when everything is
-perfect. It should also behave predictably when the cell is waiting, blocked,
-empty, misaligned, or recovering from an error.
+Most programming problems come from ignoring one of these questions. Typical
+examples are targets stored in the wrong frame, a CAM path that the robot cannot
+reach with a safe posture, a sensor-guided routine without a clear failure case,
+or a robot program that moves correctly but does not coordinate properly with the
+PLC and safety system.
 
 # Exercises
 
 1. Choose one task, for example palletizing, welding, machine tending, or glue
-   dispensing. Which programming approach would you choose first, and why?
-2. For the same task, list which frames would be needed in the program.
-3. Identify one part of the task that could be taught online and one part that
-   would be better generated offline or parametrically.
-4. In an offline simulation, what information must match the real cell before
-   you would trust the program?
-5. Consider a camera-guided pick task. What data must pass from the camera to
-   the robot, and what role does the PLC play?
-6. Open ISO 10218-1:2025 and compare the terms **teach**, **teach pendant**,
+   dispensing. Compare at least two programming approaches for the task. Which
+   one would you choose first, and why?
+2. For the same task, identify what is fixed when the program is written, what
+   could be selected from parameters, and what may need to be measured by a
+   sensor at run time.
+3. List the frames, tools, and workpiece data that the program would need.
+4. Identify one part of the task that could be taught online and one part that
+   would be better generated offline, by CAM, or parametrically.
+5. Pick one approach that depends on controller support. Which vendor functions,
+   fieldbus signals, postprocessors, sensor interfaces, or ROS 2 interfaces would
+   have to be available?
+6. In an offline simulation or CAM workflow, what information must match the real
+   cell before you would trust the generated program?
+7. Consider a camera-guided pick task or a seam-tracking welding task. What data
+   must pass between the sensor system, robot program, and PLC? What should the
+   cell do if the measurement is missing or unreasonable?
+8. Open ISO 10218-1:2025 and compare the terms **teach**, **teach pendant**,
    **manual mode**, and **automatic mode**. Which of these terms describe a
    programming activity, and which describe a control state or device?
-7. Use ISO 10218-1:2025, clause 5.10.2, to list three safety functions or design
+9. Use ISO 10218-1:2025, clause 5.10.2, to list three safety functions or design
    requirements that matter when hand-guided control is used. Would they be
    relevant for a cobot, a conventional industrial manipulator, or both?
 
@@ -544,5 +626,9 @@ empty, misaligned, or recovering from an error.
 - Heimann and Guhl review industrial robot programming methods with a focus on
   manufacturing tasks [@Heimann.2020].
 - Argall et al. survey learning from demonstration in robotics [@Argall.2009].
+- Chi et al. introduce Diffusion Policy as a modern visuomotor learning approach
+  based on action diffusion [@Chi.2024].
+- Black et al. and Physical Intelligence describe recent VLA and robot foundation
+  model work [@Black.2024; @PhysicalIntelligence.2026].
 - Bouchard gives a practical production-oriented view of how to make robot cells
   work in factories [@Bouchard.2017].
