@@ -429,6 +429,11 @@ A concrete palletizing example is Pally, palletizing software from Rocketfarm in
 Sogndal for Universal Robots cells. The user defines product, box, pallet, and
 pattern data, and the software generates the palletizing behavior from those
 parameters ([Rocketfarm](https://www.rocketfarm.no/software-products/palletizing/)).
+@fig-pally-dimensions shows the same parametric idea on the UR pendant: the user
+enters box dimensions, and the palletizing program uses those values instead of
+being rewritten for each new packing task.
+
+![Pally URCap interface for entering box dimensions for a palletizing task. These values become parameters used by the palletizing program. Image source: [Pally URCap User Manual, version 2.12](https://www.rocketfarm.no/wp-content/uploads/2022/08/User-Manual-Pally-URCap-2.12.pdf).](img/pally_dimensions.png){#fig-pally-dimensions fig-alt="Pally URCap screen on a Universal Robots teach pendant for entering box dimensions"}
 
 A parametric program is therefore not just a final list of fixed commands. It is
 closer to a small computer program that can generate the required robot commands
