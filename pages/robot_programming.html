@@ -500,7 +500,17 @@ Figure&nbsp;7: Seam tracking example using welding process data instead of a sep
 <li>A dispensing program changes speed, path offset, or tool settings based on a product variant.</li>
 <li>A robot program selects between predefined routines based on a PLC or process variable.</li>
 </ul>
-<p>A concrete palletizing example is Pally, palletizing software from Rocketfarm in Sogndal for Universal Robots cells. The user defines product, box, pallet, and pattern data, and the software generates the palletizing behavior from those parameters (<a href="https://www.rocketfarm.no/software-products/palletizing/">Rocketfarm</a>).</p>
+<p>A concrete palletizing example is Pally, palletizing software from Rocketfarm in Sogndal for Universal Robots cells. The user defines product, box, pallet, and pattern data, and the software generates the palletizing behavior from those parameters (<a href="https://www.rocketfarm.no/software-products/palletizing/">Rocketfarm</a>). <a href="#fig-pally-dimensions" class="quarto-xref">Figure&nbsp;8</a> shows the same parametric idea on the UR pendant: the user enters box dimensions, and the palletizing program uses those values instead of being rewritten for each new packing task.</p>
+<div id="fig-pally-dimensions" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Pally URCap screen on a Universal Robots teach pendant for entering box dimensions">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pally-dimensions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/pally_dimensions.png" class="img-fluid figure-img" alt="Pally URCap screen on a Universal Robots teach pendant for entering box dimensions">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pally-dimensions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Pally URCap interface for entering box dimensions for a palletizing task. These values become parameters used by the palletizing program. Image source: <a href="https://www.rocketfarm.no/wp-content/uploads/2022/08/User-Manual-Pally-URCap-2.12.pdf">Pally URCap User Manual, version 2.12</a>.
+</figcaption>
+</figure>
+</div>
 <p>A parametric program is therefore not just a final list of fixed commands. It is closer to a small computer program that can generate the required robot commands for a specific case. The advantage is flexibility across variants. The risk is that the parameter logic must be tested over the full range of allowed values.</p>
 <p>Sensor guidance and parametrization are only two ways to make a robot program less rigid. They should not be confused with cell programming in general. Even a simple fixed robot program can be part of a cell program if it exchanges wait, ready, busy, start, complete, and fault signals with a PLC. The difference is that sensor-guided and parametric programs also change the robot targets, paths, or branches based on measured or selected input values.</p>
 </section>
@@ -509,20 +519,20 @@ Figure&nbsp;7: Seam tracking example using welding process data instead of a sep
 <h2 class="anchored" data-anchor-id="sec-robot-learning">Robot learning and programming by demonstration</h2>
 <p>Sensor-guided and parametric programs already move away from a completely fixed command list. Some parts of the sequence are left open during programming and are only filled in shortly before or during execution, for example from a camera measurement, force signal, PLC value, or product parameter.</p>
 <p>Robot learning takes this idea further. Instead of defining most of the command sequence explicitly, the robot learns a behavior from data, interaction, or demonstrations. In robot learning this behavior is often called a <strong>policy</strong>: a rule or model that maps the current task state to the next robot action. The program is therefore not only adjusted by a few parameters; larger parts of the behavior can adapt to the current state of the task and environment.</p>
-<p>A common industrially relevant form is <strong>learning from demonstration</strong> or <strong>programming by demonstration</strong>. A human provides examples of the task, for example by kinesthetic teaching, teleoperation, or motion capture. The robot then uses those examples to reproduce or generalize the behavior <span class="citation" data-cites="Argall.2009">(<a href="#ref-Argall.2009" role="doc-biblioref">Argall et al. 2009</a>)</span>. The kinesthetic teaching example in <a href="#fig-lfd-example" class="quarto-xref">Figure&nbsp;8</a> can therefore be understood both as direct path teaching and as a way to collect demonstration data.</p>
+<p>A common industrially relevant form is <strong>learning from demonstration</strong> or <strong>programming by demonstration</strong>. A human provides examples of the task, for example by kinesthetic teaching, teleoperation, or motion capture. The robot then uses those examples to reproduce or generalize the behavior <span class="citation" data-cites="Argall.2009">(<a href="#ref-Argall.2009" role="doc-biblioref">Argall et al. 2009</a>)</span>. The kinesthetic teaching example in <a href="#fig-lfd-example" class="quarto-xref">Figure&nbsp;9</a> can therefore be understood both as direct path teaching and as a way to collect demonstration data.</p>
 <div id="fig-lfd-example" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Person physically guiding a robot during a demonstration">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-lfd-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/lfd_example.jpg" class="img-fluid figure-img" alt="Person physically guiding a robot during a demonstration">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lfd-example-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8: Kinesthetic teaching can be used either for direct path teaching or as demonstration data for learning-based approaches.
+Figure&nbsp;9: Kinesthetic teaching can be used either for direct path teaching or as demonstration data for learning-based approaches.
 </figcaption>
 </figure>
 </div>
 <p>This is different from ordinary hand-guided teaching. In hand-guided record and replay, the robot mainly repeats the shown path. In learning from demonstration, the goal is to extract something more general, such as a movement pattern, a contact behavior, or a policy that adapts to variations.</p>
 <p>A modern example is a <strong>diffusion policy</strong>. Here the robot learns from expert demonstrations and generates short sequences of actions from the current visual observation. This is still learning from examples, but the result is not a single recorded path. It is a policy that can choose actions for the situation it currently sees <span class="citation" data-cites="Chi.2024">(<a href="#ref-Chi.2024" role="doc-biblioref">Chi et al. 2024</a>)</span>.</p>
-<p>At the current research frontier are <strong>robot foundation models</strong> and <strong>vision-language-action (VLA) models</strong>. These models try to do for robot control what large foundation models do for text and images: train on broad data, then adapt to many tasks. A VLA combines camera observations, language instructions, and robot action data, so a prompt such as place the cup in the bin can be mapped directly to robot actions. Physical Intelligence’s pi0 family is one example. Their recent pi0.7 model is trained with diverse prompts and data from many sources, and is intended to generalize across robots, scenes, and tasks <span class="citation" data-cites="Black.2024 PhysicalIntelligence.2026">(<a href="#ref-Black.2024" role="doc-biblioref">Black et al. 2024</a>; <a href="#ref-PhysicalIntelligence.2026" role="doc-biblioref">Physical Intelligence 2026</a>)</span>. The examples in <a href="#fig-diffusion-policy-video" class="quarto-xref">Figure&nbsp;9</a> and <a href="#fig-pi-foundation-model-video" class="quarto-xref">Figure&nbsp;10</a> show how far this is from replaying a fixed path.</p>
+<p>At the current research frontier are <strong>robot foundation models</strong> and <strong>vision-language-action (VLA) models</strong>. These models try to do for robot control what large foundation models do for text and images: train on broad data, then adapt to many tasks. A VLA combines camera observations, language instructions, and robot action data, so a prompt such as place the cup in the bin can be mapped directly to robot actions. Physical Intelligence’s pi0 family is one example. Their recent pi0.7 model is trained with diverse prompts and data from many sources, and is intended to generalize across robots, scenes, and tasks <span class="citation" data-cites="Black.2024 PhysicalIntelligence.2026">(<a href="#ref-Black.2024" role="doc-biblioref">Black et al. 2024</a>; <a href="#ref-PhysicalIntelligence.2026" role="doc-biblioref">Physical Intelligence 2026</a>)</span>. The examples in <a href="#fig-diffusion-policy-video" class="quarto-xref">Figure&nbsp;10</a> and <a href="#fig-pi-foundation-model-video" class="quarto-xref">Figure&nbsp;11</a> show how far this is from replaying a fixed path.</p>
 <div class="video-grid">
 <div id="fig-diffusion-policy-video" class="video-embed quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -532,7 +542,7 @@ Figure&nbsp;8: Kinesthetic teaching can be used either for direct path teaching 
 </video>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-diffusion-policy-video-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9: Diffusion Policy mug flipping experiment: a learned visuomotor policy generates robot actions from visual observations. Source: <a href="https://diffusion-policy.cs.columbia.edu/">Diffusion Policy project page</a>.
+Figure&nbsp;10: Diffusion Policy mug flipping experiment: a learned visuomotor policy generates robot actions from visual observations. Source: <a href="https://diffusion-policy.cs.columbia.edu/">Diffusion Policy project page</a>.
 </figcaption>
 </figure>
 </div>
@@ -544,7 +554,7 @@ Figure&nbsp;9: Diffusion Policy mug flipping experiment: a learned visuomotor po
 </video>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pi-foundation-model-video-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10: Physical Intelligence pi0.7 example: a robot foundation model demonstrated on several dexterous tasks. Source: <a href="https://www.pi.website/blog/pi07">Physical Intelligence</a>.
+Figure&nbsp;11: Physical Intelligence pi0.7 example: a robot foundation model demonstrated on several dexterous tasks. Source: <a href="https://www.pi.website/blog/pi07">Physical Intelligence</a>.
 </figcaption>
 </figure>
 </div>

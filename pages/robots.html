@@ -204,6 +204,8 @@ div.csl-indent {
    
   <ul>
   <li><a href="#what-is-a-robot" id="toc-what-is-a-robot" class="nav-link active" data-scroll-target="#what-is-a-robot">What is a robot?</a></li>
+  <li><a href="#basic-robot-anatomy" id="toc-basic-robot-anatomy" class="nav-link" data-scroll-target="#basic-robot-anatomy">Basic robot anatomy</a></li>
+  <li><a href="#conventional-industrial-manipulators-and-cobots" id="toc-conventional-industrial-manipulators-and-cobots" class="nav-link" data-scroll-target="#conventional-industrial-manipulators-and-cobots">Conventional industrial manipulators and cobots</a></li>
   <li><a href="#when-to-use-a-robot" id="toc-when-to-use-a-robot" class="nav-link" data-scroll-target="#when-to-use-a-robot">When to use a robot?</a></li>
   <li><a href="#lean-robotics" id="toc-lean-robotics" class="nav-link" data-scroll-target="#lean-robotics">Lean Robotics</a></li>
   </ul>
@@ -240,7 +242,31 @@ div.csl-indent {
 <p>Robots can be divided into two broad categories: mobile robots and manipulators. Mobile robots move through an environment. Examples include autonomous ground vehicles, aerial vehicles, and underwater vehicles. Manipulators are robot arms. They are designed to move a tool, sensor, gripper, or workpiece to a desired position and orientation. In this course, the focus is on manipulators, and especially on industrial robot arms used in manufacturing.</p>
 <p>An industrial robot arm can be understood as a programmable multi-axis motion generator. Mechanically, it consists of links connected by joints. Each joint is driven by a motor, often through a gearbox, and the joint positions are measured with sensors such as encoders. The robot controller coordinates all the joints so that the end of the robot follows the desired path. Without this coordination, the robot would only be a collection of motors and metal parts.</p>
 <p>This is different from a purpose-built machine, which may also use motors, sensors, and control logic to generate motion and react to its environment. A purpose-built machine is normally designed for a specific process and a limited set of motion paths. A manipulator is deliberately more generic: it is designed to reach as many positions and orientations as possible within its working range, so it can be reused for different tools, products, and tasks.</p>
-<p>The robot arm itself is only part of an automation system. To perform useful work, it normally needs an end-effector, such as a gripper, welding torch, painting nozzle, screwdriver, camera, or dispensing tool. The end-effector is what turns the robot’s motion into a production operation.</p>
+</section>
+<section id="basic-robot-anatomy" class="level1">
+<h1>Basic robot anatomy</h1>
+<p><a href="#fig-robot-anatomy" class="quarto-xref">Figure&nbsp;1</a> introduces the basic names used for an industrial robot arm. We will use these terms throughout the course.</p>
+<div id="fig-robot-anatomy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Annotated image of a KUKA industrial robot arm showing the base, base frame, joints, links, flange, tool, and TCP frame.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-robot-anatomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/robot_anatomy.png" class="img-fluid figure-img" alt="Annotated image of a KUKA industrial robot arm showing the base, base frame, joints, links, flange, tool, and TCP frame.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-robot-anatomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Basic anatomy of a six-axis industrial robot arm with a milling spindle mounted as the tool. The exact mechanical shape depends on the robot model and the mounted tool, but the terms base, base frame, joints, links, flange, and TCP frame are used in most robot applications.
+</figcaption>
+</figure>
+</div>
+<p>A robot arm is built from <strong>links</strong> connected by <strong>joints</strong>. The joints are the controlled axes of the robot. When a six-axis industrial arm moves, the controller coordinates all six joint positions so the end of the robot reaches the desired pose. On many six-axis arms, the <strong>elbow</strong> is the large bend around J3, where the main arm links meet. The <strong>wrist</strong> is the compact joint group near the flange, typically J4-J6, which mainly changes the tool orientation.</p>
+<p>The <strong>base frame</strong> is the coordinate frame attached to the robot base. Robot targets are often ultimately interpreted relative to this frame. The idea of coordinate frames is explained more carefully on the <a href="../pages/frames_poses.html">frames and poses</a> page.</p>
+<p>The <strong>flange</strong> is the mechanical mounting interface at the end of the robot arm. The robot manufacturer normally defines a flange frame there. A <strong>tool</strong> or <strong>end-effector</strong> is mounted to the flange. The coordinate frame attached to the tool is often called the <strong>tool frame</strong> or <strong>end-effector frame</strong>. Examples of end-effectors are grippers, welding torches, screwdrivers, cameras, dispensing nozzles, or milling spindles.</p>
+<p>The <strong>TCP</strong>, or <strong>tool center point</strong>, is the point on the tool that the robot is programmed to move. For a gripper, the TCP may be between the fingers. For a milling spindle, it may be at the tool tip. For a welding torch, it is typically near the wire or arc position. The TCP is not necessarily located at the flange; it is defined by the tool geometry. Correct TCP definition is essential because linear moves, process paths, and programmed target poses refer to the TCP, not to the outside shape of the robot.</p>
+<p>The robot pose, TCP, flange frame, tool frame, and base frame are closely related to the kinematics topics covered later in <a href="../pages/kinematics.html">kinematics</a>. For now, it is enough to know that the robot controller uses the joint values and the tool TCP definition to calculate where the tool is in space.</p>
+</section>
+<section id="conventional-industrial-manipulators-and-cobots" class="level1">
+<h1>Conventional industrial manipulators and cobots</h1>
+<p>A <strong>conventional industrial manipulator</strong> is usually designed for high speed, high repeatability, high payload, or harsh industrial processes. It is often used inside a guarded cell where people are kept outside the hazardous workspace while the robot runs automatically. Typical examples are welding, painting, machine tending, palletizing, dispensing, and material handling.</p>
+<p>A <strong>collaborative robot</strong>, often called a <strong>cobot</strong>, is still a manipulator, but it is designed and integrated for applications where people may work closer to the robot. Cobots often have force or torque sensing, rounded shapes, easier hand-guided teaching, and safety functions for monitored speed or power-and-force limiting. This does not mean a cobot is automatically safe in every application. The tool, workpiece, speed, payload, fixtures, and task hazards still determine what safety measures are required.</p>
+<p>The difference is therefore not only mechanical. It is also about the intended application and the safety concept. A conventional industrial robot can sometimes be used in collaborative applications if the full cell is designed and validated for it, and a cobot can still require guarding if it carries a sharp tool, a hot part, or a dangerous process.</p>
 <p>A complete robot cell includes more than the robot arm. It also needs a way to present parts to the robot and remove them after processing. Depending on the application, the cell may include fixtures, conveyors, feeders, sensors, grippers, safety equipment, a robot controller, and a PLC or other controller that coordinates the full process.</p>
 <p>The internal construction of industrial robot axes can be seen in these examples:</p>
 <ul>
@@ -258,11 +284,11 @@ div.csl-indent {
 <img src="img/automation_break_even_points.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-breakeven-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Break even points for different automation strategies. Based on <span class="citation" data-cites="Matthias.2013">Matthias et al. (<a href="#ref-Matthias.2013" role="doc-biblioref">2013</a>)</span>.
+Figure&nbsp;2: Break even points for different automation strategies. Based on <span class="citation" data-cites="Matthias.2013">Matthias et al. (<a href="#ref-Matthias.2013" role="doc-biblioref">2013</a>)</span>.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-breakeven" class="quarto-xref">Figure&nbsp;1</a> shows this trade-off in a simplified way. The horizontal axis is the production volume, while the vertical axis is the unit cost. Manual assembly often has a low initial investment, but the cost per produced unit remains high because each unit requires operator time. Robotic automation and fixed automation normally require a larger investment at the beginning, but the unit cost decreases when that investment is distributed over many produced units. The break-even points show where one automation strategy becomes more economical than another.</p>
+<p><a href="#fig-breakeven" class="quarto-xref">Figure&nbsp;2</a> shows this trade-off in a simplified way. The horizontal axis is the production volume, while the vertical axis is the unit cost. Manual assembly often has a low initial investment, but the cost per produced unit remains high because each unit requires operator time. Robotic automation and fixed automation normally require a larger investment at the beginning, but the unit cost decreases when that investment is distributed over many produced units. The break-even points show where one automation strategy becomes more economical than another.</p>
 <p>For low production volumes, manual assembly is often the most practical solution. The cost of designing, purchasing, programming, guarding, and maintaining an automated system may be difficult to justify if only a small number of parts will be produced. Manual work is also useful when the task requires judgement, adaptation, or handling of large product variation.</p>
 <p>Human-robot collaboration can be useful when some parts of the task are well suited for automation, while other parts still benefit from human flexibility. For example, the robot may handle repetitive positioning, holding, dispensing, or screwdriving, while the operator performs inspection, preparation, or decision-making. This can reduce ergonomic load and improve consistency without requiring a fully automatic production cell.</p>
 <p>A conventional industrial robot is often a good choice when the task is repetitive, the parts can be presented in a predictable way, and the required production volume is large enough to justify the investment. Typical examples include machine tending, palletizing, welding, painting, assembly, dispensing, and pick-and-place operations. Robots are especially useful when the task is dull, dirty, dangerous, ergonomically demanding, or requires repeatable motion and process quality.</p>
@@ -297,11 +323,11 @@ Figure&nbsp;1: Break even points for different automation strategies. Based on <
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hazardous-robot-tasks-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Examples of hazardous robot tasks.
+Figure&nbsp;3: Examples of hazardous robot tasks.
 </figcaption>
 </figure>
 </div>
-<p><a href="#fig-hazardous-robot-tasks" class="quarto-xref">Figure&nbsp;2</a> illustrates why safety is part of the automation decision, not an add-on after the robot has been installed. Painting and coating processes can expose workers to paint mist, solvents, dust, overspray, and controlled ventilation requirements. Welding can expose workers to arc radiation, hot surfaces, fumes, sparks, and moving machinery. In both cases, the robot can improve repeatability while keeping people farther away from the hazardous part of the process.</p>
+<p><a href="#fig-hazardous-robot-tasks" class="quarto-xref">Figure&nbsp;3</a> illustrates why safety is part of the automation decision, not an add-on after the robot has been installed. Painting and coating processes can expose workers to paint mist, solvents, dust, overspray, and controlled ventilation requirements. Welding can expose workers to arc radiation, hot surfaces, fumes, sparks, and moving machinery. In both cases, the robot can improve repeatability while keeping people farther away from the hazardous part of the process.</p>
 <p>Fixed automation is usually preferred for very high production volumes and stable products. Dedicated machines can often achieve shorter cycle times and lower unit costs than robots, but they are less flexible. If the product design, process sequence, or part geometry changes, fixed automation may require major mechanical modifications. A robot will often be slower than a purpose-built machine, but it can be reprogrammed, retooled, and reused more easily.</p>
 <p>In practice, a robot is most attractive in the middle region: the volume is too high for manual work to be efficient, but the product or process is not stable enough to justify fully dedicated fixed automation. The final decision should include not only purchase price, but also grippers and fixtures, sensors, PLC and safety integration, programming time, cycle time, maintenance, operator training, floor space, and expected future product changes.</p>
 </section>
