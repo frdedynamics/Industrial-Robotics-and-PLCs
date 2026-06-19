@@ -26,3 +26,6 @@ Thumbs.db
 /.quarto/
 
 **/*.quarto_ipynb
+
+# Local reference material, not published or committed
+/local_material/
