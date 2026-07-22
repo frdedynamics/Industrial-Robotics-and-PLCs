@@ -9,32 +9,47 @@ tools, workpieces, and other machinery. Safe automation therefore depends on the
 complete application and on how people actually work with it, not only on the
 robot arm.
 
-A useful starting question is:
+Robot safety is not a feature that can be added after the cell has been
+designed. It is a chain of decisions connecting the work people need to perform
+with the layout, equipment, control system, working procedures, and checks on the
+finished installation. A useful question throughout this process is:
 
-> When can a person come close to something dangerous, and what prevents that
-> situation from causing injury?
+> During each task, when can a person come close to something dangerous, and
+> what prevents that situation from causing injury?
 
-This page gives you a practical way to think about that question. It provides
-orientation for working with robot safety, not a compliance procedure or a
-replacement for qualified safety work on a real installation.
+The first half of the question directs attention to people, tasks, access, and
+unusual situations such as cleaning or fault recovery. The second half requires
+a concrete explanation of how the danger is removed, separated, detected,
+limited, or otherwise controlled. That explanation must still make sense when
+equipment fails, someone needs access, or the application changes.
 
 A **hazard** is something with the potential to cause harm. **Risk** describes
 how serious that harm could be and how likely it is to occur in the situation
 being considered. A robot can remain a hazard even when protective measures
 have reduced the associated risk.
 
+A **risk assessment** is the structured and documented process used to work
+through this reasoning. You examine the tasks and people involved, identify
+hazards and possible harm, decide where further risk reduction is needed, and
+record the assumptions behind those decisions. Risk reduction then changes the
+design or adds protective measures. The finished measures must be implemented,
+tested, maintained, and reconsidered when the cell or its use changes. This is
+the overall safety process that the rest of the page develops.
+
 ::: {.callout-important}
+This page provides orientation for safety work, not a compliance procedure or a
+replacement for qualified work on a real installation.
 Safety requirements depend on the application, the workplace, and the rules in
 force. A real robot cell needs its own risk assessment, technical documentation,
 tests, instructions, and competent people. Do not copy dimensions, speed limits,
 or safety settings from a course example.
 :::
 
-# Begin with the work people perform
+# Start with tasks and access
 
-A risk assessment should not begin and end with normal automatic production.
-Many serious situations arise when production has already gone wrong or when a
-person needs access to the cell.
+The process starts with how people actually use and enter the cell. Normal
+automatic production is only one situation. Many serious situations arise when
+production has already gone wrong or when a person needs access to the cell.
 
 For a typical robot application, consider tasks such as:
 
@@ -52,14 +67,14 @@ maintenance personnel, programmers, cleaners, and inexperienced operators, not
 only the person who normally starts production.
 
 The [Norwegian Labour Inspection Authority's risk-assessment guidance](https://www.arbeidstilsynet.no/hms/risikovurdering/)
-emphasizes that risk assessment is a continuing process: hazards are mapped,
-risk is considered, measures are implemented, and the result is evaluated and
-updated.
+emphasizes that risk assessment is a continuing process. Revisit it when the
+task, equipment, organization, or way of working changes.
 
-# Look beyond the robot arm
+# Identify hazards in the complete cell
 
-The robot is only one part of the hazard picture. Depending on the application,
-people can be exposed to:
+Once the tasks and access situations are understood, examine what could cause
+harm during each of them. The robot is only one part of that picture. Depending
+on the application, people can be exposed to:
 
 - impact or crushing from the robot, external axes, fixtures, or automatic doors;
 - trapping between moving equipment and a wall, fence, machine, or worktable;
@@ -83,11 +98,11 @@ training workers to understand all robot movements. These principles remain
 relevant even though robot technology has changed. See the
 [official 1984 incident report and recommendations](https://stacks.cdc.gov/view/cdc/113263).
 
-# Risk assessment as a working process {#sec-risk-assessment}
+# Record and evaluate the risk {#sec-risk-assessment}
 
-There is no single risk matrix that fits every workplace. What matters is that
-another person can follow the reasoning and check the decisions later. For each
-task or unwanted event, record:
+The observations from the previous steps now become a working risk-assessment
+record. Another person should be able to follow the reasoning and check the
+decisions later. For each task or unwanted event, record:
 
 - who is involved and what they are doing;
 - the hazardous situation and possible injury;
@@ -109,6 +124,8 @@ work, but the score is not the final result. The useful result is a set of
 measures with traceable reasons, named owners, and evidence that the measures
 work. The [Arbeidstilsynet guidance](https://www.arbeidstilsynet.no/hms/risikovurdering/)
 provides a practical Norwegian starting point for documenting the process.
+For the formal machinery-safety framework, continue with
+[ISO 12100](https://www.iso.org/standard/51528.html) through authorized access.
 
 # Reduce risk in layers
 
@@ -282,18 +299,13 @@ and surrounding equipment determine whether close human access is acceptable.
 A rounded, force-limited arm carrying a sharp part or a hot welding torch can
 still create severe hazards.
 
-[ISO 10218-2:2025](https://www.iso.org/standard/73934.html) also addresses
-collaborative applications. For applications that rely on power and force
-limiting, it includes biomechanical force and pressure limits for different body
-regions. It distinguishes a brief impact, where the person can move away from
-the contact, from sustained or clamping contact, where a body part can be
-trapped. The same force also creates more pressure through a narrow edge than
-through a broad, rounded surface.
-
-These considerations do not produce one universal *safe cobot setting*. You must
-consider possible contact points, exposed body regions, tool and workpiece
-geometry, type of contact, and measured force and pressure for the actual
-application.
+There is no universal *safe cobot setting*. You must assess the actual
+application, including possible contact and trapping situations, the tool and
+workpiece, and the surrounding equipment. For applications that rely on power
+and force limiting, [ISO 10218-2:2025](https://www.iso.org/standard/73934.html)
+specifies biomechanical force and pressure limits for different body regions.
+Consult the standard for these limits and the other requirements and guidance
+that apply to collaborative industrial robot applications.
 
 Begin by asking why a person must be close to powered motion. Conventional
 separation may be simpler when access is only occasional. Where people and
@@ -409,6 +421,12 @@ recovery, maintenance, and foreseeable changes. The
 [Arbeidstilsynet machinery guidance](https://www.arbeidstilsynet.no/risikofylt-arbeid/maskiner/)
 provides an overview of manufacturer and employer responsibilities in Norway.
 
+For further technical reading, consult
+[ISO 10218-1:2025](https://www.iso.org/standard/73933.html) for the industrial
+robot as a product and [ISO 10218-2:2025](https://www.iso.org/standard/73934.html)
+for the integrated robot application and cell. These links indicate where to
+continue reading; the requirements themselves are not reproduced here.
+
 ## Commissioning and periodic checks {#sec-commissioning}
 
 The measures selected during risk assessment must be demonstrated on the real
@@ -446,9 +464,9 @@ manufacturer; see [Arbeidstilsynet's guidance for machinery production and modif
 
 # Relevant standards and public guidance
 
-Standards provide detailed technical methods, terminology, and design
-requirements. Use authorized access to consult them during real design and
-validation work.
+The following sources provide the detailed requirements and guidance needed for
+work beyond this course introduction. Consult the standards through authorized
+access for real design and validation work.
 
 | Resource | Practical relevance |
 |---|---|
@@ -457,7 +475,6 @@ validation work.
 | [ISO 10218-2:2025](https://www.iso.org/standard/73934.html) | Safety requirements for integrating industrial robot applications and cells. |
 | [Arbeidstilsynet: machinery](https://www.arbeidstilsynet.no/risikofylt-arbeid/maskiner/) | Norwegian overview of responsibilities and current machinery guidance. |
 | [Arbeidstilsynet: risk assessment](https://www.arbeidstilsynet.no/hms/risikovurdering/) | Public guidance for mapping hazards, evaluating risk, documenting measures, and following up. |
-
 
 # Exercises
 
