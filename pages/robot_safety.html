@@ -1,2 +1,1008 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"></html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Robot safety – Industrial Robotics and PLCs</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/robot_safety.html">Robot safety</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Industrial Robotics and PLCs</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Robot Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automation with Robots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot Programming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_safety.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Robot safety</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/frames_poses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Frames and Poses</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/kinematics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinematics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Simulation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Simulation</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/further_reading.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Further Reading</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#start-with-tasks-and-access" id="toc-start-with-tasks-and-access" class="nav-link active" data-scroll-target="#start-with-tasks-and-access">Start with tasks and access</a></li>
+  <li><a href="#identify-hazards-in-the-complete-cell" id="toc-identify-hazards-in-the-complete-cell" class="nav-link" data-scroll-target="#identify-hazards-in-the-complete-cell">Identify hazards in the complete cell</a></li>
+  <li><a href="#sec-risk-assessment" id="toc-sec-risk-assessment" class="nav-link" data-scroll-target="#sec-risk-assessment">Record and evaluate the risk</a></li>
+  <li><a href="#reduce-risk-in-layers" id="toc-reduce-risk-in-layers" class="nav-link" data-scroll-target="#reduce-risk-in-layers">Reduce risk in layers</a></li>
+  <li><a href="#common-protective-measures" id="toc-common-protective-measures" class="nav-link" data-scroll-target="#common-protective-measures">Common protective measures</a></li>
+  <li><a href="#sec-safety-io" id="toc-sec-safety-io" class="nav-link" data-scroll-target="#sec-safety-io">Safety I/O and cell-level safety logic</a>
+  <ul class="collapse">
+  <li><a href="#normal-io-and-safety-io" id="toc-normal-io-and-safety-io" class="nav-link" data-scroll-target="#normal-io-and-safety-io">Normal I/O and safety I/O</a></li>
+  <li><a href="#where-is-the-safety-logic-implemented" id="toc-where-is-the-safety-logic-implemented" class="nav-link" data-scroll-target="#where-is-the-safety-logic-implemented">Where is the safety logic implemented?</a></li>
+  <li><a href="#example-requesting-access-through-an-interlocked-gate" id="toc-example-requesting-access-through-an-interlocked-gate" class="nav-link" data-scroll-target="#example-requesting-access-through-an-interlocked-gate">Example: requesting access through an interlocked gate</a></li>
+  </ul></li>
+  <li><a href="#sec-collaborative-applications" id="toc-sec-collaborative-applications" class="nav-link" data-scroll-target="#sec-collaborative-applications">Collaborative applications</a></li>
+  <li><a href="#worked-case-a-ur-palletizing-application" id="toc-worked-case-a-ur-palletizing-application" class="nav-link" data-scroll-target="#worked-case-a-ur-palletizing-application">Worked case: a UR palletizing application</a></li>
+  <li><a href="#simulation-as-a-safety-tool" id="toc-simulation-as-a-safety-tool" class="nav-link" data-scroll-target="#simulation-as-a-safety-tool">Simulation as a safety tool</a></li>
+  <li><a href="#responsibilities-through-the-cell-life-cycle" id="toc-responsibilities-through-the-cell-life-cycle" class="nav-link" data-scroll-target="#responsibilities-through-the-cell-life-cycle">Responsibilities through the cell life cycle</a>
+  <ul class="collapse">
+  <li><a href="#sec-commissioning" id="toc-sec-commissioning" class="nav-link" data-scroll-target="#sec-commissioning">Commissioning and periodic checks</a></li>
+  <li><a href="#changes-after-handover" id="toc-changes-after-handover" class="nav-link" data-scroll-target="#changes-after-handover">Changes after handover</a></li>
+  </ul></li>
+  <li><a href="#relevant-standards-and-public-guidance" id="toc-relevant-standards-and-public-guidance" class="nav-link" data-scroll-target="#relevant-standards-and-public-guidance">Relevant standards and public guidance</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robot_safety.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/robot_safety.html">Robot safety</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Robot safety</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Industrial robots can remove people from heavy, repetitive, dirty, and dangerous work. At the same time, a robot cell combines powerful motion, automatic control, tools, workpieces, and other machinery. Safe automation therefore depends on the complete application and on how people actually work with it, not only on the robot arm.</p>
+<p>Robot safety is not a feature that can be added after the cell has been designed. It is a chain of decisions connecting the work people need to perform with the layout, equipment, control system, working procedures, and checks on the finished installation. A useful question throughout this process is:</p>
+<blockquote class="blockquote">
+<p>During each task, when can a person come close to something dangerous, and what prevents that situation from causing injury?</p>
+</blockquote>
+<p>The first half of the question directs attention to people, tasks, access, and unusual situations such as cleaning or fault recovery. The second half requires a concrete explanation of how the danger is removed, separated, detected, limited, or otherwise controlled. That explanation must still make sense when equipment fails, someone needs access, or the application changes.</p>
+<p>A <strong>hazard</strong> is something with the potential to cause harm. <strong>Risk</strong> describes how serious that harm could be and how likely it is to occur in the situation being considered. A robot can remain a hazard even when protective measures have reduced the associated risk.</p>
+<p>A <strong>risk assessment</strong> is the structured and documented process used to work through this reasoning. You examine the tasks and people involved, identify hazards and possible harm, decide where further risk reduction is needed, and record the assumptions behind those decisions. Risk reduction then changes the design or adds protective measures. The finished measures must be implemented, tested, maintained, and reconsidered when the cell or its use changes. This is the overall safety process that the rest of the page develops.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This page provides orientation for safety work, not a compliance procedure or a replacement for qualified work on a real installation. Safety requirements depend on the application, the workplace, and the rules in force. A real robot cell needs its own risk assessment, technical documentation, tests, instructions, and competent people. Do not copy dimensions, speed limits, or safety settings from a course example.</p>
+</div>
+</div>
+<section id="start-with-tasks-and-access" class="level1">
+<h1>Start with tasks and access</h1>
+<p>The process starts with how people actually use and enter the cell. Normal automatic production is only one situation. Many serious situations arise when production has already gone wrong or when a person needs access to the cell.</p>
+<p>For a typical robot application, consider tasks such as:</p>
+<ul>
+<li>transporting, installing, and commissioning the equipment;</li>
+<li>teaching positions and testing programs;</li>
+<li>loading or changing tools, fixtures, and workpieces;</li>
+<li>normal automatic production;</li>
+<li>clearing jams, troubleshooting, and recovering after faults;</li>
+<li>cleaning, inspection, maintenance, and repair; and</li>
+<li>modifying products, programs, or equipment later in the cell’s life.</li>
+</ul>
+<p>For every task, identify who is involved, where they need to stand, which parts can move, and which forms of energy remain present. Include contractors, maintenance personnel, programmers, cleaners, and inexperienced operators, not only the person who normally starts production.</p>
+<p>The <a href="https://www.arbeidstilsynet.no/hms/risikovurdering/">Norwegian Labour Inspection Authority’s risk-assessment guidance</a> emphasizes that risk assessment is a continuing process. Revisit it when the task, equipment, organization, or way of working changes.</p>
+</section>
+<section id="identify-hazards-in-the-complete-cell" class="level1">
+<h1>Identify hazards in the complete cell</h1>
+<p>Once the tasks and access situations are understood, examine what could cause harm during each of them. The robot is only one part of that picture. Depending on the application, people can be exposed to:</p>
+<ul>
+<li>impact or crushing from the robot, external axes, fixtures, or automatic doors;</li>
+<li>trapping between moving equipment and a wall, fence, machine, or worktable;</li>
+<li>a dropped, ejected, sharp, hot, or incorrectly gripped workpiece;</li>
+<li>welding, cutting, lasers, fumes, heat, noise, or rotating process tools;</li>
+<li>electrical, pneumatic, hydraulic, gravitational, or stored mechanical energy;</li>
+<li>unexpected motion after a reset, program change, communication fault, or recovery action; and</li>
+<li>poor access, visibility, ergonomics, training, or work organization.</li>
+</ul>
+<p>The rear of a robot can be as important as its tool. In a fatal incident in 1984, an operator entered the operating area of an automated die-casting robot, apparently to clear accumulated scrap. He was trapped between the moving rear of the robot and a fixed steel pole. The arm’s working area was the obvious hazard, but the robot’s rear movement created an additional crushing point.</p>
+<p>The recommendations following the incident emphasized guarding the robot’s full operating area, preventing access to crushing points around fixed objects, interlocking access, using presence-sensing devices where appropriate, and training workers to understand all robot movements. These principles remain relevant even though robot technology has changed. See the <a href="https://stacks.cdc.gov/view/cdc/113263">official 1984 incident report and recommendations</a>.</p>
+</section>
+<section id="sec-risk-assessment" class="level1">
+<h1>Record and evaluate the risk</h1>
+<p>The observations from the previous steps now become a working risk-assessment record. Another person should be able to follow the reasoning and check the decisions later. For each task or unwanted event, record:</p>
+<ul>
+<li>who is involved and what they are doing;</li>
+<li>the hazardous situation and possible injury;</li>
+<li>the technical and organizational measures already present;</li>
+<li>how serious the harm could be and how exposure could occur;</li>
+<li>important assumptions or uncertainties;</li>
+<li>additional measures, responsibility, and deadline; and</li>
+<li>how you will check the completed measures.</li>
+</ul>
+<p>Consider an operator entering a cell to retrieve a dropped workpiece. The robot may be stopped, but the person could still be within reach of the robot, an automatic machine door, a pneumatic gripper, or a suspended load. The assessment must establish what prevents unexpected motion, which equipment is included in the stop, whether stored energy remains, and what must happen before restart.</p>
+<p>Many assessment methods use a matrix, colour category, or numerical score to summarize estimated risk. These formats can help compare hazards and prioritize work, but the score is not the final result. The useful result is a set of measures with traceable reasons, named owners, and evidence that the measures work. The <a href="https://www.arbeidstilsynet.no/hms/risikovurdering/">Arbeidstilsynet guidance</a> provides a practical Norwegian starting point for documenting the process. For the formal machinery-safety framework, continue with <a href="https://www.iso.org/standard/51528.html">ISO 12100</a> through authorized access.</p>
+</section>
+<section id="reduce-risk-in-layers" class="level1">
+<h1>Reduce risk in layers</h1>
+<p>Safety is strongest when hazards are addressed by the design itself. Warnings and personal protective equipment are useful for remaining risks, but they should not be the first or only measure considered.</p>
+<p>A practical order is:</p>
+<ol type="1">
+<li><strong>Remove or reduce the hazard through design.</strong> Change the layout, process, tool, payload, speed, or access need. Eliminate unnecessary trapping points and keep hazardous motion no larger than the task requires.</li>
+<li><strong>Separate people from hazardous operation.</strong> Fixed barriers, enclosed processes, and well-positioned access points can prevent routine exposure.</li>
+<li><strong>Detect access and create a safe response.</strong> Interlocked gates, light curtains, laser scanners, and safety-related control functions can stop or limit relevant equipment when separation cannot be maintained physically.</li>
+<li><strong>Organize the remaining work.</strong> Provide clear operating modes, isolation procedures, instructions, competence, supervision, maintenance, and suitable personal protective equipment.</li>
+</ol>
+<p>Several layers are often combined. A fence may prevent ordinary access, an interlocked gate may stop the cell when opened, and an energy-isolation procedure may still be needed before maintenance. An emergency-stop button is a backup for an emerging dangerous situation; it does not replace measures that prevent the exposure in the first place.</p>
+</section>
+<section id="common-protective-measures" class="level1">
+<h1>Common protective measures</h1>
+<p>The following terms describe equipment you will commonly meet around robot cells:</p>
+<ul>
+<li>A <strong>fixed guard</strong> is a physical barrier that normally requires tools to remove. Perimeter fencing is a common example.</li>
+<li>An <strong>interlocked gate</strong> is connected to the safety-related control system. Opening it causes the defined hazardous functions to stop or become unavailable.</li>
+<li>A <strong>light curtain</strong> creates an optical detection field across an opening. It detects interruption of the field but does not physically stop a person.</li>
+<li>A <strong>safety laser scanner</strong> monitors a configured area. Different zones can, for example, request reduced operation and then a stop as someone approaches.</li>
+<li>A <strong>safety-related motion limit</strong> supervises a robot quantity such as speed, position, or permitted space using a function designed for a safety role.</li>
+<li><strong>Energy isolation</strong> disconnects or restrains hazardous energy so maintenance work does not depend only on a stop command from software.</li>
+</ul>
+<p>The name of a component does not establish that the completed solution is safe. Its position, coverage, response time, wiring, configuration, interaction with other machines, and behaviour during faults all matter.</p>
+</section>
+<section id="sec-safety-io" class="level1">
+<h1>Safety I/O and cell-level safety logic</h1>
+<p>A guard, gate switch, or scanner does not stop hazardous motion by itself. Its signal must be detected, evaluated, and connected to equipment that can produce the required response. This complete chain is a <strong>safety function</strong>. For example:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Part of the function</th>
+<th>Gate-access example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Input</td>
+<td>An interlocked gate reports that access is open.</td>
+</tr>
+<tr class="even">
+<td>Logic</td>
+<td>A safety relay, safety PLC, or robot safety controller evaluates the signal.</td>
+</tr>
+<tr class="odd">
+<td>Output</td>
+<td>The logic requests the relevant robot and other hazardous equipment to stop or remain inhibited.</td>
+</tr>
+<tr class="even">
+<td>Safe state</td>
+<td>The specified hazardous motion is no longer available while access is open.</td>
+</tr>
+<tr class="odd">
+<td>Reset and restart</td>
+<td>Closing the gate does not start production; reset and start are deliberate, separate actions.</td>
+</tr>
+</tbody>
+</table>
+<p>The required safe state depends on the hazard. It can mean stopping motion, preventing a drive from producing torque, closing a valve, disabling a process, or switching the robot to monitored restrictions. It should be specified for all affected equipment, not described only as “stop the robot”.</p>
+<section id="normal-io-and-safety-io" class="level2">
+<h2 class="anchored" data-anchor-id="normal-io-and-safety-io">Normal I/O and safety I/O</h2>
+<p>Ordinary I/O is used for production information and commands: a part-present sensor, a cycle-start request, a completed-operation signal, or a lamp on the operator panel. <strong>Safety I/O</strong> carries signals that form part of a safety function, such as an interlocked-gate state, a scanner protective field, a safeguard-stop request, or confirmation that a monitored safe state is active.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Normal control</th>
+<th>Safety-related control</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Usually processed by the standard PLC program or robot task program</td>
+<td>Processed by a safety relay, safety PLC, or built-in robot safety controller</td>
+</tr>
+<tr class="even">
+<td>Intended to control and coordinate production</td>
+<td>Intended to achieve a specified protective response</td>
+</tr>
+<tr class="odd">
+<td>A wiring, communication, or program fault can produce an incorrect value without the diagnostics needed for a safety role</td>
+<td>Uses suitable monitoring and diagnostics so relevant faults cause or maintain the specified safe response</td>
+</tr>
+<tr class="even">
+<td>Useful for status, orderly stopping, sequencing, and messages</td>
+<td>Used for the safety function itself when the assessment requires a dependable response</td>
+</tr>
+</tbody>
+</table>
+<p>Safety I/O commonly uses monitored channel pairs. The exact architecture depends on the equipment and required function. A normal input does not become safety-related because it is read twice, and an ordinary robot-program <code>if</code> statement does not become safety logic because the variable is named <code>safe</code>.</p>
+<p>Safety-related data can be carried over the same industrial network as ordinary control data by using a dedicated safety communication protocol. Examples include <a href="https://www.profibus.com/technologies/profinet/profiles/profisafe">PROFIsafe</a> with PROFINET or PROFIBUS, <a href="https://www.odva.org/technology-standards/distinct-cip-services/cip-safety/">CIP Safety</a> with EtherNet/IP, and <a href="https://www.ethercat.org/en/safety.html">FSoE</a>, short for Fail Safe over EtherCAT, with EtherCAT. These protocols do not assume that the underlying network is free from faults. Instead, the safety layer at the sending and receiving devices checks information such as message identity, order, timing, and integrity. Sharing the physical network does not make ordinary fieldbus data safety-related.</p>
+</section>
+<section id="where-is-the-safety-logic-implemented" class="level2">
+<h2 class="anchored" data-anchor-id="where-is-the-safety-logic-implemented">Where is the safety logic implemented?</h2>
+<p>Robot cells often distribute safety-related control across several devices:</p>
+<ul>
+<li>The <strong>robot safety controller</strong> supervises built-in robot functions such as stops, monitored standstill (a stopped state supervised by the safety controller), speed or position limits, and configured safety inputs and outputs.</li>
+<li>A <strong>safety relay</strong> can implement a small number of fixed functions, such as connecting one interlocked gate to stop inputs.</li>
+<li>A <strong>safety PLC</strong> is useful when several guards, scanners, operating modes, robots, conveyors, positioners, or process machines must be coordinated.</li>
+<li>The <strong>standard PLC</strong> still manages the production sequence, displays status, requests orderly actions, and starts the process only after the safety system permits operation and the normal process conditions are satisfied.</li>
+</ul>
+<p>Some PLC platforms can execute the standard control program and a separately managed safety program in the same controller or industrial PC. Such a system can connect to both standard I/O modules and safety-rated I/O modules, sometimes mounted side by side in the same modular I/O station. Production sensors and actuators normally use the standard modules, while devices and outputs that form part of a safety function use suitable safety modules. Sharing a controller, engineering environment, backplane, or network does not remove this distinction. Where a response is required for safety, it must not depend only on ordinary PLC code, ordinary fieldbus data, or the robot’s task program.</p>
+<p><a href="#fig-beckhoff-standard-safety-io" class="quarto-xref">Figure&nbsp;1</a> shows one possible hardware arrangement. In this example, the safety logic is implemented in a dedicated TwinSAFE logic terminal; other Beckhoff architectures can execute the safety program in a safety runtime on an industrial PC.</p>
+<div id="fig-beckhoff-standard-safety-io" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-beckhoff-standard-safety-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/beckhoff_standard_safety_io.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beckhoff-standard-safety-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: A Beckhoff EtherCAT terminal station with grey standard I/O terminals and yellow TwinSAFE safety input, output, and logic terminals. The modules can be mounted together, but standard and safety-related signal processing remain distinct. Image excerpt from the <a href="https://download.beckhoff.com/download/Document/automation/twinsafe/el2904_en.pdf">Beckhoff EL2904 operating instructions</a>.
+</figcaption>
+</figure>
+</div>
+<p>A robot stop also does not automatically stop the rest of the cell. A gripper may retain stored pneumatic energy, a positioner may continue moving, or a process machine may remain hazardous. The safety function therefore needs a clear <strong>span of control</strong>: the robot and every other item of equipment that must respond to that input.</p>
+</section>
+<section id="example-requesting-access-through-an-interlocked-gate" class="level2">
+<h2 class="anchored" data-anchor-id="example-requesting-access-through-an-interlocked-gate">Example: requesting access through an interlocked gate</h2>
+<p>A simple cell can use the following sequence:</p>
+<ol type="1">
+<li>The operator requests access. The standard PLC can finish the current step and request an orderly process stop.</li>
+<li>The gate switch is monitored through safety I/O. Opening the gate activates the safety logic even if the ordinary sequence has not stopped correctly.</li>
+<li>The safety logic commands the robot and every other relevant hazard into the specified safe state.</li>
+<li>Hazardous operation remains inhibited while the gate is open.</li>
+<li>Closing the gate restores the safeguard but does not restart the cell. A deliberate reset confirms that the protective arrangement is restored.</li>
+<li>A separate start command is required before automatic production resumes.</li>
+</ol>
+<p>If a person can enter fully and remain hidden inside the cell, closing the gate and pressing reset may not be sufficient. The design can require visibility from the reset position, presence detection, a trapped-key arrangement, or another measure selected for the actual access situation.</p>
+<p>As one vendor example, current UR controllers provide dedicated and configurable safety I/O for functions such as safeguard stop, emergency stop, reduced mode, and safety status. The <a href="https://www.universal-robots.com/manuals/EN/HTML/SW10_12/Content/prod-CB5/cb_safety_i_o.htm">UR Safety I/O documentation</a> also shows an interlocked-door example. Other robot and PLC platforms use different terminals, software, and communication systems, but the same input-logic-output reasoning applies.</p>
+</section>
+</section>
+<section id="sec-collaborative-applications" class="level1">
+<h1>Collaborative applications</h1>
+<p>A robot sold as a <em>cobot</em> does not make the complete application safe by itself. The attached tool, workpiece, speed, layout, possible contact, trapping points, and surrounding equipment determine whether close human access is acceptable. A rounded, force-limited arm carrying a sharp part or a hot welding torch can still create severe hazards.</p>
+<p>There is no universal <em>safe cobot setting</em>. You must assess the actual application, including possible contact and trapping situations, the tool and workpiece, and the surrounding equipment. For applications that rely on power and force limiting, <a href="https://www.iso.org/standard/73934.html">ISO 10218-2:2025</a> specifies biomechanical force and pressure limits for different body regions. Consult the standard for these limits and the other requirements and guidance that apply to collaborative industrial robot applications.</p>
+<p>Begin by asking why a person must be close to powered motion. Conventional separation may be simpler when access is only occasional. Where people and robots must work near one another, sensing, speed and separation, force limitation, hand-guided operation, and suitable transitions between operating states can be relevant. Their suitability still depends on the task.</p>
+</section>
+<section id="worked-case-a-ur-palletizing-application" class="level1">
+<h1>Worked case: a UR palletizing application</h1>
+<p>The free <a href="https://academy.universal-robots.com/free-e-learning/risk-assessment-e-learning/">Universal Robots risk-assessment e-learning</a> turns the general process into decisions for a palletizing application. Module 1 introduces the assessment loop, while Module 2 applies it using examples that include safety planes, reduced settings, and joint limits. Together, the modules take approximately 50 minutes and require a free UR Academy account.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Use the activity as a worked case, not a reusable solution">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Use the activity as a worked case, not a reusable solution
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The course shows how one application can be assessed and how selected measures can be implemented on a UR controller. Its layout, hazards, assumptions, and settings do not become correct for another cell merely because that cell also uses a UR robot or performs palletizing.</p>
+</div>
+</div>
+<p>The activity applies the process from <a href="#sec-risk-assessment" class="quarto-xref">Section&nbsp;3</a> in a concrete sequence:</p>
+<ol type="1">
+<li>define the task, the people involved, and the limits of the application;</li>
+<li>identify hazardous situations, possible harm, and how exposure can occur;</li>
+<li>select measures that reduce the identified risk;</li>
+<li>reassess the application after introducing the measures; and</li>
+<li>check the finished functions and document remaining assumptions.</li>
+</ol>
+<p>Other details belong to the particular case. The box mass, stack height, gripper, layout, access needs, and possible trapping points are <strong>application-specific</strong>. The safety menus, function names, available limits, and configuration workflow are <strong>UR-specific</strong>. Keep these two categories separate from the general assessment method.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Engineering purpose</th>
+<th>UR concept to examine in the activity</th>
+<th>Possible implementation elsewhere</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Restrict where the robot may move</td>
+<td>Safety planes and joint-position limits</td>
+<td>Monitored workspaces or protected spaces on another platform; physical safeguards may still be needed</td>
+</tr>
+<tr class="even">
+<td>Use more restrictive motion limits in part of the task</td>
+<td>Reduced settings selected through the UR safety configuration</td>
+<td>Safe speed selection through a scanner or safety PLC, or stopping and preventing access</td>
+</tr>
+<tr class="odd">
+<td>Limit the consequences of permitted contact</td>
+<td>Limits for quantities such as speed, force, momentum, and power</td>
+<td>Power-and-force limiting on a suitable platform, or separation from powered motion</td>
+</tr>
+</tbody>
+</table>
+<p>Do not interpret these functions as people detection. A UR <strong>safety plane</strong> is a configured boundary for monitored robot geometry; the exact geometry covered depends on the controller and software version. <strong>Reduced</strong> means that an alternative, more restrictive set of safety limits is active. A plane or an external safety input can request this state, but neither function senses a person. See the <a href="https://www.universal-robots.com/manuals/EN/HTML/SW10_6/Content/prod-usr-man/software/PolyScopeX/psx-safety/psx-planes.htm">UR safety-plane documentation</a> and <a href="https://www.universal-robots.com/manuals/EN/HTML/SW10_14/Content/prod-usr-man/complianceUR3e/safetyFunctionsAndinterfaces/safety_functions_table1.htm">UR safety-functions overview</a>.</p>
+<p>Other suppliers can support similar engineering goals without using the same names or implementation. For example, <a href="https://www.kuka.com/en-gb/products/robotics-systems/software/hub-technologies/kuka_safeoperation">KUKA.SafeOperation</a> provides monitored workspaces, protected spaces, and velocity monitoring, while <a href="https://www.abb.com/global/en/areas/robotics/products/controllers/safemove">ABB SafeMove</a> provides safety functions integrated with ABB controllers. These are not direct one-to-one replacements for UR settings: supported robot geometry, hardware, software options, interfaces, limits, and validation procedures differ. A conventional high-speed cell may instead use perimeter guarding and interlocked access because close operation with people is unnecessary or unsuitable.</p>
+<p>The course materials include the blank risk-assessment template used in the UR activity. It provides a structure for the transfer exercise below, but you must complete it from the conditions of the new application.</p>
+</section>
+<section id="simulation-as-a-safety-tool" class="level1">
+<h1>Simulation as a safety tool</h1>
+<p>Safety should be considered from the beginning of an automation project, not added after the cell has already been designed. Simulation makes it easier to evaluate layout, motion, process, and control ideas before equipment is purchased or installed and while changes are still inexpensive.</p>
+<p>Risk assessment depends on understanding where equipment and people can be, how the process develops over time, and what can happen when normal production is interrupted. In a Visual Components model, you can:</p>
+<ul>
+<li>inspect the robot, tool, workpiece, external equipment, and access routes;</li>
+<li>look for collisions, trapping points, and insufficient clearance;</li>
+<li>compare layouts, loading positions, fences, and access points;</li>
+<li>step through production, teaching, cleaning, recovery, and maintenance; and</li>
+<li>use views and animations to discuss the design with the people who will operate and maintain the cell.</li>
+</ul>
+<p>You can revise the model repeatedly as the project develops: move a pallet, alter an approach direction, reduce the robot’s working area, or change the process sequence and control logic.</p>
+<p>Simulation does not approve or validate a real safety solution. Its conclusions are only as reliable as the geometry, motion, timing, control logic, faults, and human actions represented in the model. Stopping performance, gripping, sensor coverage, wiring, and installation details can differ on the real cell. Simulation can improve the design, but the finished installation still requires controlled physical commissioning and the checks described in <a href="#sec-commissioning" class="quarto-xref">Section&nbsp;10.1</a>.</p>
+</section>
+<section id="responsibilities-through-the-cell-life-cycle" class="level1">
+<h1>Responsibilities through the cell life cycle</h1>
+<p>Responsibility is shared across the life of the application:</p>
+<ul>
+<li>The organization that designs and assembles the complete machine must address the safety of the resulting combination and provide the required documentation.</li>
+<li>The employer must ensure that equipment made available to workers is safe for its actual use, and must provide suitable information, training, inspection, and maintenance.</li>
+<li>Operators and maintenance personnel need task-specific competence and must use the agreed protective measures and report faults or unsafe changes.</li>
+</ul>
+<p>During a project, safety work normally develops from the initial task description through design, installation, commissioning, and handover. The organization that will operate the cell contributes knowledge about products, cleaning, fault recovery, maintenance, and foreseeable changes. The <a href="https://www.arbeidstilsynet.no/risikofylt-arbeid/maskiner/">Arbeidstilsynet machinery guidance</a> provides an overview of manufacturer and employer responsibilities in Norway.</p>
+<p>For further technical reading, consult <a href="https://www.iso.org/standard/73933.html">ISO 10218-1:2025</a> for the industrial robot as a product and <a href="https://www.iso.org/standard/73934.html">ISO 10218-2:2025</a> for the integrated robot application and cell. These links indicate where to continue reading; the requirements themselves are not reproduced here.</p>
+<section id="sec-commissioning" class="level2">
+<h2 class="anchored" data-anchor-id="sec-commissioning">Commissioning and periodic checks</h2>
+<p>The measures selected during risk assessment must be demonstrated on the real installation. Plan the checks so nobody is exposed during the test. Begin under controlled conditions, then cover the operating conditions that matter for the assessment.</p>
+<p>Examples include checking that:</p>
+<ul>
+<li>guards and openings control access as intended;</li>
+<li>each gate, scanner, and light curtain affects the correct equipment, and the hazardous functions remain inhibited while access is open;</li>
+<li>reset and start behave as specified without unexpected restart;</li>
+<li>measured stop time and distance support the placement of protective equipment;</li>
+<li>tools, workpieces, and stored energy remain controlled during stopping;</li>
+<li>relevant faults and loss of power or communication produce the intended response; and</li>
+<li>maintenance, recovery, instructions, and training match the finished cell.</li>
+</ul>
+<p>Testing does not mean deliberately destroying equipment. Evidence can include controlled functional tests, measurements, inspection, technical documentation, and supporting simulation. Simulation does not replace the required checks on the real installation. At the same time, an important function cannot simply remain untested because stopping is mechanically unpleasant. Where safety depends on stopping performance, suitable manufacturer data or controlled measurements for the relevant application conditions are needed.</p>
+</section>
+<section id="changes-after-handover" class="level2">
+<h2 class="anchored" data-anchor-id="changes-after-handover">Changes after handover</h2>
+<p>Handover is not the end of the process. A new tool, payload, fixture, product, program, operating mode, access point, or surrounding machine can invalidate an earlier assumption. Review such changes before production resumes. Substantial rebuilding can also affect who carries the responsibilities of a machine manufacturer; see <a href="https://www.arbeidstilsynet.no/risikofylt-arbeid/maskiner/produksjon-og-salg-av-maskiner/">Arbeidstilsynet’s guidance for machinery production and modification</a>.</p>
+</section>
+</section>
+<section id="relevant-standards-and-public-guidance" class="level1">
+<h1>Relevant standards and public guidance</h1>
+<p>The following sources provide the detailed requirements and guidance needed for work beyond this course introduction. Consult the standards through authorized access for real design and validation work.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Resource</th>
+<th>Practical relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://www.iso.org/standard/51528.html">ISO 12100</a></td>
+<td>General machinery risk assessment and risk reduction.</td>
+</tr>
+<tr class="even">
+<td><a href="https://www.iso.org/standard/73933.html">ISO 10218-1:2025</a></td>
+<td>Safety requirements for the industrial robot supplied by its manufacturer.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://www.iso.org/standard/73934.html">ISO 10218-2:2025</a></td>
+<td>Safety requirements for integrating industrial robot applications and cells.</td>
+</tr>
+<tr class="even">
+<td><a href="https://www.arbeidstilsynet.no/risikofylt-arbeid/maskiner/">Arbeidstilsynet: machinery</a></td>
+<td>Norwegian overview of responsibilities and current machinery guidance.</td>
+</tr>
+<tr class="odd">
+<td><a href="https://www.arbeidstilsynet.no/hms/risikovurdering/">Arbeidstilsynet: risk assessment</a></td>
+<td>Public guidance for mapping hazards, evaluating risk, documenting measures, and following up.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<ol type="1">
+<li>Choose a robot cell you know or have modelled. List the tasks that require human interaction across its life cycle. Select one task and draw the person, robot, tool, workpiece, and surrounding equipment. Mark the hazards.</li>
+<li>Use the Arbeidstilsynet guidance to document one unwanted event from your drawing. State your assumptions, select measures using the layers introduced on this page, and explain how you would check them.</li>
+<li>Read the historical incident report linked above. Identify one design issue, one access issue, and one organizational issue that contributed to the event.</li>
+<li>Design access protection for a manual loading station. Compare a fixed guard, an interlocked gate, and a safety laser scanner, then justify your choice. Draw the resulting input-logic-output chain, span of control, reset, and restart.</li>
+<li>Complete both modules of the Universal Robots e-learning. Then use the course template to assess a different application modelled in Visual Components. Identify which reasoning is general, which choices are application-specific, and which implementation details are vendor-specific.</li>
+<li>A cobot carries a sharp sheet-metal part. Explain why the arm’s force-limited design is not enough to conclude that the application is safe, and identify the additional information you would need.</li>
+<li>A cell receives a new payload, tool, or fixture. Explain which assumptions in the risk assessment must be revisited and which commissioning checks or evidence must be updated before production resumes.</li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/frdedynamics\.github\.io\/Industrial-Robotics-and-PLCs\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robot_safety.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
