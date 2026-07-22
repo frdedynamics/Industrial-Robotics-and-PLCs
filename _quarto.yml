@@ -22,6 +22,7 @@ website:
         contents: 
           - pages/robots.qmd
           - pages/robot_programming.qmd
+          - pages/robot_safety.qmd
           - pages/frames_poses.qmd
           - pages/kinematics.qmd
           
