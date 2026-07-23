@@ -117,6 +117,12 @@ matches the real system. Fidelity is not one overall percentage. A model can
 have accurate robot geometry but unrealistic sensor timing, or realistic
 material flow but only approximate robot motion.
 
+Different levels of fidelity within one model are not only acceptable but often
+desirable. Use high fidelity where an error could change the decision, and use
+simpler representations where additional detail would not affect the result.
+This avoids spending unnecessary time, data preparation, maintenance effort,
+and computing resources while preserving accuracy where it matters.
+
 The difference between simulated and real behavior is often called the
 **simulation-to-reality gap**, or simply the **sim-to-real gap**. In industrial
 robotics, common causes are inaccurate geometry, frames, payload data, or robot
@@ -148,20 +154,34 @@ scenarios that were tested, and the model version used to produce the result.
 Relevant scenarios may include normal production, product variants, waiting
 conditions, and selected faults rather than only one ideal cycle.
 
-# From a robot to a production system
+# Levels of simulation
 
-Robot simulation often begins with the manipulator, but an industrial robot
-rarely works alone. The useful model boundary may include the tool, fixtures,
-workpieces, conveyors, machines, sensors, operators, PLC, and other robots.
+Simulation models can focus on different levels of an automation system. A
+robot-level model answers detailed questions about the manipulator and its
+motion, while a cell or production-level model describes how equipment,
+products, control systems, and people interact. These are complementary views,
+not project phases that must be completed in a fixed order. Modern simulation
+tools such as Visual Components naturally combine both levels in one model, so
+robot motion and the surrounding production flow can be studied together.
+
+When an existing manual process is being automated, the current task and layout
+provide the natural starting point, as described later in the Lean Robotics
+workflow. For a completely new production task, there is no manual cell to map.
+The starting point is instead the required input, output, process, production
+target, and constraints. In both cases, the simulation boundary may eventually
+include the tool, fixtures, workpieces, conveyors, machines, sensors, operators,
+PLC, and other robots.
 
 ## Robot-level simulation
 
 At robot level, simulation is closely connected to the concepts from
-[frames and poses](frames_poses.qmd) and [kinematics](kinematics.qmd). Its main
-uses are checking reachability and collisions, identifying difficult joint
-configurations or singularities, and estimating cycle time. For process tasks,
-the simulated path also helps verify that the tool keeps the required
-orientation relative to the workpiece.
+[frames and poses](frames_poses.qmd), [kinematics](kinematics.qmd), path
+planning, and motion control. Path planning determines a feasible motion between
+poses, while motion control governs how the robot axes follow the commanded
+motion. At this level, simulation is mainly used to check reachability and
+collisions, identify difficult joint configurations or singularities, and
+estimate cycle time. For process tasks, the simulated path also helps verify
+that the tool keeps the required orientation relative to the workpiece.
 
 In Visual Components, this corresponds to teaching positions and building robot
 programs from routines and statements, with the appropriate tool and base
