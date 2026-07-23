@@ -23,8 +23,11 @@ draft: true
 
 
 TODO:
-- Introduce the iso standards, and say why they are importatn for practice and that we have acess to them by logging in with the student account on standard norge
+
 - add more info on not only robot programming but robot cell programming, how to coordinate robot with external hardware via direct robot ios or PLCs, what connections between robot and PLC exist, how to set up the interaction between the two, we have to mention state machines. also how to document the robot cell programming, e.g. with sequence diagrams, flow charts, etc. -> new section on programming page or new page?
+
 - add info on robot cell design, from VC or also lean robotics?
 
 - for safety, one exercise should be to perform risk assessment for their simulated cell
+
+- make brief page about robot control?
