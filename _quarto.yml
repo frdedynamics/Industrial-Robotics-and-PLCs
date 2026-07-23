@@ -32,6 +32,7 @@ website:
       - section: Simulation
         contents: 
           - pages/simulation.qmd
+          - pages/visual_components.qmd
           
       - text: "Further Reading"
         href: pages/further_reading.qmd

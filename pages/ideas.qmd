@@ -12,6 +12,10 @@ draft: true
 # other pages
 - make AI guide highlighting the power of modern AI tools but also their negative impact on learning when used uncritically, give hints on how to use them, maybe with prompts that are useful for learning (not giving full answers but guiding the user to find the answer themselves or only answering syntax questions in python not giving the full code or solution or conceptual answer)
 
+- make brief page about robot control?
+
+- make page on project
+
 
 # General
 - when writing:
@@ -30,4 +34,6 @@ TODO:
 
 - for safety, one exercise should be to perform risk assessment for their simulated cell
 
-- make brief page about robot control?
+- when more of the project is defined, we should revisit all the exercises on the pages and adapt them to the project and other VC content.
+
+- think about how to use the lean robotics book beneficially in the course, e.g. by giving exercises and using it for the project. Then finish the corresponding page for it.

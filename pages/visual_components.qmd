@@ -1,0 +1,8 @@
+---
+title: Visual Components
+draft: true
+--- 
+
+- make brief overview of the Visual Components software, what it is, what it can do, and how it can be used in the course.
+- point to the Visual Components Academy and relevant learning paths, videos and docs
+- explain that we will not do a fine grained step  by step tutorial but that students are expected to use the VC material for self study and also play around with the software, which is the most effective way to learn it. 
