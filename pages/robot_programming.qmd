@@ -542,7 +542,7 @@ the people who will maintain the cell.
 |---|---|---|---|
 | Online programming with teach pendant or hand guiding | Simple handling tasks, final corrections, commissioning | Direct feedback, no cell model needed | Robot downtime, slower for complex paths |
 | Text-based / structured programming | Variants, loops, PLC handshakes, recovery logic | Flexible and explicit | Requires programming and robot knowledge |
-| Offline programming / simulation | Complex cells, expensive downtime, virtual commissioning | Test before hardware, minimized downtime, collision checks, cycle-time estimates | Needs accurate models and calibration |
+| Offline programming / simulation | Complex cells, expensive downtime, [virtual commissioning](simulation.qmd#sec-virtual-commissioning) | Test before hardware, minimized downtime, collision checks, cycle-time estimates | Needs accurate models and calibration |
 | CAM-style programming | Path-heavy manufacturing operations | Efficient generation of complex toolpaths | Needs process formalization, postprocessing, calibration |
 | Sensor-guided programming | Variable part poses, adaptive handling, inspection | Adapts to real conditions | Adds sensor calibration, data handling, failure cases |
 | Learning from demonstration | Hard-to-model tasks, demonstrations of expert skill | Potentially intuitive and adaptive | Validation, safety, and reliability are challenging |

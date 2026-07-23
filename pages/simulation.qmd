@@ -1,5 +1,6 @@
 ---
 title: "Simulation"
+bibliography: references.bib
 draft: false
 ---
 
@@ -22,25 +23,42 @@ behavior. A static 3D drawing can be part of a simulation model, but it is not a
 simulation by itself.
 
 Consider a palletizing cell in which a robot picks boxes from a conveyor and
-places them on pallets. At different stages of the project, a simulation could
-help answer different questions:
-
-- Which robot and gripper can reach the conveyor and the complete pallet?
-- Where should the robot, conveyor, pallets, guarding, and access points be
-  placed?
-- Can the robot move between the pick and place poses without collisions or
-  difficult configurations?
-- How long does one palletizing cycle take, and can the conveyor supply boxes
-  quickly enough?
-- Does the PLC sequence handle normal production, a missing box, a full pallet,
-  and a stopped conveyor correctly?
-- How can the proposed cell be explained to the customer and to the people who
-  will operate it?
+places them on pallets. A simulation could help select the robot and gripper,
+develop the layout, check reachability and collisions, estimate cycle time and
+production capacity, and test how the PLC sequence responds to missing boxes,
+full pallets, or stopped equipment. The same model can also make the proposed
+cell easier to discuss with the customer and the people who will operate it.
 
 These are not all the same simulation problem. A rough layout may be sufficient
-for checking floor space, while cycle-time prediction and virtual commissioning
-need much more detailed behavior. The purpose of the simulation therefore
-determines what must be included in the model.
+for checking floor space, while cycle-time prediction or testing connected
+control software needs much more detailed behavior. The purpose of the
+simulation therefore determines what must be included in the model.
+
+The questions above are not only technical checks. Together, they can provide an
+early **proof of concept** before investing in the robot, tooling, fixtures,
+sensors, safety equipment, engineering, and installation. The simulation helps
+show whether a concept deserves further development and which uncertain parts
+still need more investigation.
+
+These technical results can support the business case. For example, simulated
+cycle time and production capacity can be combined with expected production
+volume, labor requirements, integration costs, and operating costs to estimate
+payback and compare alternative concepts. Simulation does not calculate
+profitability by itself, but it can replace important guesses with better
+evidence while changes are still inexpensive.
+
+This is where simulation connects usefully to Lean Robotics. The methodology
+recommends comparing the current and proposed tasks, calculating return on
+investment, and de-risking critical assumptions before finalizing the robotic
+cell concept [@Bouchard.2017]. Simulation is one practical tool for supporting
+those steps; it is not itself a Lean Robotics principle.
+
+In this course, we use
+[Visual Components Premium OLP 5.1](https://www.visualcomponents.com/products/manufacturing-simulation/)
+as our main environment for building robot cells, simulating production
+behavior, developing robot operations, and connecting simulation with PLC
+programming. It is one example of a simulation platform, not the only possible
+choice.
 
 ::: {.callout-important}
 A simulation is not automatically a correct prediction of reality. It answers a
@@ -55,10 +73,28 @@ matter for the current question and leaves other details out. A useful model is
 therefore not necessarily the most detailed model; it is detailed enough to
 support the decision you need to make.
 
+You have probably encountered George Box's well-known reminder: "Essentially,
+all models are wrong, but some are useful" [@BoxDraper.1987, p. 424]. Here,
+**wrong** means incomplete or simplified, not worthless.
+
 The **model boundary** separates what is represented inside the simulation from
 what is treated as an external input or left out. A robot-only model has a
 narrow boundary. A production-line model may include several machines,
 operators, material flow, and control systems.
+
+Building a working simulation has an important side effect: it forces you to
+make details explicit. You must decide where a sensor is located, when a part
+appears, which signal starts a motion, how long an operation takes, and what
+happens next. Questions that might remain hidden in a drawing or meeting often
+become visible because the simulation cannot run until some behavior has been
+defined.
+
+This can also create false confidence. The simulation only forces you to define
+what is represented in the model. A sensor may work perfectly by default, a
+gripper may never drop a part, and communication may have no delay. Once the
+virtual cell runs smoothly, it is easy to forget which real-world details are
+still missing. Treat a successful run as evidence about the modeled system, not
+as proof that the physical cell is complete.
 
 | Question | Information the model needs |
 |---|---|
@@ -83,32 +119,34 @@ material flow but only approximate robot motion.
 
 The difference between simulated and real behavior is often called the
 **simulation-to-reality gap**, or simply the **sim-to-real gap**. In industrial
-robotics, common causes include:
-
-- inaccurate tool, fixture, workpiece, or cell geometry;
-- wrong TCP, base frames, payload data, joint limits, or robot configuration;
-- idealized actuators, sensors, gripping, contact, and communication;
-- differences between generic simulated motion and the real robot controller;
-- omitted process variation, faults, people, and recovery actions; and
-- changes made to the physical cell without updating the model.
+robotics, common causes are inaccurate geometry, frames, payload data, or robot
+configurations; idealized sensors, gripping, contact, and communication;
+differences between generic simulated motion and the real controller; omitted
+process variation and recovery situations; and physical changes that were not
+added to the model.
 
 The gap cannot be removed by making the graphics more realistic. It is reduced
 by using trustworthy input data, calibrating the real cell, comparing important
 simulation results with independent calculations or measurements, and updating
 the model when the installation changes.
 
-Two checks are useful:
+Two checks are useful. **Verification** asks whether the model has been
+implemented as intended. For example, are signals connected to the correct
+simulated sensors, and does the gripper logic follow the specified sequence?
 
-- **Verification** asks whether the model has been implemented as intended. For
-  example, are signals connected to the correct simulated sensors, and does the
-  gripper logic follow the specified sequence?
-- **Validation** asks whether the model represents the real system well enough
-  for its intended use. For example, do measured robot cycle times agree closely
-  enough with the simulated times for a production-capacity decision?
+**Validation** asks whether the model represents the real system well enough
+for its intended use. For example, do measured robot cycle times agree closely
+enough with the simulated times for a production-capacity decision?
 
 Validation is always connected to a purpose. A model validated for explaining a
 cell concept to a customer is not automatically accurate enough for predicting
 throughput or transferring a robot program.
+
+The evidence behind a simulation should remain traceable. Record the sources
+and versions of important input data, the assumptions and limitations, the
+scenarios that were tested, and the model version used to produce the result.
+Relevant scenarios may include normal production, product variants, waiting
+conditions, and selected faults rather than only one ideal cycle.
 
 # From a robot to a production system
 
@@ -119,15 +157,20 @@ workpieces, conveyors, machines, sensors, operators, PLC, and other robots.
 ## Robot-level simulation
 
 At robot level, simulation is closely connected to the concepts from
-[frames and poses](frames_poses.qmd) and [kinematics](kinematics.qmd). Typical
-checks include:
+[frames and poses](frames_poses.qmd) and [kinematics](kinematics.qmd). Its main
+uses are checking reachability and collisions, identifying difficult joint
+configurations or singularities, and estimating cycle time. For process tasks,
+the simulated path also helps verify that the tool keeps the required
+orientation relative to the workpiece.
 
-- reachability of target poses;
-- joint limits, robot configurations, and singularities;
-- collisions involving the robot, tool, workpiece, and surrounding equipment;
-- the geometric difference between joint, linear, and process motions;
-- cable, hose, and external-axis motion where these are represented; and
-- approximate or controller-based cycle times.
+In Visual Components, this corresponds to teaching positions and building robot
+programs from routines and statements, with the appropriate tool and base
+frames. Its robot-simulation tools can then be used to inspect reachability,
+collisions, and cycle time. In Premium OLP, **Path Check** can inspect the
+interpolated motion between program statements; path-solving tools can also be
+used where the corresponding add-on is available. The
+[Visual Components robot-simulation learning path](https://academy.visualcomponents.com/learning-paths/using-visual-components-for-robot-simulation/)
+introduces these software concepts.
 
 For the palletizing example, the robot can reach the top of a new pallet quite
 easily but may struggle with the lowest boxes at the far side. A simulation lets
@@ -141,48 +184,59 @@ but how resources interact over time. A box arrives, a sensor changes state, the
 PLC starts the robot, a machine finishes, or a buffer becomes full. These
 changes are commonly represented as events in a **discrete-event simulation**.
 
-This level of simulation can be used to study:
+This broader model can reveal production rate, queues, buffers, bottlenecks, and
+resource utilization. It can also show how product variants, failures, material
+shortages, or coordination between processes affect the complete system.
 
-- production rate and cycle time;
-- queues, buffers, and bottlenecks;
-- utilization of robots, machines, and operators;
-- product variants and changeovers;
-- failures, repair times, and material shortages; and
-- coordination between several cells or production processes.
+In Visual Components, the closest counterpart is **Process Modeling**. A
+**product** is an item moving through production, a **process** defines what
+happens at a station, and a **flow** defines the sequence of processes that the
+product follows. The **Process Flow editor** is used to define this sequence,
+while transport links and controllers represent movement between processes. The
+[Introduction to Process Modeling](https://academy.visualcomponents.com/courses/introduction-to-process-modeling/)
+uses this vocabulary to build production-flow simulations.
 
 A robot path that is two seconds faster may have no effect on total production
 if the robot is usually waiting for the upstream machine. Conversely, a small
 buffer may increase production more than a faster robot. Whole-cell simulation
 helps reveal these system-level effects.
 
-# Simulation through an automation project
+# Simulation through a Lean Robotics project
 
-The same model can develop with the project, although its purpose and required
-detail change. @fig-simulation-workflow shows a typical progression.
+Lean Robotics organizes robotic-cell deployment into four phases: **Prepare**,
+**Design**, **Integrate**, and **Operate** [@Bouchard.2017]. Simulation is not an
+additional phase. It is a tool that can support decisions and reduce uncertainty
+throughout this workflow. @fig-simulation-workflow keeps the same four-phase
+structure.
 
 ```{mermaid}
 %%| label: fig-simulation-workflow
-%%| fig-cap: "Simulation supports repeated decisions from the first cell concept to physical commissioning. Measurements and changes from the real installation should be used to correct the model."
-flowchart TB
-    A["Task and production target"] --> B["Layout and equipment concept"]
-    B --> C["Robot paths and process behavior"]
-    B --> D["PLC and cell-control logic"]
-    C --> E["Integrated cell simulation"]
-    D --> E
-    E --> F["Offline programs and test results"]
-    F --> G["Physical commissioning"]
-    G --> H["Measurements and observed behavior"]
-    H --> B
+%%| fig-cap: "The four phases of robotic-cell deployment used in Lean Robotics. Simulation and Visual Components support work within each phase rather than forming a separate phase."
+flowchart LR
+    A["Prepare<br/>Task, goals, and team"] --> B["Design<br/>Manual task, robotic concept, and comparison"]
+    B --> C["Integrate<br/>Build, program, test, and install"]
+    C --> D["Operate<br/>Start, monitor, and improve"]
 ```
 
-| Project stage | How simulation can contribute |
+The Design phase in Lean Robotics moves from understanding the current manual
+task to defining and comparing a robotic alternative before the cell concept is
+finalized. This is where simulation can provide an early proof of concept and
+help de-risk the **minimum viable robotic cell**: a deliberately simple first
+cell that can deliver the required production value. The model can then be
+developed further during integration and corrected using observations from
+operation.
+
+| Lean Robotics phase | How simulation can support the project |
 |---|---|
-| Concept and quotation | Compare layouts and equipment, check basic feasibility, estimate capacity, and communicate a proposed solution |
-| Detailed engineering | Refine geometry, robot motion, material flow, access, interfaces, and expected cycle times |
-| Programming | Develop robot paths and cell logic without occupying the real equipment |
-| Commissioning preparation | Test robot and PLC sequences, I/O handshakes, product variants, and selected fault cases |
-| Training and handover | Let operators and maintenance personnel explore the cell sequence and discuss recovery tasks |
-| Operation and improvement | Compare planned and measured performance, test changes, and investigate production problems |
+| Prepare | Define the task, desired output, production target, and questions the simulation must answer. Gather the data needed to model the current task. |
+| Design | Represent the current process and proposed robotic process, compare layouts and equipment, and investigate reachability, material flow, cycle time, capacity, and important uncertainties before committing to a concept. |
+| Integrate | Develop robot programs and detailed cell behavior, connect representative control software to the simulated cell, and test sequences, signals, product variants, and selected faults before installation. |
+| Operate | Compare predicted and measured performance, update the model when the cell changes, and test possible improvements before modifying production equipment. |
+
+Lean Robotics provides the deployment method; Visual Components provides models
+and tests that support parts of that method. The connected controller testing
+described in @sec-virtual-commissioning fits mainly within the Integrate phase,
+but it depends on the cell model and decisions developed during Design.
 
 Simulation is useful for discussing safety early because layouts, access, tasks,
 and abnormal situations can be made visible and changed while the design is
@@ -195,30 +249,15 @@ The limits of simulation for safety work are discussed further in
 Simulation and offline programming are related but not identical.
 **Simulation** is the broader activity of experimenting with a model.
 **Offline programming (OLP)** uses a simulation environment to create or modify
-a robot task program away from the physical robot. OLP is introduced as a
-programming approach on the [robot programming page](robot_programming.qmd#offline-programming-and-simulation).
+a robot task program away from the physical robot. The complete OLP workflow,
+including postprocessing and transfer, is covered on the
+[robot programming page](robot_programming.qmd#offline-programming-and-simulation).
 
 @fig-simulation-olp shows a typical OLP environment. The 3D model provides the
 context for tools, frames, workpieces, targets, paths, collisions, and robot
 configurations.
 
 ![A robot offline-programming environment in which the cell model, robot paths, targets, and program are developed together. Image source: [Visual Components](https://www.visualcomponents.com/blog/steps-of-the-olp-process/).](img/visual_components_olp5-2.png){#fig-simulation-olp fig-alt="Visual Components offline programming environment showing an industrial robot, cell geometry, paths, targets, and program statements"}
-
-A common OLP workflow is:
-
-1. Build or import the cell geometry and select the correct robot model.
-2. Define the tool, TCP, workpiece frames, payload, and relevant I/O.
-3. Create or import the required targets and process paths.
-4. Check reachability, configurations, joint limits, singularities, and
-   collisions.
-5. Test the sequence and estimate the cycle time.
-6. Generate vendor-specific robot code with a **postprocessor**, which
-   translates the program from the simulation environment into the required
-   vendor format, or run it using a compatible virtual robot controller.
-7. Transfer the program and calibrate the relationship between the virtual and
-   physical cells.
-8. Test the real installation under controlled conditions and make the required
-   corrections.
 
 A visually correct simulation is not enough for program transfer. The real
 robot must agree with the model about the TCP, bases, fixture and workpiece
@@ -238,18 +277,28 @@ agreement for program syntax, configuration, motion generation, I/O behavior,
 and cycle time. For example, ABB describes RobotStudio as using an
 [ABB Virtual Controller](https://www.abb.com/global/en/areas/robotics/products/software/robotstudio-suite/robotstudio-desktop),
 and KUKA combines KUKA.Sim with controller and connectivity options for
-[offline programming and virtual commissioning](https://www.kuka.com/kuka-sim).
+[programming and testing a simulated cell](https://www.kuka.com/kuka-sim).
 
 Even a virtual controller does not make the complete cell real. Contact,
 gripping, process behavior, external equipment, communication, and mechanical
 variation still depend on the surrounding model.
 
-# PLC integration and virtual commissioning
+# PLC integration and virtual commissioning {#sec-virtual-commissioning}
 
 Offline robot programming tests the robot program. A working cell also needs the
 PLC and robot to coordinate with sensors, grippers, conveyors, machines, and
 operator commands. These control programs can be developed at the same time as
 the virtual cell.
+
+In this course, we develop the PLC program in
+[CODESYS](https://www.codesys.com/) and run it with **CODESYS Control Win SL**,
+a software-based PLC runtime, or **SoftPLC**, for Windows. Selected PLC
+variables are exchanged through OPC UA, with Visual Components acting as the
+client and mapping the variables to signals of the simulated equipment. We can
+therefore develop the PLC program and virtual cell together while each executes
+in its own environment. The Visual Components Academy lesson on
+[connecting a remote OPC UA server](https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/)
+demonstrates the complete setup, including the CODESYS steps.
 
 In a connected simulation, the signal loop works like this:
 
@@ -265,26 +314,33 @@ Faults such as a missing box, failed grip, full pallet, or lost ready signal can
 be tested before all physical equipment is available. Such an agreed sequence
 of signals between controllers is often called a **handshake**.
 
-**Virtual commissioning** means using a simulated machine or production system
-to test the real or representative control software before commissioning the
-physical system. The controller can also be simulated, often called
-**software-in-the-loop**, or a physical PLC or robot controller can be connected
-to the model, often called **hardware-in-the-loop**. The exact boundary depends
-on the available software, interfaces, and project goals.
+**Commissioning** is the work of bringing the installed cell into operation and
+checking that its equipment and control programs behave as intended. The core
+idea of **virtual commissioning** is straightforward: perform part of this
+testing against a sufficiently representative simulation before the physical
+cell is ready. It is a structured use of simulation, not a separate kind of
+automation. What distinguishes it from simply watching a simulation is that the
+control program and interfaces being tested represent the planned real
+implementation.
+
+When both the plant model and controller run as software, the setup is commonly
+called **software-in-the-loop**. Our CODESYS Control Win SL and Visual
+Components setup is an example. If a physical PLC or robot controller is
+connected to the model, it is commonly called **hardware-in-the-loop**. The
+exact boundary depends on the available software, interfaces, and project goals.
 
 This approach allows robot programmers, PLC programmers, and mechanical
 designers to work in parallel. Errors in the I/O list, sequence, interlocks,
 timeouts, reset behavior, and product handling can be found while the mechanical
 cell is still being assembled. An **interlock** is a condition that blocks an
 action until the required state is true, for example preventing the conveyor
-from moving while the robot is picking a box. Visual Components provides an
-official
+from moving while the robot is picking a box. The official Visual Components
 [virtual commissioning learning path](https://academy.visualcomponents.com/learning-paths/virtual-commissioning/)
-that includes component behavior, PLC connectivity, and connections to several
-robot-controller environments.
+places this controller connection in the broader context of component behavior,
+PLC connectivity, and robot-controller environments.
 
-Virtual commissioning reduces the amount of control debugging that must happen
-for the first time on the physical cell. It does not remove physical
+Testing against the virtual cell reduces the amount of control debugging that
+must happen for the first time on the physical cell. It does not remove physical
 commissioning. Wiring, sensor placement, network behavior, mechanical
 tolerances, calibration, stopping performance, process quality, and safety
 functions still have to be checked on the finished installation.
@@ -298,25 +354,22 @@ simulation is a digital twin. A practical distinction is:
 |---|---|---|
 | 3D model | Geometry and component structure | Usually none |
 | Simulation model | Executable behavior for experiments and predictions | May be completely offline |
-| Digital twin | A fit-for-purpose digital representation that is connected to and updated from a particular physical system | Operational data keeps relevant state aligned with its physical counterpart |
+| Digital twin | A digital representation of a particular physical asset or system that is updated using operational data | An ongoing data connection keeps relevant state aligned with the physical counterpart and may also support feedback to it |
 
 Definitions vary between organizations and applications. The important
 additional idea is the continuing connection to a particular physical asset or
-process. NIST describes digital twins as dynamic, data-driven representations
-that combine models with connectivity and synchronization
-([NIST digital-twin overview](https://www.nist.gov/digital-twins) and
-[essential elements](https://www.nist.gov/digital-twins/essential-elements)).
+process. The Norwegian research organization SINTEF describes digital twins as
+virtual representations built from historical and real-time data, and
+emphasizes two-way communication where the twin is used to support decisions or
+actions in the physical system
+([SINTEF: Data-Driven Digital Twins](https://www.sintef.no/en/expert-list/digital/sustainable-communication-technologies/data-driven-digital-twins/)).
 
 For the palletizing cell, an offline simulation might use an assumed arrival
 rate and robot cycle time. A digital-twin implementation could receive actual
 PLC states, production counts, robot positions, alarms, and measured cycle
-times. The digital representation could then support:
-
-- monitoring the current cell state and production performance;
-- finding differences between expected and measured behavior;
-- evaluating a new schedule or product mix before applying it;
-- diagnosing repeated stops or bottlenecks; and
-- estimating when equipment will require maintenance.
+times. The connected model could then monitor production, reveal differences
+between expected and measured behavior, test changes to schedules or product
+mix, help diagnose repeated stops, and support maintenance planning.
 
 For **predictive maintenance**, operational measurements such as motor current,
 temperature, vibration, cycle count, or fault history are combined with a model
@@ -339,49 +392,20 @@ supported by the equipment vendor are often as important as the 3D functions.
 
 | Tool category and examples | Strong fit |
 |---|---|
-| [Visual Components](https://www.visualcomponents.com/products/manufacturing-simulation/) | Multi-vendor robot cells and production systems, layout and material-flow simulation, OLP, and PLC or robot-controller connectivity. This is the main simulation environment used in this course. |
+| [Visual Components](https://www.visualcomponents.com/products/manufacturing-simulation/) | Multi-vendor robot cells and production systems, layout and material-flow simulation, OLP, and PLC or robot-controller connectivity. |
 | [RoboDK](https://robodk.com/doc/en/Getting-Started.html) | Multi-vendor robot simulation and OLP, especially robot paths, machining and process applications, calibration, and program generation. |
 | Vendor-specific tools such as [ABB RobotStudio](https://www.abb.com/global/en/areas/robotics/products/software/robotstudio-suite/robotstudio-desktop), [KUKA.Sim](https://www.kuka.com/kuka-sim), and [FANUC ROBOGUIDE](https://www.fanuc.co.jp/en/product/robot/function/roboguide.html) | Detailed work with one vendor's robots, program format, controller behavior, configuration, and optional application packages. |
 | [Factory I/O](https://docs.factoryio.com/) | Learning and testing PLC and automation logic with configurable virtual factory scenes and connections to physical or simulated PLCs. It is not primarily a detailed robot OLP system. |
 
-Before selecting a tool, ask:
-
-- Is the main question about robot paths, control logic, material flow, physics,
-  training, or operational data?
-- Which robot, PLC, postprocessor, protocol, or virtual controller must be
-  supported?
-- Which results need to be accurate, and how will they be validated?
-- Will the model be used once for a concept, transferred to a real cell, or
-  maintained during operation?
-- Who must build, understand, and update the model?
-
-# A practical simulation workflow
-
-Use simulation as an engineering experiment rather than as an animation task:
-
-1. **State the decision.** Write down the question and what result would be
-   acceptable before building the model.
-2. **Choose the model boundary.** Decide which equipment, behavior, people,
-   products, and failure cases can affect that result.
-3. **Select the required fidelity.** Use the simplest representation that can
-   answer the question, but do not omit details that could change the decision.
-4. **Build from controlled data.** Record the sources and versions of robot
-   models, CAD geometry, frames, cycle times, I/O lists, and process assumptions.
-5. **Design scenarios.** Include normal production, relevant product variants,
-   waiting conditions, and selected faults rather than running only one ideal
-   cycle.
-6. **Verify and validate.** Check model logic and compare important outputs with
-   datasheets, calculations, controller results, or physical measurements.
-7. **Document the result.** Record assumptions, limitations, model version, and
-   the evidence supporting the conclusion.
-8. **Transfer carefully.** Treat offline programs and virtual commissioning
-   results as inputs to controlled physical commissioning, not as proof that the
-   real cell will work identically.
+Choose the tool from the question you need to answer, the required robot and PLC
+interfaces, and the fidelity that can be achieved and validated. Also consider
+who will build and maintain the model; the most capable software is not useful
+if it cannot be supported throughout the project.
 
 # Exercises
 
-1. For the palletizing example, choose three questions from the introduction.
-   For each question, identify the model boundary, required input data, useful
+1. Define three useful simulation questions for the palletizing example. For
+   each question, identify the model boundary, required input data, useful
    output, and one assumption that could make the result wrong.
 2. In Visual Components, create two feasible layouts for the same robot,
    conveyor, and palletizing task. Compare reachability, collisions, robot
