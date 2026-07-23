@@ -1,5 +1,409 @@
 ---
 title: "Simulation"
+draft: false
 ---
 
-Simulation is good
+# Why simulate?
+
+Before a robot cell exists, many decisions already have to be made. Can the
+robot reach all required poses? Is there enough space for the tool and
+workpiece? Will the cell meet the required cycle time? How should the robot,
+conveyors, sensors, and PLC coordinate? Building the cell first and answering
+these questions afterwards is slow, expensive, and difficult to change.
+
+A **simulation** lets you investigate such questions using an executable model
+of the planned or existing system. You can change the model, run an experiment,
+observe the result, and compare alternatives without immediately changing the
+real equipment. This makes simulation useful for robot motion, complete cells,
+production lines, training, and communication with customers and operators.
+Here, **executable** means that the model changes over time: components move,
+signals change, and the modeled equipment responds according to defined
+behavior. A static 3D drawing can be part of a simulation model, but it is not a
+simulation by itself.
+
+Consider a palletizing cell in which a robot picks boxes from a conveyor and
+places them on pallets. At different stages of the project, a simulation could
+help answer different questions:
+
+- Which robot and gripper can reach the conveyor and the complete pallet?
+- Where should the robot, conveyor, pallets, guarding, and access points be
+  placed?
+- Can the robot move between the pick and place poses without collisions or
+  difficult configurations?
+- How long does one palletizing cycle take, and can the conveyor supply boxes
+  quickly enough?
+- Does the PLC sequence handle normal production, a missing box, a full pallet,
+  and a stopped conveyor correctly?
+- How can the proposed cell be explained to the customer and to the people who
+  will operate it?
+
+These are not all the same simulation problem. A rough layout may be sufficient
+for checking floor space, while cycle-time prediction and virtual commissioning
+need much more detailed behavior. The purpose of the simulation therefore
+determines what must be included in the model.
+
+::: {.callout-important}
+A simulation is not automatically a correct prediction of reality. It answers a
+question **within the assumptions and limitations of its model**. A convincing
+3D animation can still give a wrong result.
+:::
+
+# A model built for a purpose
+
+A model is a deliberate simplification. It contains the parts of reality that
+matter for the current question and leaves other details out. A useful model is
+therefore not necessarily the most detailed model; it is detailed enough to
+support the decision you need to make.
+
+The **model boundary** separates what is represented inside the simulation from
+what is treated as an external input or left out. A robot-only model has a
+narrow boundary. A production-line model may include several machines,
+operators, material flow, and control systems.
+
+| Question | Information the model needs |
+|---|---|
+| Can the robot reach the task? | Correct robot kinematics, tool, workpiece poses, frames, and joint limits |
+| Can the motion collide with something? | Relevant collision geometry and the actual robot paths |
+| What is the robot cycle time? | Controller behavior, speeds, accelerations, blending, tool actions, and process delays |
+| Can the cell meet its production target? | Robot and machine cycle times, part arrivals, buffers, failures, and control logic |
+| Does the PLC sequence work? | Sensors, actuators, I/O mapping, state changes, timing, and fault scenarios |
+| Is the layout suitable for the people using it? | Access routes and the tasks performed during production, teaching, recovery, and maintenance |
+
+For example, a simplified box is often sufficient when checking whether a
+workpiece collides with a fence. The same box may be inadequate when checking
+whether a gripper finger fits into a narrow opening. Adding detail that cannot
+change the answer only makes the model slower to build and harder to maintain.
+
+## Model fidelity and the simulation-to-reality gap
+
+**Model fidelity** describes how closely the relevant behavior of the model
+matches the real system. Fidelity is not one overall percentage. A model can
+have accurate robot geometry but unrealistic sensor timing, or realistic
+material flow but only approximate robot motion.
+
+The difference between simulated and real behavior is often called the
+**simulation-to-reality gap**, or simply the **sim-to-real gap**. In industrial
+robotics, common causes include:
+
+- inaccurate tool, fixture, workpiece, or cell geometry;
+- wrong TCP, base frames, payload data, joint limits, or robot configuration;
+- idealized actuators, sensors, gripping, contact, and communication;
+- differences between generic simulated motion and the real robot controller;
+- omitted process variation, faults, people, and recovery actions; and
+- changes made to the physical cell without updating the model.
+
+The gap cannot be removed by making the graphics more realistic. It is reduced
+by using trustworthy input data, calibrating the real cell, comparing important
+simulation results with independent calculations or measurements, and updating
+the model when the installation changes.
+
+Two checks are useful:
+
+- **Verification** asks whether the model has been implemented as intended. For
+  example, are signals connected to the correct simulated sensors, and does the
+  gripper logic follow the specified sequence?
+- **Validation** asks whether the model represents the real system well enough
+  for its intended use. For example, do measured robot cycle times agree closely
+  enough with the simulated times for a production-capacity decision?
+
+Validation is always connected to a purpose. A model validated for explaining a
+cell concept to a customer is not automatically accurate enough for predicting
+throughput or transferring a robot program.
+
+# From a robot to a production system
+
+Robot simulation often begins with the manipulator, but an industrial robot
+rarely works alone. The useful model boundary may include the tool, fixtures,
+workpieces, conveyors, machines, sensors, operators, PLC, and other robots.
+
+## Robot-level simulation
+
+At robot level, simulation is closely connected to the concepts from
+[frames and poses](frames_poses.qmd) and [kinematics](kinematics.qmd). Typical
+checks include:
+
+- reachability of target poses;
+- joint limits, robot configurations, and singularities;
+- collisions involving the robot, tool, workpiece, and surrounding equipment;
+- the geometric difference between joint, linear, and process motions;
+- cable, hose, and external-axis motion where these are represented; and
+- approximate or controller-based cycle times.
+
+For the palletizing example, the robot can reach the top of a new pallet quite
+easily but may struggle with the lowest boxes at the far side. A simulation lets
+you test the robot position, pallet orientation, tool length, and approach
+direction before fixing the layout.
+
+## Cell and production-flow simulation
+
+At cell or production-line level, the main question is often not one robot pose
+but how resources interact over time. A box arrives, a sensor changes state, the
+PLC starts the robot, a machine finishes, or a buffer becomes full. These
+changes are commonly represented as events in a **discrete-event simulation**.
+
+This level of simulation can be used to study:
+
+- production rate and cycle time;
+- queues, buffers, and bottlenecks;
+- utilization of robots, machines, and operators;
+- product variants and changeovers;
+- failures, repair times, and material shortages; and
+- coordination between several cells or production processes.
+
+A robot path that is two seconds faster may have no effect on total production
+if the robot is usually waiting for the upstream machine. Conversely, a small
+buffer may increase production more than a faster robot. Whole-cell simulation
+helps reveal these system-level effects.
+
+# Simulation through an automation project
+
+The same model can develop with the project, although its purpose and required
+detail change. @fig-simulation-workflow shows a typical progression.
+
+```{mermaid}
+%%| label: fig-simulation-workflow
+%%| fig-cap: "Simulation supports repeated decisions from the first cell concept to physical commissioning. Measurements and changes from the real installation should be used to correct the model."
+flowchart TB
+    A["Task and production target"] --> B["Layout and equipment concept"]
+    B --> C["Robot paths and process behavior"]
+    B --> D["PLC and cell-control logic"]
+    C --> E["Integrated cell simulation"]
+    D --> E
+    E --> F["Offline programs and test results"]
+    F --> G["Physical commissioning"]
+    G --> H["Measurements and observed behavior"]
+    H --> B
+```
+
+| Project stage | How simulation can contribute |
+|---|---|
+| Concept and quotation | Compare layouts and equipment, check basic feasibility, estimate capacity, and communicate a proposed solution |
+| Detailed engineering | Refine geometry, robot motion, material flow, access, interfaces, and expected cycle times |
+| Programming | Develop robot paths and cell logic without occupying the real equipment |
+| Commissioning preparation | Test robot and PLC sequences, I/O handshakes, product variants, and selected fault cases |
+| Training and handover | Let operators and maintenance personnel explore the cell sequence and discuss recovery tasks |
+| Operation and improvement | Compare planned and measured performance, test changes, and investigate production problems |
+
+Simulation is useful for discussing safety early because layouts, access, tasks,
+and abnormal situations can be made visible and changed while the design is
+still flexible. It does not validate the safety of the physical installation.
+The limits of simulation for safety work are discussed further in
+[Simulation as a safety tool](robot_safety.qmd#simulation-as-a-safety-tool).
+
+# Offline robot programming
+
+Simulation and offline programming are related but not identical.
+**Simulation** is the broader activity of experimenting with a model.
+**Offline programming (OLP)** uses a simulation environment to create or modify
+a robot task program away from the physical robot. OLP is introduced as a
+programming approach on the [robot programming page](robot_programming.qmd#offline-programming-and-simulation).
+
+@fig-simulation-olp shows a typical OLP environment. The 3D model provides the
+context for tools, frames, workpieces, targets, paths, collisions, and robot
+configurations.
+
+![A robot offline-programming environment in which the cell model, robot paths, targets, and program are developed together. Image source: [Visual Components](https://www.visualcomponents.com/blog/steps-of-the-olp-process/).](img/visual_components_olp5-2.png){#fig-simulation-olp fig-alt="Visual Components offline programming environment showing an industrial robot, cell geometry, paths, targets, and program statements"}
+
+A common OLP workflow is:
+
+1. Build or import the cell geometry and select the correct robot model.
+2. Define the tool, TCP, workpiece frames, payload, and relevant I/O.
+3. Create or import the required targets and process paths.
+4. Check reachability, configurations, joint limits, singularities, and
+   collisions.
+5. Test the sequence and estimate the cycle time.
+6. Generate vendor-specific robot code with a **postprocessor**, which
+   translates the program from the simulation environment into the required
+   vendor format, or run it using a compatible virtual robot controller.
+7. Transfer the program and calibrate the relationship between the virtual and
+   physical cells.
+8. Test the real installation under controlled conditions and make the required
+   corrections.
+
+A visually correct simulation is not enough for program transfer. The real
+robot must agree with the model about the TCP, bases, fixture and workpiece
+positions, robot configuration, controller options, and program semantics.
+Calibration connects the coordinate systems of the virtual and physical cells.
+
+## Generic models and virtual controllers
+
+A general simulation tool can calculate robot motion from a kinematic model and
+then translate the result through a postprocessor. This is flexible and supports
+many robot brands, but details such as path blending, motion timing, and special
+instructions may differ from the real controller.
+
+A **virtual controller** runs the robot vendor's controller software, or a
+closely corresponding software version, on a computer. It can provide better
+agreement for program syntax, configuration, motion generation, I/O behavior,
+and cycle time. For example, ABB describes RobotStudio as using an
+[ABB Virtual Controller](https://www.abb.com/global/en/areas/robotics/products/software/robotstudio-suite/robotstudio-desktop),
+and KUKA combines KUKA.Sim with controller and connectivity options for
+[offline programming and virtual commissioning](https://www.kuka.com/kuka-sim).
+
+Even a virtual controller does not make the complete cell real. Contact,
+gripping, process behavior, external equipment, communication, and mechanical
+variation still depend on the surrounding model.
+
+# PLC integration and virtual commissioning
+
+Offline robot programming tests the robot program. A working cell also needs the
+PLC and robot to coordinate with sensors, grippers, conveyors, machines, and
+operator commands. These control programs can be developed at the same time as
+the virtual cell.
+
+In a connected simulation, the signal loop works like this:
+
+1. A simulated sensor or device produces an input signal.
+2. The PLC or controller executes the actual control logic.
+3. Its outputs command simulated actuators or robot actions.
+4. The model changes state and returns new sensor signals.
+
+For the palletizing example, the virtual conveyor can activate
+`part_at_pick`. The PLC then checks that the robot is ready and permits the
+pick. The robot reports `pick_complete`, and the PLC releases the next box.
+Faults such as a missing box, failed grip, full pallet, or lost ready signal can
+be tested before all physical equipment is available. Such an agreed sequence
+of signals between controllers is often called a **handshake**.
+
+**Virtual commissioning** means using a simulated machine or production system
+to test the real or representative control software before commissioning the
+physical system. The controller can also be simulated, often called
+**software-in-the-loop**, or a physical PLC or robot controller can be connected
+to the model, often called **hardware-in-the-loop**. The exact boundary depends
+on the available software, interfaces, and project goals.
+
+This approach allows robot programmers, PLC programmers, and mechanical
+designers to work in parallel. Errors in the I/O list, sequence, interlocks,
+timeouts, reset behavior, and product handling can be found while the mechanical
+cell is still being assembled. An **interlock** is a condition that blocks an
+action until the required state is true, for example preventing the conveyor
+from moving while the robot is picking a box. Visual Components provides an
+official
+[virtual commissioning learning path](https://academy.visualcomponents.com/learning-paths/virtual-commissioning/)
+that includes component behavior, PLC connectivity, and connections to several
+robot-controller environments.
+
+Virtual commissioning reduces the amount of control debugging that must happen
+for the first time on the physical cell. It does not remove physical
+commissioning. Wiring, sensor placement, network behavior, mechanical
+tolerances, calibration, stopping performance, process quality, and safety
+functions still have to be checked on the finished installation.
+
+# Simulation and digital twins
+
+The term **digital twin** is often used loosely, but not every CAD model or
+simulation is a digital twin. A practical distinction is:
+
+| Digital representation | What it contains | Connection to the real system |
+|---|---|---|
+| 3D model | Geometry and component structure | Usually none |
+| Simulation model | Executable behavior for experiments and predictions | May be completely offline |
+| Digital twin | A fit-for-purpose digital representation that is connected to and updated from a particular physical system | Operational data keeps relevant state aligned with its physical counterpart |
+
+Definitions vary between organizations and applications. The important
+additional idea is the continuing connection to a particular physical asset or
+process. NIST describes digital twins as dynamic, data-driven representations
+that combine models with connectivity and synchronization
+([NIST digital-twin overview](https://www.nist.gov/digital-twins) and
+[essential elements](https://www.nist.gov/digital-twins/essential-elements)).
+
+For the palletizing cell, an offline simulation might use an assumed arrival
+rate and robot cycle time. A digital-twin implementation could receive actual
+PLC states, production counts, robot positions, alarms, and measured cycle
+times. The digital representation could then support:
+
+- monitoring the current cell state and production performance;
+- finding differences between expected and measured behavior;
+- evaluating a new schedule or product mix before applying it;
+- diagnosing repeated stops or bottlenecks; and
+- estimating when equipment will require maintenance.
+
+For **predictive maintenance**, operational measurements such as motor current,
+temperature, vibration, cycle count, or fault history are combined with a model
+or data analysis to estimate deterioration and future maintenance needs. A 3D
+visualization alone cannot make such a prediction. The data must be relevant,
+reliable, and connected to a validated health model.
+
+Maintaining a digital twin is an engineering task of its own. Model versions,
+controller changes, replaced equipment, sensor quality, data ownership,
+connectivity, and cybersecurity must be managed throughout the cell's life. A
+digital twin that no longer matches its physical counterpart can support worse
+decisions than a simpler but well-maintained simulation.
+
+# Choosing a simulation tool
+
+No single tool is best for every question. Some tools focus on multi-vendor
+factory layouts and material flow, some on detailed robot-controller behavior,
+and others on PLC logic or physics. The required interfaces and the software
+supported by the equipment vendor are often as important as the 3D functions.
+
+| Tool category and examples | Strong fit |
+|---|---|
+| [Visual Components](https://www.visualcomponents.com/products/manufacturing-simulation/) | Multi-vendor robot cells and production systems, layout and material-flow simulation, OLP, and PLC or robot-controller connectivity. This is the main simulation environment used in this course. |
+| [RoboDK](https://robodk.com/doc/en/Getting-Started.html) | Multi-vendor robot simulation and OLP, especially robot paths, machining and process applications, calibration, and program generation. |
+| Vendor-specific tools such as [ABB RobotStudio](https://www.abb.com/global/en/areas/robotics/products/software/robotstudio-suite/robotstudio-desktop), [KUKA.Sim](https://www.kuka.com/kuka-sim), and [FANUC ROBOGUIDE](https://www.fanuc.co.jp/en/product/robot/function/roboguide.html) | Detailed work with one vendor's robots, program format, controller behavior, configuration, and optional application packages. |
+| [Factory I/O](https://docs.factoryio.com/) | Learning and testing PLC and automation logic with configurable virtual factory scenes and connections to physical or simulated PLCs. It is not primarily a detailed robot OLP system. |
+
+Before selecting a tool, ask:
+
+- Is the main question about robot paths, control logic, material flow, physics,
+  training, or operational data?
+- Which robot, PLC, postprocessor, protocol, or virtual controller must be
+  supported?
+- Which results need to be accurate, and how will they be validated?
+- Will the model be used once for a concept, transferred to a real cell, or
+  maintained during operation?
+- Who must build, understand, and update the model?
+
+# A practical simulation workflow
+
+Use simulation as an engineering experiment rather than as an animation task:
+
+1. **State the decision.** Write down the question and what result would be
+   acceptable before building the model.
+2. **Choose the model boundary.** Decide which equipment, behavior, people,
+   products, and failure cases can affect that result.
+3. **Select the required fidelity.** Use the simplest representation that can
+   answer the question, but do not omit details that could change the decision.
+4. **Build from controlled data.** Record the sources and versions of robot
+   models, CAD geometry, frames, cycle times, I/O lists, and process assumptions.
+5. **Design scenarios.** Include normal production, relevant product variants,
+   waiting conditions, and selected faults rather than running only one ideal
+   cycle.
+6. **Verify and validate.** Check model logic and compare important outputs with
+   datasheets, calculations, controller results, or physical measurements.
+7. **Document the result.** Record assumptions, limitations, model version, and
+   the evidence supporting the conclusion.
+8. **Transfer carefully.** Treat offline programs and virtual commissioning
+   results as inputs to controlled physical commissioning, not as proof that the
+   real cell will work identically.
+
+# Exercises
+
+1. For the palletizing example, choose three questions from the introduction.
+   For each question, identify the model boundary, required input data, useful
+   output, and one assumption that could make the result wrong.
+2. In Visual Components, create two feasible layouts for the same robot,
+   conveyor, and palletizing task. Compare reachability, collisions, robot
+   configurations, floor-space use, and cycle time. Recommend one layout and
+   state which conclusions still require physical checks.
+3. Introduce one deliberate model error, such as a wrong TCP, displaced pallet
+   frame, idealized sensor, or missing process delay. Run the simulation before
+   and after correcting it. Explain which conclusions were affected and why the
+   error was or was not visually obvious.
+4. Define a PLC--robot handshake for the palletizing cell. Include at least
+   `part_at_pick`, `robot_ready`, `pick_complete`, and a fault or reset signal.
+   Test the normal sequence and two abnormal situations in simulation.
+5. Create or inspect an offline robot program. List the information that must
+   match between the simulated and real cell before transferring it. Separate
+   what can be checked in simulation from what must be calibrated or tested on
+   the physical installation.
+6. Classify each of the following as a 3D model, simulation, virtual
+   commissioning setup, or digital twin: a CAD layout, an animated robot cycle,
+   a PLC controlling a simulated conveyor, and a live model receiving production
+   data from an installed cell. Explain what additional connection or behavior
+   moves each example to the next category.
+7. Use the same simulated cell for the risk-assessment exercise on the
+   [robot safety page](robot_safety.qmd#exercises). Identify which observations
+   are supported by the model and which safety conclusions require information
+   or tests from the physical installation.
