@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -71,6 +90,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -185,8 +207,32 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#why-simulate" id="toc-why-simulate" class="nav-link active" data-scroll-target="#why-simulate">Why simulate?</a></li>
+  <li><a href="#a-model-built-for-a-purpose" id="toc-a-model-built-for-a-purpose" class="nav-link" data-scroll-target="#a-model-built-for-a-purpose">A model built for a purpose</a>
+  <ul class="collapse">
+  <li><a href="#model-fidelity-and-the-simulation-to-reality-gap" id="toc-model-fidelity-and-the-simulation-to-reality-gap" class="nav-link" data-scroll-target="#model-fidelity-and-the-simulation-to-reality-gap">Model fidelity and the simulation-to-reality gap</a></li>
+  </ul></li>
+  <li><a href="#levels-of-simulation" id="toc-levels-of-simulation" class="nav-link" data-scroll-target="#levels-of-simulation">Levels of simulation</a>
+  <ul class="collapse">
+  <li><a href="#robot-level-simulation" id="toc-robot-level-simulation" class="nav-link" data-scroll-target="#robot-level-simulation">Robot-level simulation</a></li>
+  <li><a href="#cell-and-production-flow-simulation" id="toc-cell-and-production-flow-simulation" class="nav-link" data-scroll-target="#cell-and-production-flow-simulation">Cell and production-flow simulation</a></li>
+  </ul></li>
+  <li><a href="#simulation-through-a-lean-robotics-project" id="toc-simulation-through-a-lean-robotics-project" class="nav-link" data-scroll-target="#simulation-through-a-lean-robotics-project">Simulation through a Lean Robotics project</a></li>
+  <li><a href="#offline-robot-programming" id="toc-offline-robot-programming" class="nav-link" data-scroll-target="#offline-robot-programming">Offline robot programming</a>
+  <ul class="collapse">
+  <li><a href="#generic-models-and-virtual-controllers" id="toc-generic-models-and-virtual-controllers" class="nav-link" data-scroll-target="#generic-models-and-virtual-controllers">Generic models and virtual controllers</a></li>
+  </ul></li>
+  <li><a href="#sec-virtual-commissioning" id="toc-sec-virtual-commissioning" class="nav-link" data-scroll-target="#sec-virtual-commissioning">PLC integration and virtual commissioning</a></li>
+  <li><a href="#simulation-and-digital-twins" id="toc-simulation-and-digital-twins" class="nav-link" data-scroll-target="#simulation-and-digital-twins">Simulation and digital twins</a></li>
+  <li><a href="#choosing-a-simulation-tool" id="toc-choosing-a-simulation-tool" class="nav-link" data-scroll-target="#choosing-a-simulation-tool">Choosing a simulation tool</a></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/simulation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -210,11 +256,296 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Simulation is good</p>
+<section id="why-simulate" class="level1">
+<h1>Why simulate?</h1>
+<p>Before a robot cell exists, many decisions already have to be made. Can the robot reach all required poses? Is there enough space for the tool and workpiece? Will the cell meet the required cycle time? How should the robot, conveyors, sensors, and PLC coordinate? Building the cell first and answering these questions afterwards is slow, expensive, and difficult to change.</p>
+<p>A <strong>simulation</strong> lets you investigate such questions using an executable model of the planned or existing system. You can change the model, run an experiment, observe the result, and compare alternatives without immediately changing the real equipment. This makes simulation useful for robot motion, complete cells, production lines, training, and communication with customers and operators. Here, <strong>executable</strong> means that the model changes over time: components move, signals change, and the modeled equipment responds according to defined behavior. A static 3D drawing can be part of a simulation model, but it is not a simulation by itself.</p>
+<p>Consider a palletizing cell in which a robot picks boxes from a conveyor and places them on pallets. A simulation could help select the robot and gripper, develop the layout, check reachability and collisions, estimate cycle time and production capacity, and test how the PLC sequence responds to missing boxes, full pallets, or stopped equipment. The same model can also make the proposed cell easier to discuss with the customer and the people who will operate it.</p>
+<p>These are not all the same simulation problem. A rough layout may be sufficient for checking floor space, while cycle-time prediction or testing connected control software needs much more detailed behavior. The purpose of the simulation therefore determines what must be included in the model.</p>
+<p>The questions above are not only technical checks. Together, they can provide an early <strong>proof of concept</strong> before investing in the robot, tooling, fixtures, sensors, safety equipment, engineering, and installation. The simulation helps show whether a concept deserves further development and which uncertain parts still need more investigation.</p>
+<p>These technical results can support the business case. For example, simulated cycle time and production capacity can be combined with expected production volume, labor requirements, integration costs, and operating costs to estimate payback and compare alternative concepts. Simulation does not calculate profitability by itself, but it can replace important guesses with better evidence while changes are still inexpensive.</p>
+<p>This is where simulation connects usefully to Lean Robotics. The methodology recommends comparing the current and proposed tasks, calculating return on investment, and de-risking critical assumptions before finalizing the robotic cell concept <span class="citation" data-cites="Bouchard.2017">(<a href="#ref-Bouchard.2017" role="doc-biblioref">Bouchard 2017</a>)</span>. Simulation is one practical tool for supporting those steps; it is not itself a Lean Robotics principle.</p>
+<p>In this course, we use <a href="https://www.visualcomponents.com/products/manufacturing-simulation/">Visual Components Premium OLP 5.1</a> as our main environment for building robot cells, simulating production behavior, developing robot operations, and connecting simulation with PLC programming. It is one example of a simulation platform, not the only possible choice.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A simulation is not automatically a correct prediction of reality. It answers a question <strong>within the assumptions and limitations of its model</strong>. A convincing 3D animation can still give a wrong result.</p>
+</div>
+</div>
+</section>
+<section id="a-model-built-for-a-purpose" class="level1">
+<h1>A model built for a purpose</h1>
+<p>A model is a deliberate simplification. It contains the parts of reality that matter for the current question and leaves other details out. A useful model is therefore not necessarily the most detailed model; it is detailed enough to support the decision you need to make.</p>
+<p>You have probably encountered George Box’s well-known reminder: “Essentially, all models are wrong, but some are useful” <span class="citation" data-cites="BoxDraper.1987">(<a href="#ref-BoxDraper.1987" role="doc-biblioref">Box and Draper 1987, 424</a>)</span>. Here, <strong>wrong</strong> means incomplete or simplified, not worthless.</p>
+<p>The <strong>model boundary</strong> separates what is represented inside the simulation from what is treated as an external input or left out. A robot-only model has a narrow boundary. A production-line model may include several machines, operators, material flow, and control systems.</p>
+<p>Building a working simulation has an important side effect: it forces you to make details explicit. You must decide where a sensor is located, when a part appears, which signal starts a motion, how long an operation takes, and what happens next. Questions that might remain hidden in a drawing or meeting often become visible because the simulation cannot run until some behavior has been defined.</p>
+<p>This can also create false confidence. The simulation only forces you to define what is represented in the model. A sensor may work perfectly by default, a gripper may never drop a part, and communication may have no delay. Once the virtual cell runs smoothly, it is easy to forget which real-world details are still missing. Treat a successful run as evidence about the modeled system, not as proof that the physical cell is complete.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Question</th>
+<th>Information the model needs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Can the robot reach the task?</td>
+<td>Correct robot kinematics, tool, workpiece poses, frames, and joint limits</td>
+</tr>
+<tr class="even">
+<td>Can the motion collide with something?</td>
+<td>Relevant collision geometry and the actual robot paths</td>
+</tr>
+<tr class="odd">
+<td>What is the robot cycle time?</td>
+<td>Controller behavior, speeds, accelerations, blending, tool actions, and process delays</td>
+</tr>
+<tr class="even">
+<td>Can the cell meet its production target?</td>
+<td>Robot and machine cycle times, part arrivals, buffers, failures, and control logic</td>
+</tr>
+<tr class="odd">
+<td>Does the PLC sequence work?</td>
+<td>Sensors, actuators, I/O mapping, state changes, timing, and fault scenarios</td>
+</tr>
+<tr class="even">
+<td>Is the layout suitable for the people using it?</td>
+<td>Access routes and the tasks performed during production, teaching, recovery, and maintenance</td>
+</tr>
+</tbody>
+</table>
+<p>For example, a simplified box is often sufficient when checking whether a workpiece collides with a fence. The same box may be inadequate when checking whether a gripper finger fits into a narrow opening. Adding detail that cannot change the answer only makes the model slower to build and harder to maintain.</p>
+<section id="model-fidelity-and-the-simulation-to-reality-gap" class="level2">
+<h2 class="anchored" data-anchor-id="model-fidelity-and-the-simulation-to-reality-gap">Model fidelity and the simulation-to-reality gap</h2>
+<p><strong>Model fidelity</strong> describes how closely the relevant behavior of the model matches the real system. Fidelity is not one overall percentage. A model can have accurate robot geometry but unrealistic sensor timing, or realistic material flow but only approximate robot motion.</p>
+<p>Different levels of fidelity within one model are not only acceptable but often desirable. Use high fidelity where an error could change the decision, and use simpler representations where additional detail would not affect the result. This avoids spending unnecessary time, data preparation, maintenance effort, and computing resources while preserving accuracy where it matters.</p>
+<p>The difference between simulated and real behavior is often called the <strong>simulation-to-reality gap</strong>, or simply the <strong>sim-to-real gap</strong>. In industrial robotics, common causes are inaccurate geometry, frames, payload data, or robot configurations; idealized sensors, gripping, contact, and communication; differences between generic simulated motion and the real controller; omitted process variation and recovery situations; and physical changes that were not added to the model.</p>
+<p>The gap cannot be removed by making the graphics more realistic. It is reduced by using trustworthy input data, calibrating the real cell, comparing important simulation results with independent calculations or measurements, and updating the model when the installation changes.</p>
+<p>Two checks are useful. <strong>Verification</strong> asks whether the model has been implemented as intended. For example, are signals connected to the correct simulated sensors, and does the gripper logic follow the specified sequence?</p>
+<p><strong>Validation</strong> asks whether the model represents the real system well enough for its intended use. For example, do measured robot cycle times agree closely enough with the simulated times for a production-capacity decision?</p>
+<p>Validation is always connected to a purpose. A model validated for explaining a cell concept to a customer is not automatically accurate enough for predicting throughput or transferring a robot program.</p>
+<p>The evidence behind a simulation should remain traceable. Record the sources and versions of important input data, the assumptions and limitations, the scenarios that were tested, and the model version used to produce the result. Relevant scenarios may include normal production, product variants, waiting conditions, and selected faults rather than only one ideal cycle.</p>
+</section>
+</section>
+<section id="levels-of-simulation" class="level1">
+<h1>Levels of simulation</h1>
+<p>Simulation models can focus on different levels of an automation system. A robot-level model answers detailed questions about the manipulator and its motion, while a cell or production-level model describes how equipment, products, control systems, and people interact. These are complementary views, not project phases that must be completed in a fixed order. Modern simulation tools such as Visual Components naturally combine both levels in one model, so robot motion and the surrounding production flow can be studied together.</p>
+<p>When an existing manual process is being automated, the current task and layout provide the natural starting point, as described later in the Lean Robotics workflow. For a completely new production task, there is no manual cell to map. The starting point is instead the required input, output, process, production target, and constraints. In both cases, the simulation boundary may eventually include the tool, fixtures, workpieces, conveyors, machines, sensors, operators, PLC, and other robots.</p>
+<section id="robot-level-simulation" class="level2">
+<h2 class="anchored" data-anchor-id="robot-level-simulation">Robot-level simulation</h2>
+<p>At robot level, simulation is closely connected to the concepts from <a href="../pages/frames_poses.html">frames and poses</a>, <a href="../pages/kinematics.html">kinematics</a>, path planning, and motion control. Path planning determines a feasible motion between poses, while motion control governs how the robot axes follow the commanded motion. At this level, simulation is mainly used to check reachability and collisions, identify difficult joint configurations or singularities, and estimate cycle time. For process tasks, the simulated path also helps verify that the tool keeps the required orientation relative to the workpiece.</p>
+<p>In Visual Components, this corresponds to teaching positions and building robot programs from routines and statements, with the appropriate tool and base frames. Its robot-simulation tools can then be used to inspect reachability, collisions, and cycle time. In Premium OLP, <strong>Path Check</strong> can inspect the interpolated motion between program statements; path-solving tools can also be used where the corresponding add-on is available. The <a href="https://academy.visualcomponents.com/learning-paths/using-visual-components-for-robot-simulation/">Visual Components robot-simulation learning path</a> introduces these software concepts.</p>
+<p>For the palletizing example, the robot can reach the top of a new pallet quite easily but may struggle with the lowest boxes at the far side. A simulation lets you test the robot position, pallet orientation, tool length, and approach direction before fixing the layout.</p>
+</section>
+<section id="cell-and-production-flow-simulation" class="level2">
+<h2 class="anchored" data-anchor-id="cell-and-production-flow-simulation">Cell and production-flow simulation</h2>
+<p>At cell or production-line level, the main question is often not one robot pose but how resources interact over time. A box arrives, a sensor changes state, the PLC starts the robot, a machine finishes, or a buffer becomes full. These changes are commonly represented as events in a <strong>discrete-event simulation</strong>.</p>
+<p>This broader model can reveal production rate, queues, buffers, bottlenecks, and resource utilization. It can also show how product variants, failures, material shortages, or coordination between processes affect the complete system.</p>
+<p>In Visual Components, the closest counterpart is <strong>Process Modeling</strong>. A <strong>product</strong> is an item moving through production, a <strong>process</strong> defines what happens at a station, and a <strong>flow</strong> defines the sequence of processes that the product follows. The <strong>Process Flow editor</strong> is used to define this sequence, while transport links and controllers represent movement between processes. The <a href="https://academy.visualcomponents.com/courses/introduction-to-process-modeling/">Introduction to Process Modeling</a> uses this vocabulary to build production-flow simulations.</p>
+<p>A robot path that is two seconds faster may have no effect on total production if the robot is usually waiting for the upstream machine. Conversely, a small buffer may increase production more than a faster robot. Whole-cell simulation helps reveal these system-level effects.</p>
+</section>
+</section>
+<section id="simulation-through-a-lean-robotics-project" class="level1">
+<h1>Simulation through a Lean Robotics project</h1>
+<p>Lean Robotics organizes robotic-cell deployment into four phases: <strong>Prepare</strong>, <strong>Design</strong>, <strong>Integrate</strong>, and <strong>Operate</strong> <span class="citation" data-cites="Bouchard.2017">(<a href="#ref-Bouchard.2017" role="doc-biblioref">Bouchard 2017</a>)</span>. Simulation is not an additional phase. It is a tool that can support decisions and reduce uncertainty throughout this workflow. <a href="#fig-simulation-workflow" class="quarto-xref">Figure&nbsp;1</a> keeps the same four-phase structure.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-simulation-workflow" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-simulation-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-simulation-workflow">flowchart LR
+    A["Prepare&lt;br/&gt;Task, goals, and team"] --&gt; B["Design&lt;br/&gt;Manual task, robotic concept, and comparison"]
+    B --&gt; C["Integrate&lt;br/&gt;Build, program, test, and install"]
+    C --&gt; D["Operate&lt;br/&gt;Start, monitor, and improve"]
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simulation-workflow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The four phases of robotic-cell deployment used in Lean Robotics. Simulation and Visual Components support work within each phase rather than forming a separate phase.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The Design phase in Lean Robotics moves from understanding the current manual task to defining and comparing a robotic alternative before the cell concept is finalized. This is where simulation can provide an early proof of concept and help de-risk the <strong>minimum viable robotic cell</strong>: a deliberately simple first cell that can deliver the required production value. The model can then be developed further during integration and corrected using observations from operation.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Lean Robotics phase</th>
+<th>How simulation can support the project</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Prepare</td>
+<td>Define the task, desired output, production target, and questions the simulation must answer. Gather the data needed to model the current task.</td>
+</tr>
+<tr class="even">
+<td>Design</td>
+<td>Represent the current process and proposed robotic process, compare layouts and equipment, and investigate reachability, material flow, cycle time, capacity, and important uncertainties before committing to a concept.</td>
+</tr>
+<tr class="odd">
+<td>Integrate</td>
+<td>Develop robot programs and detailed cell behavior, connect representative control software to the simulated cell, and test sequences, signals, product variants, and selected faults before installation.</td>
+</tr>
+<tr class="even">
+<td>Operate</td>
+<td>Compare predicted and measured performance, update the model when the cell changes, and test possible improvements before modifying production equipment.</td>
+</tr>
+</tbody>
+</table>
+<p>Lean Robotics provides the deployment method; Visual Components provides models and tests that support parts of that method. The connected controller testing described in <a href="#sec-virtual-commissioning" class="quarto-xref">Section&nbsp;6</a> fits mainly within the Integrate phase, but it depends on the cell model and decisions developed during Design.</p>
+<p>Simulation is useful for discussing safety early because layouts, access, tasks, and abnormal situations can be made visible and changed while the design is still flexible. It does not validate the safety of the physical installation. The limits of simulation for safety work are discussed further in <a href="../pages/robot_safety.html#simulation-as-a-safety-tool">Simulation as a safety tool</a>.</p>
+</section>
+<section id="offline-robot-programming" class="level1">
+<h1>Offline robot programming</h1>
+<p>Simulation and offline programming are related but not identical. <strong>Simulation</strong> is the broader activity of experimenting with a model. <strong>Offline programming (OLP)</strong> uses a simulation environment to create or modify a robot task program away from the physical robot. The complete OLP workflow, including postprocessing and transfer, is covered on the <a href="../pages/robot_programming.html#offline-programming-and-simulation">robot programming page</a>.</p>
+<p><a href="#fig-simulation-olp" class="quarto-xref">Figure&nbsp;2</a> shows a typical OLP environment. The 3D model provides the context for tools, frames, workpieces, targets, paths, collisions, and robot configurations.</p>
+<div id="fig-simulation-olp" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Visual Components offline programming environment showing an industrial robot, cell geometry, paths, targets, and program statements">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-simulation-olp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="img/visual_components_olp5-2.png" class="img-fluid figure-img" alt="Visual Components offline programming environment showing an industrial robot, cell geometry, paths, targets, and program statements">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simulation-olp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: A robot offline-programming environment in which the cell model, robot paths, targets, and program are developed together. Image source: <a href="https://www.visualcomponents.com/blog/steps-of-the-olp-process/">Visual Components</a>.
+</figcaption>
+</figure>
+</div>
+<p>A visually correct simulation is not enough for program transfer. The real robot must agree with the model about the TCP, bases, fixture and workpiece positions, robot configuration, controller options, and program semantics. Calibration connects the coordinate systems of the virtual and physical cells.</p>
+<section id="generic-models-and-virtual-controllers" class="level2">
+<h2 class="anchored" data-anchor-id="generic-models-and-virtual-controllers">Generic models and virtual controllers</h2>
+<p>A general simulation tool can calculate robot motion from a kinematic model and then translate the result through a postprocessor. This is flexible and supports many robot brands, but details such as path blending, motion timing, and special instructions may differ from the real controller.</p>
+<p>A <strong>virtual controller</strong> runs the robot vendor’s controller software, or a closely corresponding software version, on a computer. It can provide better agreement for program syntax, configuration, motion generation, I/O behavior, and cycle time. For example, ABB describes RobotStudio as using an <a href="https://www.abb.com/global/en/areas/robotics/products/software/robotstudio-suite/robotstudio-desktop">ABB Virtual Controller</a>, and KUKA combines KUKA.Sim with controller and connectivity options for <a href="https://www.kuka.com/kuka-sim">programming and testing a simulated cell</a>.</p>
+<p>Even a virtual controller does not make the complete cell real. Contact, gripping, process behavior, external equipment, communication, and mechanical variation still depend on the surrounding model.</p>
+</section>
+</section>
+<section id="sec-virtual-commissioning" class="level1">
+<h1>PLC integration and virtual commissioning</h1>
+<p>Offline robot programming tests the robot program. A working cell also needs the PLC and robot to coordinate with sensors, grippers, conveyors, machines, and operator commands. These control programs can be developed at the same time as the virtual cell.</p>
+<p>In this course, we develop the PLC program in <a href="https://www.codesys.com/">CODESYS</a> and run it with <strong>CODESYS Control Win SL</strong>, a software-based PLC runtime, or <strong>SoftPLC</strong>, for Windows. Selected PLC variables are exchanged through OPC UA, with Visual Components acting as the client and mapping the variables to signals of the simulated equipment. We can therefore develop the PLC program and virtual cell together while each executes in its own environment. The Visual Components Academy lesson on <a href="https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/">connecting a remote OPC UA server</a> demonstrates the complete setup, including the CODESYS steps.</p>
+<p>In a connected simulation, the signal loop works like this:</p>
+<ol type="1">
+<li>A simulated sensor or device produces an input signal.</li>
+<li>The PLC or controller executes the actual control logic.</li>
+<li>Its outputs command simulated actuators or robot actions.</li>
+<li>The model changes state and returns new sensor signals.</li>
+</ol>
+<p>For the palletizing example, the virtual conveyor can activate <code>part_at_pick</code>. The PLC then checks that the robot is ready and permits the pick. The robot reports <code>pick_complete</code>, and the PLC releases the next box. Faults such as a missing box, failed grip, full pallet, or lost ready signal can be tested before all physical equipment is available. Such an agreed sequence of signals between controllers is often called a <strong>handshake</strong>.</p>
+<p><strong>Commissioning</strong> is the work of bringing the installed cell into operation and checking that its equipment and control programs behave as intended. The core idea of <strong>virtual commissioning</strong> is straightforward: perform part of this testing against a sufficiently representative simulation before the physical cell is ready. It is a structured use of simulation, not a separate kind of automation. What distinguishes it from simply watching a simulation is that the control program and interfaces being tested represent the planned real implementation.</p>
+<p>When both the plant model and controller run as software, the setup is commonly called <strong>software-in-the-loop</strong>. Our CODESYS Control Win SL and Visual Components setup is an example. If a physical PLC or robot controller is connected to the model, it is commonly called <strong>hardware-in-the-loop</strong>. The exact boundary depends on the available software, interfaces, and project goals.</p>
+<p>This approach allows robot programmers, PLC programmers, and mechanical designers to work in parallel. Errors in the I/O list, sequence, interlocks, timeouts, reset behavior, and product handling can be found while the mechanical cell is still being assembled. An <strong>interlock</strong> is a condition that blocks an action until the required state is true, for example preventing the conveyor from moving while the robot is picking a box. The official Visual Components <a href="https://academy.visualcomponents.com/learning-paths/virtual-commissioning/">virtual commissioning learning path</a> places this controller connection in the broader context of component behavior, PLC connectivity, and robot-controller environments.</p>
+<p>Testing against the virtual cell reduces the amount of control debugging that must happen for the first time on the physical cell. It does not remove physical commissioning. Wiring, sensor placement, network behavior, mechanical tolerances, calibration, stopping performance, process quality, and safety functions still have to be checked on the finished installation.</p>
+</section>
+<section id="simulation-and-digital-twins" class="level1">
+<h1>Simulation and digital twins</h1>
+<p>The term <strong>digital twin</strong> is often used loosely, but not every CAD model or simulation is a digital twin. A practical distinction is:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Digital representation</th>
+<th>What it contains</th>
+<th>Connection to the real system</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>3D model</td>
+<td>Geometry and component structure</td>
+<td>Usually none</td>
+</tr>
+<tr class="even">
+<td>Simulation model</td>
+<td>Executable behavior for experiments and predictions</td>
+<td>May be completely offline</td>
+</tr>
+<tr class="odd">
+<td>Digital twin</td>
+<td>A digital representation of a particular physical asset or system that is updated using operational data</td>
+<td>An ongoing data connection keeps relevant state aligned with the physical counterpart and may also support feedback to it</td>
+</tr>
+</tbody>
+</table>
+<p>Definitions vary between organizations and applications. The important additional idea is the continuing connection to a particular physical asset or process. The Norwegian research organization SINTEF describes digital twins as virtual representations built from historical and real-time data, and emphasizes two-way communication where the twin is used to support decisions or actions in the physical system (<a href="https://www.sintef.no/en/expert-list/digital/sustainable-communication-technologies/data-driven-digital-twins/">SINTEF: Data-Driven Digital Twins</a>).</p>
+<p>For the palletizing cell, an offline simulation might use an assumed arrival rate and robot cycle time. A digital-twin implementation could receive actual PLC states, production counts, robot positions, alarms, and measured cycle times. The connected model could then monitor production, reveal differences between expected and measured behavior, test changes to schedules or product mix, help diagnose repeated stops, and support maintenance planning.</p>
+<p>For <strong>predictive maintenance</strong>, operational measurements such as motor current, temperature, vibration, cycle count, or fault history are combined with a model or data analysis to estimate deterioration and future maintenance needs. A 3D visualization alone cannot make such a prediction. The data must be relevant, reliable, and connected to a validated health model.</p>
+<p>Maintaining a digital twin is an engineering task of its own. Model versions, controller changes, replaced equipment, sensor quality, data ownership, connectivity, and cybersecurity must be managed throughout the cell’s life. A digital twin that no longer matches its physical counterpart can support worse decisions than a simpler but well-maintained simulation.</p>
+</section>
+<section id="choosing-a-simulation-tool" class="level1">
+<h1>Choosing a simulation tool</h1>
+<p>No single tool is best for every question. Some tools focus on multi-vendor factory layouts and material flow, some on detailed robot-controller behavior, and others on PLC logic or physics. The required interfaces and the software supported by the equipment vendor are often as important as the 3D functions.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Tool category and examples</th>
+<th>Strong fit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://www.visualcomponents.com/products/manufacturing-simulation/">Visual Components</a></td>
+<td>Multi-vendor robot cells and production systems, layout and material-flow simulation, OLP, and PLC or robot-controller connectivity.</td>
+</tr>
+<tr class="even">
+<td><a href="https://robodk.com/doc/en/Getting-Started.html">RoboDK</a></td>
+<td>Multi-vendor robot simulation and OLP, especially robot paths, machining and process applications, calibration, and program generation.</td>
+</tr>
+<tr class="odd">
+<td>Vendor-specific tools such as <a href="https://www.abb.com/global/en/areas/robotics/products/software/robotstudio-suite/robotstudio-desktop">ABB RobotStudio</a>, <a href="https://www.kuka.com/kuka-sim">KUKA.Sim</a>, and <a href="https://www.fanuc.co.jp/en/product/robot/function/roboguide.html">FANUC ROBOGUIDE</a></td>
+<td>Detailed work with one vendor’s robots, program format, controller behavior, configuration, and optional application packages.</td>
+</tr>
+<tr class="even">
+<td><a href="https://docs.factoryio.com/">Factory I/O</a></td>
+<td>Learning and testing PLC and automation logic with configurable virtual factory scenes and connections to physical or simulated PLCs. It is not primarily a detailed robot OLP system.</td>
+</tr>
+</tbody>
+</table>
+<p>Choose the tool from the question you need to answer, the required robot and PLC interfaces, and the fidelity that can be achieved and validated. Also consider who will build and maintain the model; the most capable software is not useful if it cannot be supported throughout the project.</p>
+</section>
+<section id="exercises" class="level1">
+<h1>Exercises</h1>
+<ol type="1">
+<li>Define three useful simulation questions for the palletizing example. For each question, identify the model boundary, required input data, useful output, and one assumption that could make the result wrong.</li>
+<li>In Visual Components, create two feasible layouts for the same robot, conveyor, and palletizing task. Compare reachability, collisions, robot configurations, floor-space use, and cycle time. Recommend one layout and state which conclusions still require physical checks.</li>
+<li>Introduce one deliberate model error, such as a wrong TCP, displaced pallet frame, idealized sensor, or missing process delay. Run the simulation before and after correcting it. Explain which conclusions were affected and why the error was or was not visually obvious.</li>
+<li>Define a PLC–robot handshake for the palletizing cell. Include at least <code>part_at_pick</code>, <code>robot_ready</code>, <code>pick_complete</code>, and a fault or reset signal. Test the normal sequence and two abnormal situations in simulation.</li>
+<li>Create or inspect an offline robot program. List the information that must match between the simulated and real cell before transferring it. Separate what can be checked in simulation from what must be calibrated or tested on the physical installation.</li>
+<li>Classify each of the following as a 3D model, simulation, virtual commissioning setup, or digital twin: a CAD layout, an animated robot cycle, a PLC controlling a simulated conveyor, and a live model receiving production data from an installed cell. Explain what additional connection or behavior moves each example to the next category.</li>
+<li>Use the same simulated cell for the risk-assessment exercise on the <a href="../pages/robot_safety.html#exercises">robot safety page</a>. Identify which observations are supported by the model and which safety conclusions require information or tests from the physical installation.</li>
+</ol>
 
 
 
-</main> <!-- /main -->
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-Bouchard.2017" class="csl-entry" role="listitem">
+Bouchard, Samuel. 2017. <em>Lean Robotics: A Guide to Making Robots Work in Your Factory</em>. Samuel Bouchard. <a href="https://leanrobotics.org/">https://leanrobotics.org/</a>.
+</div>
+<div id="ref-BoxDraper.1987" class="csl-entry" role="listitem">
+Box, George E. P., and Norman R. Draper. 1987. <em>Empirical Model-Building and Response Surfaces</em>. Wiley.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -620,4 +951,4 @@ ul.task-list li input[type="checkbox"] {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/simulation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/simulation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

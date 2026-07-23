@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Robot safety – Industrial Robotics and PLCs</title>
+<title>Robot Safety – Industrial Robotics and PLCs</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -219,7 +219,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/robot_safety.html">Robot safety</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Robot safety</h1>
+<h1 class="title">Robot Safety</h1>
 </div>
 
 
@@ -413,7 +413,7 @@ Important
 </ul>
 <p>Some PLC platforms can execute the standard control program and a separately managed safety program in the same controller or industrial PC. Such a system can connect to both standard I/O modules and safety-rated I/O modules, sometimes mounted side by side in the same modular I/O station. Production sensors and actuators normally use the standard modules, while devices and outputs that form part of a safety function use suitable safety modules. Sharing a controller, engineering environment, backplane, or network does not remove this distinction. Where a response is required for safety, it must not depend only on ordinary PLC code, ordinary fieldbus data, or the robot’s task program.</p>
 <p><a href="#fig-beckhoff-standard-safety-io" class="quarto-xref">Figure&nbsp;1</a> shows one possible hardware arrangement. In this example, the safety logic is implemented in a dedicated TwinSAFE logic terminal; other Beckhoff architectures can execute the safety program in a safety runtime on an industrial PC.</p>
-<div id="fig-beckhoff-standard-safety-io" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules" data-fig-align="center">
+<div id="fig-beckhoff-standard-safety-io" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-beckhoff-standard-safety-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="img/beckhoff_standard_safety_io.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules">

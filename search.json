@@ -4,7 +4,51 @@
     "href": "pages/simulation.html",
     "title": "Simulation",
     "section": "",
-    "text": "Simulation is good",
+    "text": "Before a robot cell exists, many decisions already have to be made. Can the robot reach all required poses? Is there enough space for the tool and workpiece? Will the cell meet the required cycle time? How should the robot, conveyors, sensors, and PLC coordinate? Building the cell first and answering these questions afterwards is slow, expensive, and difficult to change.\nA simulation lets you investigate such questions using an executable model of the planned or existing system. You can change the model, run an experiment, observe the result, and compare alternatives without immediately changing the real equipment. This makes simulation useful for robot motion, complete cells, production lines, training, and communication with customers and operators. Here, executable means that the model changes over time: components move, signals change, and the modeled equipment responds according to defined behavior. A static 3D drawing can be part of a simulation model, but it is not a simulation by itself.\nConsider a palletizing cell in which a robot picks boxes from a conveyor and places them on pallets. A simulation could help select the robot and gripper, develop the layout, check reachability and collisions, estimate cycle time and production capacity, and test how the PLC sequence responds to missing boxes, full pallets, or stopped equipment. The same model can also make the proposed cell easier to discuss with the customer and the people who will operate it.\nThese are not all the same simulation problem. A rough layout may be sufficient for checking floor space, while cycle-time prediction or testing connected control software needs much more detailed behavior. The purpose of the simulation therefore determines what must be included in the model.\nThe questions above are not only technical checks. Together, they can provide an early proof of concept before investing in the robot, tooling, fixtures, sensors, safety equipment, engineering, and installation. The simulation helps show whether a concept deserves further development and which uncertain parts still need more investigation.\nThese technical results can support the business case. For example, simulated cycle time and production capacity can be combined with expected production volume, labor requirements, integration costs, and operating costs to estimate payback and compare alternative concepts. Simulation does not calculate profitability by itself, but it can replace important guesses with better evidence while changes are still inexpensive.\nThis is where simulation connects usefully to Lean Robotics. The methodology recommends comparing the current and proposed tasks, calculating return on investment, and de-risking critical assumptions before finalizing the robotic cell concept (Bouchard 2017). Simulation is one practical tool for supporting those steps; it is not itself a Lean Robotics principle.\nIn this course, we use Visual Components Premium OLP 5.1 as our main environment for building robot cells, simulating production behavior, developing robot operations, and connecting simulation with PLC programming. It is one example of a simulation platform, not the only possible choice.\n\n\n\n\n\n\nImportant\n\n\n\nA simulation is not automatically a correct prediction of reality. It answers a question within the assumptions and limitations of its model. A convincing 3D animation can still give a wrong result.",
+    "crumbs": [
+      "Simulation",
+      "Simulation"
+    ]
+  },
+  {
+    "objectID": "pages/simulation.html#model-fidelity-and-the-simulation-to-reality-gap",
+    "href": "pages/simulation.html#model-fidelity-and-the-simulation-to-reality-gap",
+    "title": "Simulation",
+    "section": "Model fidelity and the simulation-to-reality gap",
+    "text": "Model fidelity and the simulation-to-reality gap\nModel fidelity describes how closely the relevant behavior of the model matches the real system. Fidelity is not one overall percentage. A model can have accurate robot geometry but unrealistic sensor timing, or realistic material flow but only approximate robot motion.\nDifferent levels of fidelity within one model are not only acceptable but often desirable. Use high fidelity where an error could change the decision, and use simpler representations where additional detail would not affect the result. This avoids spending unnecessary time, data preparation, maintenance effort, and computing resources while preserving accuracy where it matters.\nThe difference between simulated and real behavior is often called the simulation-to-reality gap, or simply the sim-to-real gap. In industrial robotics, common causes are inaccurate geometry, frames, payload data, or robot configurations; idealized sensors, gripping, contact, and communication; differences between generic simulated motion and the real controller; omitted process variation and recovery situations; and physical changes that were not added to the model.\nThe gap cannot be removed by making the graphics more realistic. It is reduced by using trustworthy input data, calibrating the real cell, comparing important simulation results with independent calculations or measurements, and updating the model when the installation changes.\nTwo checks are useful. Verification asks whether the model has been implemented as intended. For example, are signals connected to the correct simulated sensors, and does the gripper logic follow the specified sequence?\nValidation asks whether the model represents the real system well enough for its intended use. For example, do measured robot cycle times agree closely enough with the simulated times for a production-capacity decision?\nValidation is always connected to a purpose. A model validated for explaining a cell concept to a customer is not automatically accurate enough for predicting throughput or transferring a robot program.\nThe evidence behind a simulation should remain traceable. Record the sources and versions of important input data, the assumptions and limitations, the scenarios that were tested, and the model version used to produce the result. Relevant scenarios may include normal production, product variants, waiting conditions, and selected faults rather than only one ideal cycle.",
+    "crumbs": [
+      "Simulation",
+      "Simulation"
+    ]
+  },
+  {
+    "objectID": "pages/simulation.html#robot-level-simulation",
+    "href": "pages/simulation.html#robot-level-simulation",
+    "title": "Simulation",
+    "section": "Robot-level simulation",
+    "text": "Robot-level simulation\nAt robot level, simulation is closely connected to the concepts from frames and poses, kinematics, path planning, and motion control. Path planning determines a feasible motion between poses, while motion control governs how the robot axes follow the commanded motion. At this level, simulation is mainly used to check reachability and collisions, identify difficult joint configurations or singularities, and estimate cycle time. For process tasks, the simulated path also helps verify that the tool keeps the required orientation relative to the workpiece.\nIn Visual Components, this corresponds to teaching positions and building robot programs from routines and statements, with the appropriate tool and base frames. Its robot-simulation tools can then be used to inspect reachability, collisions, and cycle time. In Premium OLP, Path Check can inspect the interpolated motion between program statements; path-solving tools can also be used where the corresponding add-on is available. The Visual Components robot-simulation learning path introduces these software concepts.\nFor the palletizing example, the robot can reach the top of a new pallet quite easily but may struggle with the lowest boxes at the far side. A simulation lets you test the robot position, pallet orientation, tool length, and approach direction before fixing the layout.",
+    "crumbs": [
+      "Simulation",
+      "Simulation"
+    ]
+  },
+  {
+    "objectID": "pages/simulation.html#cell-and-production-flow-simulation",
+    "href": "pages/simulation.html#cell-and-production-flow-simulation",
+    "title": "Simulation",
+    "section": "Cell and production-flow simulation",
+    "text": "Cell and production-flow simulation\nAt cell or production-line level, the main question is often not one robot pose but how resources interact over time. A box arrives, a sensor changes state, the PLC starts the robot, a machine finishes, or a buffer becomes full. These changes are commonly represented as events in a discrete-event simulation.\nThis broader model can reveal production rate, queues, buffers, bottlenecks, and resource utilization. It can also show how product variants, failures, material shortages, or coordination between processes affect the complete system.\nIn Visual Components, the closest counterpart is Process Modeling. A product is an item moving through production, a process defines what happens at a station, and a flow defines the sequence of processes that the product follows. The Process Flow editor is used to define this sequence, while transport links and controllers represent movement between processes. The Introduction to Process Modeling uses this vocabulary to build production-flow simulations.\nA robot path that is two seconds faster may have no effect on total production if the robot is usually waiting for the upstream machine. Conversely, a small buffer may increase production more than a faster robot. Whole-cell simulation helps reveal these system-level effects.",
+    "crumbs": [
+      "Simulation",
+      "Simulation"
+    ]
+  },
+  {
+    "objectID": "pages/simulation.html#generic-models-and-virtual-controllers",
+    "href": "pages/simulation.html#generic-models-and-virtual-controllers",
+    "title": "Simulation",
+    "section": "Generic models and virtual controllers",
+    "text": "Generic models and virtual controllers\nA general simulation tool can calculate robot motion from a kinematic model and then translate the result through a postprocessor. This is flexible and supports many robot brands, but details such as path blending, motion timing, and special instructions may differ from the real controller.\nA virtual controller runs the robot vendor’s controller software, or a closely corresponding software version, on a computer. It can provide better agreement for program syntax, configuration, motion generation, I/O behavior, and cycle time. For example, ABB describes RobotStudio as using an ABB Virtual Controller, and KUKA combines KUKA.Sim with controller and connectivity options for programming and testing a simulated cell.\nEven a virtual controller does not make the complete cell real. Contact, gripping, process behavior, external equipment, communication, and mechanical variation still depend on the surrounding model.",
     "crumbs": [
       "Simulation",
       "Simulation"
@@ -13,7 +57,7 @@
   {
     "objectID": "pages/robot_safety.html",
     "href": "pages/robot_safety.html",
-    "title": "Robot safety",
+    "title": "Robot Safety",
     "section": "",
     "text": "Industrial robots can remove people from heavy, repetitive, dirty, and dangerous work. At the same time, a robot cell combines powerful motion, automatic control, tools, workpieces, and other machinery. Safe automation therefore depends on the complete application and on how people actually work with it, not only on the robot arm.\nRobot safety is not a feature that can be added after the cell has been designed. It is a chain of decisions connecting the work people need to perform with the layout, equipment, control system, working procedures, and checks on the finished installation. A useful question throughout this process is:\nThe first half of the question directs attention to people, tasks, access, and unusual situations such as cleaning or fault recovery. The second half requires a concrete explanation of how the danger is removed, separated, detected, limited, or otherwise controlled. That explanation must still make sense when equipment fails, someone needs access, or the application changes.\nA hazard is something with the potential to cause harm. Risk describes how serious that harm could be and how likely it is to occur in the situation being considered. A robot can remain a hazard even when protective measures have reduced the associated risk.\nA risk assessment is the structured and documented process used to work through this reasoning. You examine the tasks and people involved, identify hazards and possible harm, decide where further risk reduction is needed, and record the assumptions behind those decisions. Risk reduction then changes the design or adds protective measures. The finished measures must be implemented, tested, maintained, and reconsidered when the cell or its use changes. This is the overall safety process that the rest of the page develops.",
     "crumbs": [
@@ -24,7 +68,7 @@
   {
     "objectID": "pages/robot_safety.html#normal-io-and-safety-io",
     "href": "pages/robot_safety.html#normal-io-and-safety-io",
-    "title": "Robot safety",
+    "title": "Robot Safety",
     "section": "Normal I/O and safety I/O",
     "text": "Normal I/O and safety I/O\nOrdinary I/O is used for production information and commands: a part-present sensor, a cycle-start request, a completed-operation signal, or a lamp on the operator panel. Safety I/O carries signals that form part of a safety function, such as an interlocked-gate state, a scanner protective field, a safeguard-stop request, or confirmation that a monitored safe state is active.\n\n\n\n\n\n\n\nNormal control\nSafety-related control\n\n\n\n\nUsually processed by the standard PLC program or robot task program\nProcessed by a safety relay, safety PLC, or built-in robot safety controller\n\n\nIntended to control and coordinate production\nIntended to achieve a specified protective response\n\n\nA wiring, communication, or program fault can produce an incorrect value without the diagnostics needed for a safety role\nUses suitable monitoring and diagnostics so relevant faults cause or maintain the specified safe response\n\n\nUseful for status, orderly stopping, sequencing, and messages\nUsed for the safety function itself when the assessment requires a dependable response\n\n\n\nSafety I/O commonly uses monitored channel pairs. The exact architecture depends on the equipment and required function. A normal input does not become safety-related because it is read twice, and an ordinary robot-program if statement does not become safety logic because the variable is named safe.\nSafety-related data can be carried over the same industrial network as ordinary control data by using a dedicated safety communication protocol. Examples include PROFIsafe with PROFINET or PROFIBUS, CIP Safety with EtherNet/IP, and FSoE, short for Fail Safe over EtherCAT, with EtherCAT. These protocols do not assume that the underlying network is free from faults. Instead, the safety layer at the sending and receiving devices checks information such as message identity, order, timing, and integrity. Sharing the physical network does not make ordinary fieldbus data safety-related.",
     "crumbs": [
@@ -35,7 +79,7 @@
   {
     "objectID": "pages/robot_safety.html#where-is-the-safety-logic-implemented",
     "href": "pages/robot_safety.html#where-is-the-safety-logic-implemented",
-    "title": "Robot safety",
+    "title": "Robot Safety",
     "section": "Where is the safety logic implemented?",
     "text": "Where is the safety logic implemented?\nRobot cells often distribute safety-related control across several devices:\n\nThe robot safety controller supervises built-in robot functions such as stops, monitored standstill (a stopped state supervised by the safety controller), speed or position limits, and configured safety inputs and outputs.\nA safety relay can implement a small number of fixed functions, such as connecting one interlocked gate to stop inputs.\nA safety PLC is useful when several guards, scanners, operating modes, robots, conveyors, positioners, or process machines must be coordinated.\nThe standard PLC still manages the production sequence, displays status, requests orderly actions, and starts the process only after the safety system permits operation and the normal process conditions are satisfied.\n\nSome PLC platforms can execute the standard control program and a separately managed safety program in the same controller or industrial PC. Such a system can connect to both standard I/O modules and safety-rated I/O modules, sometimes mounted side by side in the same modular I/O station. Production sensors and actuators normally use the standard modules, while devices and outputs that form part of a safety function use suitable safety modules. Sharing a controller, engineering environment, backplane, or network does not remove this distinction. Where a response is required for safety, it must not depend only on ordinary PLC code, ordinary fieldbus data, or the robot’s task program.\nFigure 1 shows one possible hardware arrangement. In this example, the safety logic is implemented in a dedicated TwinSAFE logic terminal; other Beckhoff architectures can execute the safety program in a safety runtime on an industrial PC.\n\n\n\n\n\n\nFigure 1: A Beckhoff EtherCAT terminal station with grey standard I/O terminals and yellow TwinSAFE safety input, output, and logic terminals. The modules can be mounted together, but standard and safety-related signal processing remain distinct. Image excerpt from the Beckhoff EL2904 operating instructions.\n\n\n\nA robot stop also does not automatically stop the rest of the cell. A gripper may retain stored pneumatic energy, a positioner may continue moving, or a process machine may remain hazardous. The safety function therefore needs a clear span of control: the robot and every other item of equipment that must respond to that input.",
     "crumbs": [
@@ -46,7 +90,7 @@
   {
     "objectID": "pages/robot_safety.html#example-requesting-access-through-an-interlocked-gate",
     "href": "pages/robot_safety.html#example-requesting-access-through-an-interlocked-gate",
-    "title": "Robot safety",
+    "title": "Robot Safety",
     "section": "Example: requesting access through an interlocked gate",
     "text": "Example: requesting access through an interlocked gate\nA simple cell can use the following sequence:\n\nThe operator requests access. The standard PLC can finish the current step and request an orderly process stop.\nThe gate switch is monitored through safety I/O. Opening the gate activates the safety logic even if the ordinary sequence has not stopped correctly.\nThe safety logic commands the robot and every other relevant hazard into the specified safe state.\nHazardous operation remains inhibited while the gate is open.\nClosing the gate restores the safeguard but does not restart the cell. A deliberate reset confirms that the protective arrangement is restored.\nA separate start command is required before automatic production resumes.\n\nIf a person can enter fully and remain hidden inside the cell, closing the gate and pressing reset may not be sufficient. The design can require visibility from the reset position, presence detection, a trapped-key arrangement, or another measure selected for the actual access situation.\nAs one vendor example, current UR controllers provide dedicated and configurable safety I/O for functions such as safeguard stop, emergency stop, reduced mode, and safety status. The UR Safety I/O documentation also shows an interlocked-door example. Other robot and PLC platforms use different terminals, software, and communication systems, but the same input-logic-output reasoning applies.",
     "crumbs": [
@@ -57,7 +101,7 @@
   {
     "objectID": "pages/robot_safety.html#sec-commissioning",
     "href": "pages/robot_safety.html#sec-commissioning",
-    "title": "Robot safety",
+    "title": "Robot Safety",
     "section": "Commissioning and periodic checks",
     "text": "Commissioning and periodic checks\nThe measures selected during risk assessment must be demonstrated on the real installation. Plan the checks so nobody is exposed during the test. Begin under controlled conditions, then cover the operating conditions that matter for the assessment.\nExamples include checking that:\n\nguards and openings control access as intended;\neach gate, scanner, and light curtain affects the correct equipment, and the hazardous functions remain inhibited while access is open;\nreset and start behave as specified without unexpected restart;\nmeasured stop time and distance support the placement of protective equipment;\ntools, workpieces, and stored energy remain controlled during stopping;\nrelevant faults and loss of power or communication produce the intended response; and\nmaintenance, recovery, instructions, and training match the finished cell.\n\nTesting does not mean deliberately destroying equipment. Evidence can include controlled functional tests, measurements, inspection, technical documentation, and supporting simulation. Simulation does not replace the required checks on the real installation. At the same time, an important function cannot simply remain untested because stopping is mechanically unpleasant. Where safety depends on stopping performance, suitable manufacturer data or controlled measurements for the relevant application conditions are needed.",
     "crumbs": [
@@ -68,76 +112,12 @@
   {
     "objectID": "pages/robot_safety.html#changes-after-handover",
     "href": "pages/robot_safety.html#changes-after-handover",
-    "title": "Robot safety",
+    "title": "Robot Safety",
     "section": "Changes after handover",
     "text": "Changes after handover\nHandover is not the end of the process. A new tool, payload, fixture, product, program, operating mode, access point, or surrounding machine can invalidate an earlier assumption. Review such changes before production resumes. Substantial rebuilding can also affect who carries the responsibilities of a machine manufacturer; see Arbeidstilsynet’s guidance for machinery production and modification.",
     "crumbs": [
       "Robot Foundations",
       "Robot safety"
-    ]
-  },
-  {
-    "objectID": "pages/kinematics.html",
-    "href": "pages/kinematics.html",
-    "title": "Kinematics",
-    "section": "",
-    "text": "An industrial robot arm is a collection of joints and links. The controller commands the joints, but the production task usually cares about the tool: where is the TCP, which direction is the tool pointing, and how does it move through the workpiece?\nKinematics is the connection between these two descriptions. It describes how joint positions create the position and orientation of the tool, and how a desired tool pose can be converted back into joint positions.\nFollowing the notation used by Corke, we use q for the robot’s joint coordinates and T for a pose represented as a homogeneous transformation matrix (Corke 2023). In practical terms:\n\nq describes the robot in joint space.\nT describes the TCP in Cartesian space.\nforward kinematics computes T from q.\ninverse kinematics computes one possible q from a desired T.\n\nThis page uses simple planar robot arms to explain the concepts. Real industrial robots move in 3D and usually have six axes, but the same ideas apply.",
-    "crumbs": [
-      "Robot Foundations",
-      "Kinematics"
-    ]
-  },
-  {
-    "objectID": "pages/kinematics.html#sec-redundancy-nullspace",
-    "href": "pages/kinematics.html#sec-redundancy-nullspace",
-    "title": "Kinematics",
-    "section": "Redundancy and nullspace",
-    "text": "Redundancy and nullspace\nIt is useful to relate inverse kinematics to the number of independent joint motions available for the task:\n\nA robot is fully actuated for a task when it has enough independently controlled joints to control all required task coordinates. A typical six-axis industrial arm can control a full 3D TCP pose: three position coordinates and three orientation coordinates.\nA redundant robot has more joints than the task strictly requires. A seven-axis arm, or a six-axis arm mounted on a linear track, can often reach the same TCP pose in many more ways.\nAn underactuated robot has fewer controllable joints than the desired task requires. For example, a simple four-axis palletizing robot can place boxes in many positions, but it cannot freely choose every possible tool orientation.\n\nThe planar demo above is non-redundant for the selected task because it uses three joints to control x, y, and tool angle. If we removed the tool-angle requirement and only asked the TCP to reach an x,y position, the same arm would become redundant for that smaller task. It would have three joints for a two-coordinate task, so the same point could be reached with many different robot configurations. These configurations would place the TCP at the specified x,y coordinate, but with different tool angles.\nFor redundant robots, the extra freedom is often described as nullspace motion. This means continuous joint motion that changes the robot posture without changing the task coordinate we care about. A common industrial example is a seven-axis robot that keeps the TCP fixed while moving its elbow away from an obstacle. The important word is continuous: the robot can move through a range of postures while the TCP task remains satisfied.\nThis is different from the Elbow down / Elbow up switch for the fully actuated robot in the demo. That switch selects between separate inverse kinematics branches. It is a discrete configuration choice, not a continuous nullspace motion. Both ideas matter in industrial programming: configuration branches decide which posture family the robot uses, while redundancy gives the controller extra room inside a task.\nFigure 2 shows this idea on a Franka Research 3 robot. The end-effector pose is held fixed, while the body of the robot is made compliant enough that a person can push the elbow around.\n\n\n\n\n\n\nFigure 2: Nullspace motion on a Franka Research 3: the end-effector pose remains fixed while the robot body is moved through compliant impedance behavior.",
-    "crumbs": [
-      "Robot Foundations",
-      "Kinematics"
-    ]
-  },
-  {
-    "objectID": "pages/kinematics.html#the-jacobian-view",
-    "href": "pages/kinematics.html#the-jacobian-view",
-    "title": "Kinematics",
-    "section": "The Jacobian view",
-    "text": "The Jacobian view\nForward kinematics maps joint positions to the TCP pose:\n\\[\n\\text{TCP pose} = f(\\text{joint angles})\n\\]\nThe Jacobian is the local motion version of that same idea. It tells how joint speeds create TCP speed at the current posture. In mathematics, a Jacobian is a matrix of derivatives. In robotics, the Jacobian we usually mean is the derivative of the forward kinematics function with respect to the joint coordinates. It answers a local question: if each joint moves a tiny amount, how does the TCP position and orientation change?\nFor the planar arm above, the forward kinematics equations give \\(x\\), \\(y\\), and tool angle from \\(q_1\\), \\(q_2\\), and \\(q_3\\). The Jacobian contains the local slopes of those equations. For a six-axis industrial arm, the same idea applies to the full TCP velocity: three translational components and three rotational components. Corke writes this velocity relationship using the Jacobian matrix \\(J(q)\\) (Corke 2023):\n\\[\n\\dot{x} = J(q)\\dot{q}\n\\]\nHere, \\(q\\) is the current joint position, \\(\\dot{q}\\) is joint speed, and \\(\\dot{x}\\) is TCP speed. The important point is that \\(J(q)\\) depends on the current posture. As the robot moves, the Jacobian changes.\nWhen the Jacobian is healthy, the robot can create the requested TCP motion without excessive joint speeds. Near a singularity, the same TCP motion can require much larger joint speeds. At the singularity, one independent TCP motion direction is no longer available at all. Robot singularities are called singularities because the Jacobian matrix becomes singular: it loses full rank. Robot controllers, offline programming tools, and simulation systems can test the Jacobian rank, or use related numerical indicators, to check whether a Cartesian move is feasible and whether the robot is getting close to a difficult posture.",
-    "crumbs": [
-      "Robot Foundations",
-      "Kinematics"
-    ]
-  },
-  {
-    "objectID": "pages/kinematics.html#why-movement-type-matters",
-    "href": "pages/kinematics.html#why-movement-type-matters",
-    "title": "Kinematics",
-    "section": "Why movement type matters",
-    "text": "Why movement type matters\nThis connects directly to MoveJ/PTP and MoveL/LIN. In a joint-space move, the controller interpolates joint angles. The TCP path is not prescribed, so the controller is not forced to keep solving for a specific Cartesian path between the points. This is one reason joint moves are often preferred for free-space repositioning.\nIn a Cartesian linear move, the TCP path is prescribed. The controller has to generate joint motion that keeps the TCP on the line, and the Jacobian is part of how the controller relates the requested TCP velocity to required joint velocities. If that line passes near a singular posture, the joint speeds needed to maintain the line can become very large. This does not mean that MoveJ avoids singularities in general. A joint move can still start, end, or pass near a singular posture. The difference is that a LIN/MoveL command makes the TCP path a hard requirement.\nThe animation below uses the same 3DOF planar arm as before, and must move between two full planar TCP poses: \\(x\\), \\(y\\), and tool angle. The marked area is around a folded-elbow singularity. Near that posture, motion along the folded link direction is not available in the same way as sideways motion. The blue motion-ability ellipse at the TCP shows this: when it collapses into a thin shape, the Jacobian is losing rank and one TCP motion direction has become difficult or unavailable.\nThe LIN/MoveL option forces the TCP through a straight Cartesian line while holding the tool angle fixed. In this example, that line passes close to the folded singularity. The PTP/MoveJ option interpolates the joint angles instead, so the TCP path bends around that posture. The horizontal status bar shows the relative joint-speed demand for the current part of the motion: it grows when a small TCP motion requires larger joint motion. This does not mean that MoveJ avoids singularities in general. It only shows that strict Cartesian path constraints can force the controller closer to a singular posture.\n\nJavaScript is required to use the singularity animation.\nReal six-axis industrial robots have additional singularity families. For a typical wrist-partitioned arm such as a KUKA KR AGILUS, the common cases are:\n\nan extended position singularity, where the wrist center lies in the extension of the main arm links,\na wrist-axis singularity, where wrist axes line up and two wrist rotations start to produce nearly the same tool motion,\nan overhead or shoulder singularity, where the wrist center is in an awkward relation to the base axis.\n\nThe exact names and warning behavior depend on the robot vendor, but the underlying idea is the same: the current posture makes the Jacobian lose an independent motion direction. Robots with a different mechanical structure can have different singularity patterns. For example, many collaborative robots such as Universal Robots arms have a different axis arrangement than a KUKA AGILUS, so the practical singularity situations and controller warnings are not exactly the same.\nThe video below shows typical singularities for a six-axis arm. Turn on captions if they are not shown automatically; the subtitles explain what happens in each case.\n\n  \n  \n  Typical singularities for a six-axis industrial robot arm. Turn on captions if they are not shown automatically. Source: YouTube.\n\nIn practice, singularity problems are usually solved by changing the task setup or the programmed motion. We avoid singularities by changing the target pose, changing the approach direction, using another robot configuration, moving the part or fixture, or using a joint move for repositioning before starting a process move.",
-    "crumbs": [
-      "Robot Foundations",
-      "Kinematics"
-    ]
-  },
-  {
-    "objectID": "pages/further_reading.html",
-    "href": "pages/further_reading.html",
-    "title": "Further Reading",
-    "section": "",
-    "text": "Robotics, Vision and Control: Fundamental Algorithms in Python by Peter Corke (Corke 2023). Available for free through HVL library.\nLean Robotics: A Guide to Making Robots Work in Your Factory by Samuel Bouchard (Bouchard 2017). Available for free here.\n\n\n\n\n\nReferences\n\nBouchard, Samuel. 2017. Lean Robotics: A Guide to Making Robots Work in Your Factory. Samuel Bouchard. https://leanrobotics.org/.\n\n\nCorke, Peter. 2023. Robotics, Vision and Control. Vol. 146. Springer International Publishing. https://doi.org/10.1007/978-3-031-06469-2.",
-    "crumbs": [
-      "Further Reading"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Welcome!",
-    "section": "",
-    "text": "On this website you find course materials for the course ELE804/ELE2010 - Industrial Robotics and PLCs at HVL.\nNote that some of the PLC related materials are to be found on Canvas, and not on this website.\nThe interactive robot below is a playful first look at kinematics: move any joint, watch the arm reconfigure, and see how the end-effector pose changes in real time.\n\n    \n        Interactive Demo\n        Jog a robot\n\n    \n\n    \n        \n            \n        \n\n        \n            \n                \n                    Joint angles\n                    \n                \n\n                \n                    End-effector pose\n                    \n                \n            \n\n            \n                \n                    Presets\n                    \n                        Home\n                        Random\n                    \n                \n            \n        \n    \n\n    \n        JavaScript is required to use the interactive robot preview.",
-    "crumbs": [
-      "Home"
     ]
   },
   {
@@ -182,6 +162,70 @@
     "crumbs": [
       "Robot Foundations",
       "Frames and Poses"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome!",
+    "section": "",
+    "text": "On this website you find course materials for the course ELE804/ELE2010 - Industrial Robotics and PLCs at HVL.\nNote that some of the PLC related materials are to be found on Canvas, and not on this website.\nThe interactive robot below is a playful first look at kinematics: move any joint, watch the arm reconfigure, and see how the end-effector pose changes in real time.\n\n    \n        Interactive Demo\n        Jog a robot\n\n    \n\n    \n        \n            \n        \n\n        \n            \n                \n                    Joint angles\n                    \n                \n\n                \n                    End-effector pose\n                    \n                \n            \n\n            \n                \n                    Presets\n                    \n                        Home\n                        Random\n                    \n                \n            \n        \n    \n\n    \n        JavaScript is required to use the interactive robot preview.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "pages/further_reading.html",
+    "href": "pages/further_reading.html",
+    "title": "Further Reading",
+    "section": "",
+    "text": "Robotics, Vision and Control: Fundamental Algorithms in Python by Peter Corke (Corke 2023). Available for free through HVL library.\nLean Robotics: A Guide to Making Robots Work in Your Factory by Samuel Bouchard (Bouchard 2017). Available for free here.\n\n\n\n\n\nReferences\n\nBouchard, Samuel. 2017. Lean Robotics: A Guide to Making Robots Work in Your Factory. Samuel Bouchard. https://leanrobotics.org/.\n\n\nCorke, Peter. 2023. Robotics, Vision and Control. Vol. 146. Springer International Publishing. https://doi.org/10.1007/978-3-031-06469-2.",
+    "crumbs": [
+      "Further Reading"
+    ]
+  },
+  {
+    "objectID": "pages/kinematics.html",
+    "href": "pages/kinematics.html",
+    "title": "Kinematics",
+    "section": "",
+    "text": "An industrial robot arm is a collection of joints and links. The controller commands the joints, but the production task usually cares about the tool: where is the TCP, which direction is the tool pointing, and how does it move through the workpiece?\nKinematics is the connection between these two descriptions. It describes how joint positions create the position and orientation of the tool, and how a desired tool pose can be converted back into joint positions.\nFollowing the notation used by Corke, we use q for the robot’s joint coordinates and T for a pose represented as a homogeneous transformation matrix (Corke 2023). In practical terms:\n\nq describes the robot in joint space.\nT describes the TCP in Cartesian space.\nforward kinematics computes T from q.\ninverse kinematics computes one possible q from a desired T.\n\nThis page uses simple planar robot arms to explain the concepts. Real industrial robots move in 3D and usually have six axes, but the same ideas apply.",
+    "crumbs": [
+      "Robot Foundations",
+      "Kinematics"
+    ]
+  },
+  {
+    "objectID": "pages/kinematics.html#sec-redundancy-nullspace",
+    "href": "pages/kinematics.html#sec-redundancy-nullspace",
+    "title": "Kinematics",
+    "section": "Redundancy and nullspace",
+    "text": "Redundancy and nullspace\nIt is useful to relate inverse kinematics to the number of independent joint motions available for the task:\n\nA robot is fully actuated for a task when it has enough independently controlled joints to control all required task coordinates. A typical six-axis industrial arm can control a full 3D TCP pose: three position coordinates and three orientation coordinates.\nA redundant robot has more joints than the task strictly requires. A seven-axis arm, or a six-axis arm mounted on a linear track, can often reach the same TCP pose in many more ways.\nAn underactuated robot has fewer controllable joints than the desired task requires. For example, a simple four-axis palletizing robot can place boxes in many positions, but it cannot freely choose every possible tool orientation.\n\nThe planar demo above is non-redundant for the selected task because it uses three joints to control x, y, and tool angle. If we removed the tool-angle requirement and only asked the TCP to reach an x,y position, the same arm would become redundant for that smaller task. It would have three joints for a two-coordinate task, so the same point could be reached with many different robot configurations. These configurations would place the TCP at the specified x,y coordinate, but with different tool angles.\nFor redundant robots, the extra freedom is often described as nullspace motion. This means continuous joint motion that changes the robot posture without changing the task coordinate we care about. A common industrial example is a seven-axis robot that keeps the TCP fixed while moving its elbow away from an obstacle. The important word is continuous: the robot can move through a range of postures while the TCP task remains satisfied.\nThis is different from the Elbow down / Elbow up switch for the fully actuated robot in the demo. That switch selects between separate inverse kinematics branches. It is a discrete configuration choice, not a continuous nullspace motion. Both ideas matter in industrial programming: configuration branches decide which posture family the robot uses, while redundancy gives the controller extra room inside a task.\nFigure 2 shows this idea on a Franka Research 3 robot. The end-effector pose is held fixed, while the body of the robot is made compliant enough that a person can push the elbow around.\n\n\n\n\n\n\nFigure 2: Nullspace motion on a Franka Research 3: the end-effector pose remains fixed while the robot body is moved through compliant impedance behavior.",
+    "crumbs": [
+      "Robot Foundations",
+      "Kinematics"
+    ]
+  },
+  {
+    "objectID": "pages/kinematics.html#the-jacobian-view",
+    "href": "pages/kinematics.html#the-jacobian-view",
+    "title": "Kinematics",
+    "section": "The Jacobian view",
+    "text": "The Jacobian view\nForward kinematics maps joint positions to the TCP pose:\n\\[\n\\text{TCP pose} = f(\\text{joint angles})\n\\]\nThe Jacobian is the local motion version of that same idea. It tells how joint speeds create TCP speed at the current posture. In mathematics, a Jacobian is a matrix of derivatives. In robotics, the Jacobian we usually mean is the derivative of the forward kinematics function with respect to the joint coordinates. It answers a local question: if each joint moves a tiny amount, how does the TCP position and orientation change?\nFor the planar arm above, the forward kinematics equations give \\(x\\), \\(y\\), and tool angle from \\(q_1\\), \\(q_2\\), and \\(q_3\\). The Jacobian contains the local slopes of those equations. For a six-axis industrial arm, the same idea applies to the full TCP velocity: three translational components and three rotational components. Corke writes this velocity relationship using the Jacobian matrix \\(J(q)\\) (Corke 2023):\n\\[\n\\dot{x} = J(q)\\dot{q}\n\\]\nHere, \\(q\\) is the current joint position, \\(\\dot{q}\\) is joint speed, and \\(\\dot{x}\\) is TCP speed. The important point is that \\(J(q)\\) depends on the current posture. As the robot moves, the Jacobian changes.\nWhen the Jacobian is healthy, the robot can create the requested TCP motion without excessive joint speeds. Near a singularity, the same TCP motion can require much larger joint speeds. At the singularity, one independent TCP motion direction is no longer available at all. Robot singularities are called singularities because the Jacobian matrix becomes singular: it loses full rank. Robot controllers, offline programming tools, and simulation systems can test the Jacobian rank, or use related numerical indicators, to check whether a Cartesian move is feasible and whether the robot is getting close to a difficult posture.",
+    "crumbs": [
+      "Robot Foundations",
+      "Kinematics"
+    ]
+  },
+  {
+    "objectID": "pages/kinematics.html#why-movement-type-matters",
+    "href": "pages/kinematics.html#why-movement-type-matters",
+    "title": "Kinematics",
+    "section": "Why movement type matters",
+    "text": "Why movement type matters\nThis connects directly to MoveJ/PTP and MoveL/LIN. In a joint-space move, the controller interpolates joint angles. The TCP path is not prescribed, so the controller is not forced to keep solving for a specific Cartesian path between the points. This is one reason joint moves are often preferred for free-space repositioning.\nIn a Cartesian linear move, the TCP path is prescribed. The controller has to generate joint motion that keeps the TCP on the line, and the Jacobian is part of how the controller relates the requested TCP velocity to required joint velocities. If that line passes near a singular posture, the joint speeds needed to maintain the line can become very large. This does not mean that MoveJ avoids singularities in general. A joint move can still start, end, or pass near a singular posture. The difference is that a LIN/MoveL command makes the TCP path a hard requirement.\nThe animation below uses the same 3DOF planar arm as before, and must move between two full planar TCP poses: \\(x\\), \\(y\\), and tool angle. The marked area is around a folded-elbow singularity. Near that posture, motion along the folded link direction is not available in the same way as sideways motion. The blue motion-ability ellipse at the TCP shows this: when it collapses into a thin shape, the Jacobian is losing rank and one TCP motion direction has become difficult or unavailable.\nThe LIN/MoveL option forces the TCP through a straight Cartesian line while holding the tool angle fixed. In this example, that line passes close to the folded singularity. The PTP/MoveJ option interpolates the joint angles instead, so the TCP path bends around that posture. The horizontal status bar shows the relative joint-speed demand for the current part of the motion: it grows when a small TCP motion requires larger joint motion. This does not mean that MoveJ avoids singularities in general. It only shows that strict Cartesian path constraints can force the controller closer to a singular posture.\n\nJavaScript is required to use the singularity animation.\nReal six-axis industrial robots have additional singularity families. For a typical wrist-partitioned arm such as a KUKA KR AGILUS, the common cases are:\n\nan extended position singularity, where the wrist center lies in the extension of the main arm links,\na wrist-axis singularity, where wrist axes line up and two wrist rotations start to produce nearly the same tool motion,\nan overhead or shoulder singularity, where the wrist center is in an awkward relation to the base axis.\n\nThe exact names and warning behavior depend on the robot vendor, but the underlying idea is the same: the current posture makes the Jacobian lose an independent motion direction. Robots with a different mechanical structure can have different singularity patterns. For example, many collaborative robots such as Universal Robots arms have a different axis arrangement than a KUKA AGILUS, so the practical singularity situations and controller warnings are not exactly the same.\nThe video below shows typical singularities for a six-axis arm. Turn on captions if they are not shown automatically; the subtitles explain what happens in each case.\n\n  \n  \n  Typical singularities for a six-axis industrial robot arm. Turn on captions if they are not shown automatically. Source: YouTube.\n\nIn practice, singularity problems are usually solved by changing the task setup or the programmed motion. We avoid singularities by changing the target pose, changing the approach direction, using another robot configuration, moving the part or fixture, or using a joint move for repositioning before starting a process move.",
+    "crumbs": [
+      "Robot Foundations",
+      "Kinematics"
     ]
   },
   {
