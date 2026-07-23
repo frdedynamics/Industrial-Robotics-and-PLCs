@@ -33,6 +33,10 @@ website:
         contents: 
           - pages/simulation.qmd
           - pages/visual_components.qmd
+
+      - section: Project
+        contents: 
+          - pages/project.qmd   
           
       - text: "Further Reading"
         href: pages/further_reading.qmd
