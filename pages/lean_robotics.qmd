@@ -1,0 +1,9 @@
+---
+title: Lean Robotics
+draft: true
+---
+
+- Many ways to design a cell, but some are better than others. Lean robotics principles can be used to design a cell that is more efficient, safer?, and easier to program and maintain.
+- lean robotics introduces the concept of "lean" in robotics, which is about eliminating waste and improving efficiency in robotic systems. This can be applied to the design of robotic cells, where the layout, programming, and operation can be optimized to reduce unnecessary movements, simplify programming, and enhance safety.
+- philosophy for modern robot cell design, smaller cells, not necessary whole factories
+- then slightly more details, without reciting the full details, but mention key principles. also to look what happens before and after the cell
