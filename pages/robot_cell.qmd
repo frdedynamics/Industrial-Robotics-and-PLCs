@@ -28,8 +28,7 @@ are introduced.
 
 By completing the project, you should be able to:
 
-- configure a robot, tool changer, gripper, conveyor, sensor, and process
-  machine in VC,
+- configure a robot, gripper, conveyor, sensor, and process machine in VC,
 - divide a robot task into meaningful reusable subroutines,
 - define a clear control boundary between a PLC and robot controller,
 - design two controllers that coordinate through a command handshake,
@@ -121,20 +120,6 @@ differs in your VC installation, search for the stated component name.
 <td>Robot end-effector.</td>
 </tr>
 <tr>
-<td class="text-end">1 each</td>
-<td class="component-catalog-table__preview-cell"><div class="component-catalog-table__preview-pair"><img class="component-catalog-table__preview" src="img/VC Components Previews/tool_changer_robot_adapter.png" alt="Preview of the Tool Changer Robot Adapter component" loading="lazy"><img class="component-catalog-table__preview" src="img/VC Components Previews/tool_changer_tool_adapter.png" alt="Preview of the Tool Changer Tool Adapter component" loading="lazy"></div></td>
-<td>Tool Changer Robot Adapter and Tool Changer Tool Adapter</td>
-<td><code>Robot Tools</code></td>
-<td>Connect the detachable gripper mechanically to the robot.</td>
-</tr>
-<tr>
-<td class="text-end">1</td>
-<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/tool_changer_tool_stand.png" alt="Preview of the Tool Changer Tool Stand component" loading="lazy"></td>
-<td>Tool Changer Tool Stand</td>
-<td><code>Robot Tools</code></td>
-<td>Provide the gripper's initial storage position.</td>
-</tr>
-<tr>
 <td class="text-end">1</td>
 <td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/process_machine_cnc.png" alt="Preview of the Process Machine - CNC component" loading="lazy"></td>
 <td>Process Machine - CNC</td>
@@ -190,15 +175,13 @@ and configure the copy to generate only grey cylinders by removing the other
 product variants. This provides test parts immediately while the robot cell is
 developed on its own.
 
-Place the CNC mill and outgoing conveyor provisionally, then add the Tool
-Changer Tool Stand. Their first positions do not need to be final. Leave room
-for the accessing the CNC door, the tool and workpiece, and clear approach and retract
-motions. The tool stand must also be reachable with the correct flange
-orientation, not only by the robot wrist position.
+Place the CNC mill and outgoing conveyor provisionally. Their first positions
+do not need to be final. Leave enough room to open and access the CNC door, and
+provide clearance for the gripper, workpiece, and approach and retract motions.
 
 The final cell layout is your design decision, and there is no prescribed
 arrangement. Among the choices are the relative positions and orientations of
-the robot, conveyors, CNC mill, tool stand, and access areas. For example, the
+the robot, conveyors, CNC mill, and access areas. For example, the
 conveyors could be arranged in line or at an angle, and the CNC mill could be
 placed beside the robot or across from the conveyors. These are only starting
 points; you may develop another arrangement that gives a good combination of
@@ -240,11 +223,10 @@ and singularities are demonstrated in
 
 Before teaching the complete program, verify that:
 
-- the robot can reach the pickup, CNC loading, tool stand, and home poses,
+- the robot can reach the pickup, CNC loading, outgoing conveyor, and home poses,
 - the gripper and workpiece fit through the CNC opening,
 - the robot can approach and retract without crossing the machine or fence,
-- the conveyor sensor is located at a repeatable pickup pose, and
-- the tool stand can be reached without an awkward robot configuration.
+- the conveyor sensor is located at a repeatable pickup pose.
 
 These checks are easier to correct before many robot positions depend on the
 layout.
@@ -276,16 +258,21 @@ After placing the cell equipment, select the newly added components and use
 `ROOT` level. Moving the components together is usually quicker than assigning
 each component immediately after adding it.
 
-## Tool changer and gripper
+## Mount and configure the gripper
 
-Attach the Tool Changer Robot Adapter to the robot flange. Attach the matching
-Tool Adapter to the gripper and place the assembled gripper on the Tool Changer
-Tool Stand. When the adapter is configured, VC reports which robot output is
-assigned to mounting and unmounting. In the tested cell this is output `33`;
-check the Output panel in your own layout rather than assuming the number.
+Mount the **Generic 3 Finger Gripper** directly on the robot flange using
+**PnP**. Move the gripper toward the flange until the compatible physical
+interfaces are highlighted, then continue moving it until the components snap
+together. This physical connection makes the gripper follow the flange when
+the robot is jogged. The **Add a robot tool** chapter in the
+[Introduction to Robot Teaching](https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/)
+video demonstrates this workflow. Check the gripper orientation before
+teaching positions: the fingers and TCP must face the workpiece in a useful
+approach direction. A manual attachment is only a fallback for components that
+do not provide compatible PnP interfaces.
 
 Enable automatic I/O connection for the gripper if the component supports it.
-After mounting, inspect the gripper's **Control** properties and the robot's
+After attaching it, inspect the gripper's **Control** properties and the robot's
 signal connections. Custom gripper I/O commonly starts at robot port `100`.
 
 VC grasping is a simulation action, not a physical contact calculation. The
@@ -307,17 +294,17 @@ feedback before continuing.
 
 Standard robot outputs are also reserved for predefined tool actions. Outputs
 `1` to `16` are commonly associated with grasp and release actions for the
-default tool frames, while outputs beginning at `33` are used by tool-changing
-actions. Always inspect the selected robot's mappings because component models
-can differ.
+default tool frames. Always inspect the selected robot's mappings because
+component models can differ.
 
-## Define a stable TCP
+## Define and select the TCP
 
-The mounted gripper contributes a TCP frame, but a frame belonging to a
-detachable component may not remain available when the tool is unmounted. Move
-or copy one of the robot's native tool frames to the gripper TCP and use that
-frame in the motion program. The robot program then retains a stable tool-frame
-reference throughout mounting and unmounting.
+The attached gripper contributes a TCP frame. Select a frame located at the
+centre of the gripping region and use it as the active tool frame in the robot
+motion statements. Inspect its position and orientation rather than assuming
+that the component's default frame is suitable. If necessary, move one of the
+robot's native tool frames to the required TCP and use that frame consistently
+throughout the program.
 
 The frame should be located and oriented according to the physical task, not
 only at a convenient point in the 3D model. Review [frames and
@@ -362,7 +349,6 @@ conveyor does not restart while the robot is gripping it.
 Do not write the complete task as one long `Main` routine. At minimum, organize
 the motions into operations corresponding to:
 
-- mounting the gripper,
 - picking a part from the conveyor,
 - moving to and loading the CNC,
 - running the CNC process,
@@ -426,7 +412,7 @@ high-level operation commands and status values.
 | Controller | Responsibility |
 |---|---|
 | PLC | Conveyor control, pickup-sensor evaluation, CNC door and process control, overall operation order, and later timeout or fault handling. |
-| Robot program | Robot motion, approach and retract paths, tool handling, gripper actions, and gripper feedback within each requested operation. |
+| Robot program | Robot motion, approach and retract paths, gripper actions, and gripper feedback within each requested operation. |
 
 The gripper remains under robot control because its actions are tightly coupled
 to the pick and place motions. The conveyor and CNC are separate cell equipment
@@ -566,8 +552,7 @@ Test the connected system incrementally:
    disabled and `iRobotCommand = 0`.
 2. Connect both OPC UA variable groups in VC.
 3. Reset and start the VC simulation.
-4. Confirm that the robot initializes, mounts the gripper, moves home, and
-   reports `Ready`.
+4. Confirm that the robot initializes, moves home, and reports `Ready`.
 5. Test each robot command and its complete handshake individually.
 6. Test the conveyor sensor and each CNC command and feedback pair.
 7. Enable production and run the complete PLC-controlled cycle.
@@ -624,8 +609,6 @@ the nominal cycle and communication interface are stable.
   explains VC's internal grasp and release actions.
 - [Model a robot gripper, part II](https://academy.visualcomponents.com/lessons/model-a-robot-gripper-part-ii/)
   demonstrates gripper motion and I/O feedback.
-- [Mount and dismount tools](https://academy.visualcomponents.com/lessons/mount-and-dismount-tools/)
-  demonstrates tool-changing actions and tool-frame handling.
 - [Program Editor for Motion Controller](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Program_Editor_for_Motion_Controller.htm)
   documents robot routines, variables, conditions, and `Switch Case`.
 - [Connect a remote OPC UA server](https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/)
