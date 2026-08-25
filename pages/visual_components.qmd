@@ -6,3 +6,25 @@ draft: true
 - make brief overview of the Visual Components software, what it is, what it can do, and how it can be used in the course.
 - point to the Visual Components Academy and relevant learning paths, videos and docs
 - explain that we will not do a fine grained step  by step tutorial but that students are expected to use the VC material for self study and also play around with the software, which is the most effective way to learn it. 
+
+- what are products and what is product type editor
+
+- what are interfaces, signals, behaviors, flows, flow groups
+
+- write about robots in VC, and especially on their IOs, also on programming basics
+
+
+
+
+
+
+
+# finds from VC academy
+- video on robot programming, programming tab, statements in robot programming editor, robot action configuration https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/?module=3&learning_path=1448
+    - write a short text  to this that it covers the basic programming and tools, also snapping. basic programming here means defining a movement by a start and end pose and a movement type. say in a sentences that this basic programming is done by jogging the robot to the final pose and then making a new movement statement. the statement will then move the robot from where ever it is before to the defined final pose. write that other programming approaches e.g. programming in accordance with part geometries are discussed in another video.
+- video on movement types, basic frames, configurations. this should be linked to the general theory we have on that topic on other pages: https://academy.visualcomponents.com/lessons/basics-of-robotics/?module=3&learning_path=1448
+- video on reachability (part 1) that talks about robot workspace and the tools and procedures used in VC to place a robot in a cell such that it can reach all necessary task points. https://academy.visualcomponents.com/lessons/robot-reachability-part-i/?module=3&learning_path=1448
+- video on reachability (part 2)  checking joint limits and configurations, discussion of singularities, wrist singularity, overhead, shoulder or polar singularity. https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/?module=4&learning_path=1448
+- video on safety measures for robot cells, also shows wall builder component https://academy.visualcomponents.com/lessons/add-safety-equipment-in-robotic-cells/?module=4&learning_path=1448
+- Video on if statements in robot programming, simple logic and also how to write the conditions: https://academy.visualcomponents.com/lessons/teach-an-if-statement/?module=5&learning_path=1448
+- video on sequences and subroutines in robot programming: https://academy.visualcomponents.com/lessons/creating-subprograms-and-calling-robot-routines/?module=5&learning_path=1448
