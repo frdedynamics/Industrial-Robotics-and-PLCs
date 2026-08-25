@@ -52,6 +52,7 @@ format:
       - brand
     css: styles.css
     toc: true
+    lightbox: true
     embed-resources: false
 
 
