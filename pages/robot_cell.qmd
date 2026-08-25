@@ -192,14 +192,19 @@ robot reach, clear motion paths, material flow, and access to the equipment.
 Use the robot's `WorkSpace2D` or `WorkSpace3D` component properties to display its
 approximate workspace, also called its work envelope. Use this envelope as
 rough guidance for the initial cell layout and for estimating basic distances
-between the robot, conveyors, and CNC mill. The official Visual Components lesson
+between the robot, conveyors, and CNC mill. @fig-agilus-workspace shows the
+`WorkSpace2D` profile around the Agilus robot used in this project. The official
+Visual Components lesson
 [Robot Reachability Part I](https://academy.visualcomponents.com/lessons/robot-reachability-part-i/)
 demonstrates robot placement, pedestal height, jogging, and the workspace
 profile.
 
-For more detailed and reliable tuning of the arrangement, mount the gripper,
-generate one grey cylinder, and grip it. Then use the **Jog** tool to move the
-complete robot, tool, and workpiece assembly through the important task poses.
+![The approximate `WorkSpace2D` profile of the KUKA KR6 R900 Agilus displayed in Visual Components.](<img/VC Components Previews/agilus_2D_workspace.png>){#fig-agilus-workspace width=90% fig-alt="A KUKA KR6 R900 Agilus in Visual Components surrounded by the outline of its two-dimensional workspace profile."}
+
+For more detailed and reliable tuning of the arrangement, mount the gripper
+(see @sec-mount-gripper for how to mount and use it), generate one grey
+cylinder, and grip it. Then use the **Jog** tool to move the complete robot,
+tool, and workpiece assembly through the important task poses.
 After all, it is the workpiece that must be placed at the positions and
 orientations required by the task. The cell must therefore allow the robot to
 move the workpiece through these poses without exceeding joint limits,
@@ -258,7 +263,7 @@ After placing the cell equipment, select the newly added components and use
 `ROOT` level. Moving the components together is usually quicker than assigning
 each component immediately after adding it.
 
-## Mount and configure the gripper
+## Mount and configure the gripper {#sec-mount-gripper}
 
 Mount the **Generic 3 Finger Gripper** directly on the robot flange using
 **PnP**. Move the gripper toward the flange until the compatible physical
@@ -266,38 +271,72 @@ interfaces are highlighted, then continue moving it until the components snap
 together. This physical connection makes the gripper follow the flange when
 the robot is jogged. The **Add a robot tool** chapter in the
 [Introduction to Robot Teaching](https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/)
-video demonstrates this workflow. Check the gripper orientation before
-teaching positions: the fingers and TCP must face the workpiece in a useful
-approach direction. A manual attachment is only a fallback for components that
-do not provide compatible PnP interfaces.
+video demonstrates this workflow.
+approach direction.
 
-Enable automatic I/O connection for the gripper if the component supports it.
-After attaching it, inspect the gripper's **Control** properties and the robot's
-signal connections. Custom gripper I/O commonly starts at robot port `100`.
+Enable automatic I/O connection when mounting the gripper. This option is
+enabled by default and avoids having to connect the gripper's input and output
+signals to the robot manually.
 
-VC grasping is a simulation action, not a physical contact calculation. The
-grasp action searches a detection volume associated with a selected tool frame.
-When a product is found, VC fixes its pose relative to that frame so it moves
-with the robot. A release action removes that attachment. This explains why a
-robot can technically grasp a part even when no gripper fingers touch it.
+Before configuring these signals, it is important to understand how standard
+grasping works in VC. A grasp action searches for products inside a detection
+volume around a selected tool frame. When a product is found, VC fixes its pose
+relative to that frame, so the product moves with the robot. A release action
+removes this logical attachment. Physical finger contact is not calculated,
+which is why VC can grasp a product even when no gripper model is mounted or
+the fingers do not touch it. VC also provides rigid-body physics for custom
+contact-based simulations, but that is a separate, more complex approach and
+is not used in this project.
 
-The gripper animation still matters. Its open and closed positions should match
-the workpiece, and the program should wait for the gripper's state feedback
-before moving away. Use VC's measure tool to determine the cylinder size and
-set the gripper's `J1_OpenValue` and `J1_CloseValue` accordingly.
+The finger animation is therefore not what holds the product in the standard
+simulation, but it is still important. Realistic open and closed widths let you
+check the gripper's geometric capacity and its clearance around the workpiece.
+They also make collision checking more meaningful because an open gripper
+occupies a different volume from a closed one. Visible finger motion helps you
+understand and debug the program sequence, and it makes the simulation clearer
+and more convincing in customer or sales presentations. It does not validate
+real gripping force, payload capacity, deformation, or slip.
 
-Configure a robot output in **Actions Configuration** to perform the VC grasp
-and release actions while also driving the movable gripper. In the tested cell,
-output `100` is connected to `IN_J1_Action`: `FALSE` opens and releases, while
-`TRUE` closes and grasps. The robot reads separate open-state and closed-state
-feedback before continuing.
-
-Standard robot outputs are also reserved for predefined tool actions. Outputs
-`1` to `16` are commonly associated with grasp and release actions for the
-default tool frames. Always inspect the selected robot's mappings because
+The logical grasp and release actions are configured in the robot's **Actions
+Configuration** properties. In most VC robot components, outputs `1` to `16`
+are predefined for grasping and releasing with the default tool frames. These
+outputs can be used for a tool without movable joints, such as a suction cup,
+or even without a visible gripper. In that case, the output does not need to be
+connected to another component: setting it only triggers the robot's internal
+grasp or release action. Always inspect the selected robot's mappings because
 component models can differ.
 
-## Define and select the TCP
+A gripper with movable fingers requires both parts of the simulation. The robot
+output must trigger VC's internal grasp or release action and drive the gripper
+joint so that the fingers close or open. After mounting the gripper, inspect its
+**Control** properties and the robot's signal connections. Automatically
+connected custom gripper I/O commonly starts at robot port `100`.
+
+In the tested cell, robot output `100` is connected to the gripper input
+`IN_J1_Action`: `TRUE` closes the fingers and `FALSE` opens them. Configure the
+same output in **Actions Configuration** so that `TRUE` also performs **Grasp**
+and `FALSE` performs **Release**. Select a tool frame at the centre of the
+gripping region and set a detection volume that contains the cylinder at the
+grasp pose without including nearby products. It is usually easiest to align
+one of the robot's native tool frames with the gripper's TCP after mounting the
+gripper, and then use that frame for both the grasp action and the robot motion
+statements. @fig-gripper-action-config shows the signal connection and action
+configuration together. @sec-cell-tcp explains the TCP setup in more detail.
+
+![Robot output `100` is connected to the movable gripper and configured to perform the internal VC grasp and release actions using `Tool_TCP`.](<img/VC Components Previews/agilus_gripper_action_config.png>){#fig-gripper-action-config width=100% fig-alt="Visual Components showing a KUKA robot with a three-jaw gripper, the signal connections between robot output 100 and the gripper, and Actions Configuration set to Grasp on true and Release on false using Tool TCP."}
+
+Opening and closing the gripper takes time. After commanding it, read its
+separate open-state or closed-state feedback and wait until the requested state
+has been reached before moving the robot. The **Test the signals** chapter in
+the [Model a robot gripper, part II](https://academy.visualcomponents.com/lessons/model-a-robot-gripper-part-ii/)
+lesson demonstrates this I/O and feedback workflow.
+
+Finally, use VC's measure tool to determine the cylinder size and set the
+gripper's `J1_OpenValue` and `J1_CloseValue` properties accordingly. Run the
+sequence and confirm that the fingers fully clear the cylinder when open and
+close to a realistic gripping width.
+
+## Define and select the TCP {#sec-cell-tcp}
 
 The attached gripper contributes a TCP frame. Select a frame located at the
 centre of the gripping region and use it as the active tool frame in the robot
