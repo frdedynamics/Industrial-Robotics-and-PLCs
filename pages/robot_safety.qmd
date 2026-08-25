@@ -127,7 +127,7 @@ provides a practical Norwegian starting point for documenting the process.
 For the formal machinery-safety framework, continue with
 [ISO 12100](https://www.iso.org/standard/51528.html) through authorized access.
 
-# Reduce risk in layers
+# Reduce risk in layers {#sec-risk-reduction}
 
 Safety is strongest when hazards are addressed by the design itself. Warnings and
 personal protective equipment are useful for remaining risks, but they should
