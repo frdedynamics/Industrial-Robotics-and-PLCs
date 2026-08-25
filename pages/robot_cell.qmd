@@ -1,0 +1,632 @@
+---
+title: Robot cell
+draft: false
+---
+
+# Project objective
+
+In this part of the project, you will build and program a simulated robot cell
+in Visual Components (VC) and then coordinate it with a PLC program running in
+CODESYS Control Win SL. The cell transports a raw part to a robot, loads it into
+a CNC mill, waits for machining, unloads it, and returns the finished part to a
+conveyor.
+
+This page guides you through the work in the intended order, from assembling
+and testing the VC-only cell to connecting and commissioning the
+PLC-controlled version. Use it as a working tutorial: later steps build on the
+checks completed in the earlier steps.
+
+The work is divided into two stages:
+
+1. Build and program a complete working cell using internal VC signals.
+2. Transfer overall cell coordination to a PLC connected through OPC UA.
+
+Do not begin with the PLC connection. First establish that the robot poses,
+motions, gripper, CNC model, and complete material flow work inside VC. This
+gives you a known-working plant before communication and distributed control
+are introduced.
+
+By completing the project, you should be able to:
+
+- configure a robot, tool changer, gripper, conveyor, sensor, and process
+  machine in VC,
+- divide a robot task into meaningful reusable subroutines,
+- define a clear control boundary between a PLC and robot controller,
+- design two controllers that coordinate through a command handshake,
+- connect CODESYS and VC using OPC UA, and
+- commission the system incrementally rather than debugging everything at once.
+
+# Required cell behavior
+
+The completed system shall repeat the following material flow:
+
+1. Transport a raw part to the robot pickup position.
+2. Stop the part and conveyor at the pickup position.
+3. Pick the part and load it into the CNC mill.
+4. Close the CNC door and start machining.
+5. Confirm that machining starts and wait until it finishes.
+6. Open the door and unload the finished part.
+7. Place the part on the outgoing conveyor.
+8. Return the robot to its home pose and prepare for the next part.
+
+The first version is controlled by the robot program inside VC. In the final
+version, the PLC controls the overall sequence while the robot executes
+requested motion operations.
+
+# Components
+
+Use the following components as the basis for the cell. The manufacturer rows
+give the common eCatalog path for each group. Continue from that path into the
+subdirectory shown for the individual component. If the category structure
+differs in your VC installation, search for the stated component name.
+
+<div class="table-responsive">
+<table class="table component-catalog-table">
+<thead>
+<tr>
+<th class="text-end" scope="col">Quantity</th>
+<th scope="col">Preview</th>
+<th scope="col">Component</th>
+<th scope="col">eCatalog subdirectory</th>
+<th scope="col">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="component-catalog-table__group">
+<th colspan="5" scope="colgroup"><strong>KUKA</strong><code>Models by Manufacturer &gt; KUKA</code></th>
+</tr>
+<tr>
+<td class="text-end">1</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/kuka_kr6_r900_agilus.png" alt="Preview of the KUKA KR6 R900 Agilus component" loading="lazy"></td>
+<td>KUKA KR6 R900 Agilus</td>
+<td><code>Robots</code></td>
+<td>Industrial robot arm.</td>
+</tr>
+<tr class="component-catalog-table__group">
+<th colspan="5" scope="colgroup"><strong>Visual Components</strong><code>Models by Manufacturer &gt; Visual Components</code></th>
+</tr>
+<tr>
+<td class="text-end">1</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/simple_robot_pedestal.png" alt="Preview of the Simple Robot Pedestal component" loading="lazy"></td>
+<td>Simple Robot Pedestal</td>
+<td><code>Robot Pedestals</code></td>
+<td>Raise and position the robot in the cell.</td>
+</tr>
+<tr>
+<td class="text-end">As needed</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/conveyor.png" alt="Preview of the Conveyor component" loading="lazy"></td>
+<td>Conveyor</td>
+<td><code>Conveyors</code></td>
+<td>Transport workpieces through the cell.</td>
+</tr>
+<tr>
+<td class="text-end">1</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/conveyor_sensor.png" alt="Preview of the Conveyor Sensor component" loading="lazy"></td>
+<td>Conveyor Sensor</td>
+<td><code>Conveyor Utilities</code></td>
+<td>Detect a part at the robot pickup position.</td>
+</tr>
+<tr>
+<td class="text-end">1 copied</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/advanced_feeder.png" alt="Preview of the Advanced Feeder component" loading="lazy"></td>
+<td>Advanced Feeder</td>
+<td><code>Feeders</code></td>
+<td>Copy the configured feeder from the conveyor system and set the copy to generate only grey cylinders.</td>
+</tr>
+<tr>
+<td class="text-end">1</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/generic_3_finger_gripper.png" alt="Preview of the Generic 3 Finger Gripper component" loading="lazy"></td>
+<td>Generic 3 Finger Gripper</td>
+<td><code>Robot Tools</code></td>
+<td>Robot end-effector.</td>
+</tr>
+<tr>
+<td class="text-end">1 each</td>
+<td class="component-catalog-table__preview-cell"><div class="component-catalog-table__preview-pair"><img class="component-catalog-table__preview" src="img/VC Components Previews/tool_changer_robot_adapter.png" alt="Preview of the Tool Changer Robot Adapter component" loading="lazy"><img class="component-catalog-table__preview" src="img/VC Components Previews/tool_changer_tool_adapter.png" alt="Preview of the Tool Changer Tool Adapter component" loading="lazy"></div></td>
+<td>Tool Changer Robot Adapter and Tool Changer Tool Adapter</td>
+<td><code>Robot Tools</code></td>
+<td>Connect the detachable gripper mechanically to the robot.</td>
+</tr>
+<tr>
+<td class="text-end">1</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/tool_changer_tool_stand.png" alt="Preview of the Tool Changer Tool Stand component" loading="lazy"></td>
+<td>Tool Changer Tool Stand</td>
+<td><code>Robot Tools</code></td>
+<td>Provide the gripper's initial storage position.</td>
+</tr>
+<tr>
+<td class="text-end">1</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/process_machine_cnc.png" alt="Preview of the Process Machine - CNC component" loading="lazy"></td>
+<td>Process Machine - CNC</td>
+<td><code>Machines</code></td>
+<td>Model the CNC door and machining process.</td>
+</tr>
+<tr>
+<td class="text-end">As needed</td>
+<td class="component-catalog-table__preview-cell" aria-label="No single preview applies">&mdash;</td>
+<td>Fence, wall, and factory-building components</td>
+<td><code>Facilities - Factory</code></td>
+<td>Provide the cell boundary and visual context; use the Fence and Wall Builder where helpful.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+# Build the simulated cell
+
+## Organize the project with sublayouts
+
+Build the robot cell in the same VC file as the completed conveyor system,
+but do not connect the two systems yet. First save a copy of the working
+conveyor layout so that the original remains available as a tested backup.
+Place the new robot cell some distance away from the conveyor system, with
+enough empty space that the two material flows remain clearly separate during
+development.
+
+In the **Layouts** tab of the Cell Graph, create two sublayouts named
+`Conveyor system` and `Robot cell`. Move the existing conveyor components into
+the first sublayout. The components for the new cell are moved into the second
+sublayout after their initial placement.
+
+This structure keeps the complete system in one simulation while making each
+section easier to select, move, copy, and inspect. Visual Components
+demonstrates the relevant tools in
+[Managing larger simulations with sublayouts](https://academy.visualcomponents.com/lessons/managing-larger-simulations-with-sub-layouts/).
+Sublayout visibility is an organizational aid; hiding a sublayout does not
+replace disconnecting or stopping components when you want to test only one
+part of the system.
+
+## Design the robot cell
+
+Start with the Simple Robot Pedestal and the KUKA robot. Place the pedestal
+in the 3D world and position the robot on top; you can use the attach tool to be able to move them together. The height of the pedestal can be adjusted as needed, and it is part of the cell design:
+it determines whether the robot can approach the conveyor and CNC at useful
+joint configurations, not only whether the TCP can reach them at all.
+
+Next, add a short incoming conveyor and place a Conveyor Sensor close to its
+downstream end. This sensor defines the repeatable pickup location. Copy and
+paste the Advanced Feeder that is already configured in the conveyor system,
+and configure the copy to generate only grey cylinders by removing the other
+product variants. This provides test parts immediately while the robot cell is
+developed on its own.
+
+Place the CNC mill and outgoing conveyor provisionally, then add the Tool
+Changer Tool Stand. Their first positions do not need to be final. Leave room
+for the accessing the CNC door, the tool and workpiece, and clear approach and retract
+motions. The tool stand must also be reachable with the correct flange
+orientation, not only by the robot wrist position.
+
+The final cell layout is your design decision, and there is no prescribed
+arrangement. Among the choices are the relative positions and orientations of
+the robot, conveyors, CNC mill, tool stand, and access areas. For example, the
+conveyors could be arranged in line or at an angle, and the CNC mill could be
+placed beside the robot or across from the conveyors. These are only starting
+points; you may develop another arrangement that gives a good combination of
+robot reach, clear motion paths, material flow, and access to the equipment.
+
+### Check reachability and clearance
+
+Use the robot's `WorkSpace2D` or `WorkSpace3D` component properties to display its
+approximate workspace, also called its work envelope. Use this envelope as
+rough guidance for the initial cell layout and for estimating basic distances
+between the robot, conveyors, and CNC mill. The official Visual Components lesson
+[Robot Reachability Part I](https://academy.visualcomponents.com/lessons/robot-reachability-part-i/)
+demonstrates robot placement, pedestal height, jogging, and the workspace
+profile.
+
+For more detailed and reliable tuning of the arrangement, mount the gripper,
+generate one grey cylinder, and grip it. Then use the **Jog** tool to move the
+complete robot, tool, and workpiece assembly through the important task poses.
+After all, it is the workpiece that must be placed at the positions and
+orientations required by the task. The cell must therefore allow the robot to
+move the workpiece through these poses without exceeding joint limits,
+approaching singularities, or colliding with the surrounding equipment. While
+jogging, use the **Jog** panel to monitor each joint's current value and
+permitted range. This shows when a target pose pushes one or more joints toward
+their limits. Enable **Color Highlight** in the **Limits** group to also mark
+the affected robot geometry in red when a joint limit is exceeded. Enable a
+collision detector and start the simulation once to initialize it. You can
+then reset the simulation and use the detector while jogging; collisions with
+the CNC, conveyors, pedestal, and other equipment are highlighted in yellow in the 3D
+view. 
+
+Manual jogging checks individual poses but does not validate every point along
+the programmed motion between them. After teaching representative motions, run
+the program with collision detection and the
+[**Limits** tools](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Limiting_a_robot_and_its_joints.htm)
+enabled, including the singularity check. Joint limits, robot configurations,
+and singularities are demonstrated in
+[Robot Reachability Part II](https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/).
+
+Before teaching the complete program, verify that:
+
+- the robot can reach the pickup, CNC loading, tool stand, and home poses,
+- the gripper and workpiece fit through the CNC opening,
+- the robot can approach and retract without crossing the machine or fence,
+- the conveyor sensor is located at a repeatable pickup pose, and
+- the tool stand can be reached without an awkward robot configuration.
+
+These checks are easier to correct before many robot positions depend on the
+layout.
+
+### Consider safety while the layout develops
+
+Do not wait until the end of the project to think about safety, but also do not
+spend time drawing final fencing while the equipment is still moving between
+tests. During layout design, consider where people need access for loading,
+teaching, clearing faults, and maintenance; where parts and people could enter
+the cell intentionally or unintentionally; where a gate could be placed; and
+whether robot motion creates trapping points against the CNC mill, fence, or
+other fixed equipment.
+
+Once the equipment positions are mostly stable and the relevant robot motions
+have been checked, use the **Fence and Wall Builder** from `Facilities -
+Factory` to draw the perimeter caging. This is usually the most convenient way
+to create and revise the fence. Simulation does not replace a risk assessment,
+but it makes alternative layouts easier to examine before positions and
+control logic become difficult to change. The safety process and the priority
+given to reducing hazards through design are discussed in the
+[risk-assessment process](robot_safety.qmd#sec-risk-assessment) and the
+[risk-reduction priorities](robot_safety.qmd#sec-risk-reduction) on the robot
+safety page.
+
+After placing the cell equipment, select the newly added components and use
+**Move to Layout** to assign them to the `Robot cell` sublayout. Check the
+**Layouts** tab afterwards to make sure that no cell component remains at the
+`ROOT` level. Moving the components together is usually quicker than assigning
+each component immediately after adding it.
+
+## Tool changer and gripper
+
+Attach the Tool Changer Robot Adapter to the robot flange. Attach the matching
+Tool Adapter to the gripper and place the assembled gripper on the Tool Changer
+Tool Stand. When the adapter is configured, VC reports which robot output is
+assigned to mounting and unmounting. In the tested cell this is output `33`;
+check the Output panel in your own layout rather than assuming the number.
+
+Enable automatic I/O connection for the gripper if the component supports it.
+After mounting, inspect the gripper's **Control** properties and the robot's
+signal connections. Custom gripper I/O commonly starts at robot port `100`.
+
+VC grasping is a simulation action, not a physical contact calculation. The
+grasp action searches a detection volume associated with a selected tool frame.
+When a product is found, VC fixes its pose relative to that frame so it moves
+with the robot. A release action removes that attachment. This explains why a
+robot can technically grasp a part even when no gripper fingers touch it.
+
+The gripper animation still matters. Its open and closed positions should match
+the workpiece, and the program should wait for the gripper's state feedback
+before moving away. Use VC's measure tool to determine the cylinder size and
+set the gripper's `J1_OpenValue` and `J1_CloseValue` accordingly.
+
+Configure a robot output in **Actions Configuration** to perform the VC grasp
+and release actions while also driving the movable gripper. In the tested cell,
+output `100` is connected to `IN_J1_Action`: `FALSE` opens and releases, while
+`TRUE` closes and grasps. The robot reads separate open-state and closed-state
+feedback before continuing.
+
+Standard robot outputs are also reserved for predefined tool actions. Outputs
+`1` to `16` are commonly associated with grasp and release actions for the
+default tool frames, while outputs beginning at `33` are used by tool-changing
+actions. Always inspect the selected robot's mappings because component models
+can differ.
+
+## Define a stable TCP
+
+The mounted gripper contributes a TCP frame, but a frame belonging to a
+detachable component may not remain available when the tool is unmounted. Move
+or copy one of the robot's native tool frames to the gripper TCP and use that
+frame in the motion program. The robot program then retains a stable tool-frame
+reference throughout mounting and unmounting.
+
+The frame should be located and oriented according to the physical task, not
+only at a convenient point in the 3D model. Review [frames and
+poses](frames_poses.qmd) if the TCP or reference-frame behavior is unclear.
+
+## CNC mill
+
+Use the **Process Machine - CNC** component. Configure a short process time
+during development and inspect its command and feedback signals:
+
+| CNC signal | Direction | Meaning |
+|---|---|---|
+| `FROM_PLC_OpenDoor` | Into CNC | Request the door to open. |
+| `FROM_PLC_CloseDoor` | Into CNC | Request the door to close. |
+| `FROM_PLC_StartProcess` | Into CNC | Start the machining process. |
+| `TO_PLC_DoorsOpen` | From CNC | Door-open feedback. |
+| `TO_PLC_DoorsClosed` | From CNC | Door-closed feedback. |
+| `TO_PLC_ProcessIsRunning` | From CNC | Machining is currently running. |
+
+There is no separate process-complete signal in this model. The controller must
+first observe `ProcessIsRunning = TRUE` and then wait for it to return to
+`FALSE`. Waiting only for `FALSE` could incorrectly report completion before
+the process has started.
+
+# Stage 1: internal VC control
+
+Connect the pickup sensor and CNC signals to available robot input and output
+ports. The robot program is now responsible for the complete cell: it waits for
+a part, operates the CNC, and performs all robot and gripper motions.
+
+During this stage, the detected part must remain at the taught pickup pose. The
+simplest option is to configure the Conveyor Sensor to **StopPart** when it
+detects a product. Alternatively, route the sensor signal so that detection
+sets the incoming conveyor's `PowerOn` signal to `FALSE`. This alternative
+requires an inverted signal or equivalent routing logic; connecting a sensor
+whose active value is `TRUE` directly to `PowerOn` would have the opposite effect. In either
+case, verify that the part stops before teaching the pickup pose and that the
+conveyor does not restart while the robot is gripping it.
+
+## Use meaningful subroutines
+
+Do not write the complete task as one long `Main` routine. At minimum, organize
+the motions into operations corresponding to:
+
+- mounting the gripper,
+- picking a part from the conveyor,
+- moving to and loading the CNC,
+- running the CNC process,
+- unloading the CNC and placing the finished part, and
+- returning home.
+
+Choose names that describe what each operation achieves. Each routine should
+start and finish in a predictable situation and contain the details tightly
+coupled to that operation. For example, the pick routine should operate the
+gripper and verify its feedback before retracting.
+
+The internal `Main` routine should read like the material flow rather than a
+list of individual robot motions. This makes the program easier to test now and
+provides subroutines that can be requested by the PLC later.
+
+## Validate before continuing
+
+Run repeated complete cycles and verify:
+
+- all robot positions and configurations are reachable,
+- approach and retract paths do not collide,
+- the correct base and tool frames are active,
+- the gripper reaches its commanded state before the next motion,
+- the part is attached and released at the expected points,
+- the CNC door and process sequence completes correctly, and
+- the robot ends each cycle at a known home pose.
+
+Do not proceed to external PLC control until this version works reliably.
+
+## Moving equipment after teaching positions
+
+If you must relocate or rotate the robot after teaching positions, change
+**Lock Positions** from **To reference** to **To World** before moving it. Change
+the setting back afterwards. This holds the taught poses fixed in the world
+while the robot base moves.
+
+For equipment-relative tasks, consider defining robot base frames on the
+relevant equipment instead. A pose defined relative to a CNC fixture then moves
+with that fixture, which can make later layout changes easier. Choose the method
+that reflects which physical relationship should remain fixed.
+
+## Integrate the conveyor and robot-cell sublayouts
+
+After the internally controlled robot program works reliably with the temporary
+feeder, connect the two subsystems. Disconnect or remove the robot cell's feeder,
+move the `Conveyor system` and `Robot cell` sublayouts together, and connect the
+appropriate conveyor paths. Reintroduce the mixed product flow only after this
+connection is working.
+
+Run the complete material flow again before adding PLC control. Check not only
+whether the robot cycle still runs, but also whether parts queue at the expected
+locations, whether upstream conveyors become blocked, and whether the timing
+between part arrival, conveyor stopping, and robot pickup remains reliable.
+
+# Stage 2: external PLC control
+
+The final system separates cell coordination from robot motion. Sensors and
+machine actuators are mapped to CODESYS, while the PLC and robot exchange
+high-level operation commands and status values.
+
+| Controller | Responsibility |
+|---|---|
+| PLC | Conveyor control, pickup-sensor evaluation, CNC door and process control, overall operation order, and later timeout or fault handling. |
+| Robot program | Robot motion, approach and retract paths, tool handling, gripper actions, and gripper feedback within each requested operation. |
+
+The gripper remains under robot control because its actions are tightly coupled
+to the pick and place motions. The conveyor and CNC are separate cell equipment
+and therefore belong to the PLC sequence.
+
+Remove the direct conveyor-sensor and CNC connections from the active robot
+program. Retain the local robot-to-gripper connections. Keep the internally
+controlled routine as a tested reference while developing a separate
+PLC-controlled main routine.
+
+## Two interacting state machines
+
+The PLC and robot each need a state machine, but at different levels:
+
+- The **PLC FSM** represents progress through the complete material flow and
+  decides which device may act next.
+- The **robot dispatcher FSM** accepts one operation request, executes the
+  selected robot subroutine, and reports its status.
+
+```{mermaid}
+flowchart LR
+    PLC[PLC cell FSM]
+    ROBOT[VC robot dispatcher]
+    CONVEYOR[Conveyor and sensor]
+    CNC[CNC mill]
+    ROUTINES[Robot subroutines]
+
+    PLC -->|Command| ROBOT
+    ROBOT -->|State and active command| PLC
+    PLC -->|Run| CONVEYOR
+    CONVEYOR -->|Part detected| PLC
+    PLC -->|Door and process commands| CNC
+    CNC -->|Door and process feedback| PLC
+    ROBOT -->|Call operation| ROUTINES
+```
+
+The PLC must not calculate robot joint motion, and the robot must not silently
+continue the complete production sequence after one requested operation. Both
+controllers should be understandable and testable independently.
+
+## Robot command properties
+
+On the VC **Modeling** tab, add three integer properties to the robot component.
+Place them in a group named `PLC`:
+
+| Property | Direction | Purpose |
+|---|---|---|
+| `PLC::Command` | PLC to robot | Requested operation; zero means no command. |
+| `PLC::RobotState` | Robot to PLC | State of the robot command interface. |
+| `PLC::ActiveCommand` | Robot to PLC | Command accepted and currently being handled. |
+
+`PLC` is only the property-group name. In a robot-program expression, the `::`
+syntax separates the group and property names.
+
+Use the following interface contract:
+
+| Command | Required robot operation |
+|---:|---|
+| `0` | No command or PLC acknowledgement |
+| `1` | Pick the part from the conveyor |
+| `2` | Load the CNC |
+| `3` | Unload the CNC and place the part on the conveyor |
+| `4` | Move to the home pose |
+
+| Robot state | Meaning |
+|---:|---|
+| `0` | Initializing |
+| `1` | Ready for a command |
+| `2` | Busy executing the accepted command |
+| `3` | Command completed and waiting for acknowledgement |
+| `4` | Invalid command or fault |
+
+The robot program should use `PLC::ActiveCommand` in a `Switch Case` statement
+to choose the required subroutine.
+
+## Required command handshake
+
+For every robot operation:
+
+1. The PLC waits for robot state `Ready`.
+2. The PLC writes and holds the requested command.
+3. The robot copies it to `ActiveCommand` and reports `Busy`.
+4. The PLC verifies that the intended command was accepted.
+5. The robot executes the complete subroutine and reports `Done`.
+6. The PLC clears `Command` to `0` as acknowledgement.
+7. The robot clears `ActiveCommand` and returns to `Ready`.
+
+This level-based handshake is preferable to short pulses because a pulse could
+be missed between an OPC UA update and a PLC scan.
+
+::: {.callout-tip}
+VC robot programs provide a dedicated wait statement only for binary robot
+inputs. To wait for an integer component property, use a `While` loop with a
+short delay, for example `0.05 s`. The loop condition should describe when the
+program must continue waiting. The delay prevents an empty polling loop from
+consuming simulation execution time.
+:::
+
+# OPC UA interface
+
+Expose the required CODESYS variables through **Symbol Configuration** and
+connect VC to the CODESYS OPC UA server. With CODESYS Control Win SL on the same
+computer, the server address is normally:
+
+```text
+opc.tcp://localhost:4840
+```
+
+VC acts as the OPC UA client. Use separate Connectivity variable groups for
+values sent in each direction.
+
+| PLC variable | VC property or signal | Direction |
+|---|---|---|
+| `iRobotCommand` | `PLC::Command` | PLC to VC |
+| `xConveyorRun` | Conveyor `PowerOnSignal` | PLC to VC |
+| `xCncOpenDoor` | `FROM_PLC_OpenDoor` | PLC to VC |
+| `xCncCloseDoor` | `FROM_PLC_CloseDoor` | PLC to VC |
+| `xCncStartProcess` | `FROM_PLC_StartProcess` | PLC to VC |
+| `PLC::RobotState` | `iRobotState` | VC to PLC |
+| `PLC::ActiveCommand` | `iRobotActiveCommand` | VC to PLC |
+| Pickup sensor | `xPartAtPick` | VC to PLC |
+| `TO_PLC_DoorsOpen` | `xCncDoorOpen` | VC to PLC |
+| `TO_PLC_DoorsClosed` | `xCncDoorClosed` | VC to PLC |
+| `TO_PLC_ProcessIsRunning` | `xCncProcessRunning` | VC to PLC |
+
+If you retained the sensor's internal **StopPart** action from Stage 1, it can
+continue to hold the product at the exact taught pose despite communication
+delay. The PLC must still turn off the conveyor when it receives `xPartAtPick`,
+preventing the conveyor and following products from continuing. Document the
+internal stop as a simulation convenience rather than PLC behavior.
+
+# Commissioning procedure
+
+Test the connected system incrementally:
+
+1. Start CODESYS Control Win SL and run the PLC application with production
+   disabled and `iRobotCommand = 0`.
+2. Connect both OPC UA variable groups in VC.
+3. Reset and start the VC simulation.
+4. Confirm that the robot initializes, mounts the gripper, moves home, and
+   reports `Ready`.
+5. Test each robot command and its complete handshake individually.
+6. Test the conveyor sensor and each CNC command and feedback pair.
+7. Enable production and run the complete PLC-controlled cycle.
+
+Monitor the PLC FSM state, robot command, robot state, active command, pickup
+sensor, conveyor output, CNC door feedback, and process-running feedback. When
+the system stops, first identify which controller and state is waiting, then
+check the condition required to leave that state.
+
+# Requirements and deliverables
+
+Your submission shall include:
+
+- the VC layout with functional geometry, configured tool and signals,
+- the internally controlled robot program used for initial validation,
+- the PLC-controlled robot dispatcher and meaningful motion subroutines,
+- the CODESYS PLC program,
+- an I/O list showing every OPC UA variable and its direction,
+- diagrams or tables documenting the PLC and robot state machines, and
+- evidence that the internal and externally controlled cycles were tested.
+
+The externally controlled solution shall satisfy these acceptance criteria:
+
+- the PLC, not the robot, coordinates the conveyor and CNC,
+- the robot accepts only defined operation commands,
+- every command follows the specified acknowledgement handshake,
+- robot commands are held until acknowledged rather than sent as short pulses,
+- the CNC process is confirmed to start before completion is evaluated,
+- disabling production prevents another cycle without interrupting an active
+  robot or CNC operation,
+- the robot and gripper finish each requested operation in a predictable state,
+  and
+- the complete material flow repeats without manual intervention.
+
+Develop the normal sequence first. Add timeouts and fault recovery only after
+the nominal cycle and communication interface are stable.
+
+# Visual Components resources
+
+- [Robot Reachability Part I](https://academy.visualcomponents.com/lessons/robot-reachability-part-i/)
+  covers robot placement, pedestal height, jogging, and workspace profiles.
+- [Robot Reachability Part II](https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/)
+  covers joint limits, robot configurations, and singularities.
+- [Jog panel](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Jog_panel.htm)
+  documents Cartesian and joint jogging, active tool and base frames, and
+  unreachable-position feedback.
+- [Detecting collisions](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Detecting_collisions.htm)
+  explains collision detectors during teaching and simulation.
+- [Signals in simulation](https://academy.visualcomponents.com/lessons/signals-in-simulation-2/)
+  demonstrates component signals using a conveyor and sensor.
+- [Signals with robots](https://academy.visualcomponents.com/lessons/signals-with-robots/)
+  connects component signals to a robot program.
+- [Signal grasp and release actions](https://academy.visualcomponents.com/lessons/signal-grasp-and-release-actions/)
+  explains VC's internal grasp and release actions.
+- [Model a robot gripper, part II](https://academy.visualcomponents.com/lessons/model-a-robot-gripper-part-ii/)
+  demonstrates gripper motion and I/O feedback.
+- [Mount and dismount tools](https://academy.visualcomponents.com/lessons/mount-and-dismount-tools/)
+  demonstrates tool-changing actions and tool-frame handling.
+- [Program Editor for Motion Controller](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Program_Editor_for_Motion_Controller.htm)
+  documents robot routines, variables, conditions, and `Switch Case`.
+- [Connect a remote OPC UA server](https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/)
+  covers OPC UA configuration and variable pairing.

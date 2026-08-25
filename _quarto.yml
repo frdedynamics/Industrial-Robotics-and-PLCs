@@ -36,7 +36,9 @@ website:
 
       - section: Project
         contents: 
-          - pages/project.qmd   
+          - pages/project.qmd
+          - pages/conveyor.qmd
+          - pages/robot_cell.qmd   
           
       - text: "Further Reading"
         href: pages/further_reading.qmd
