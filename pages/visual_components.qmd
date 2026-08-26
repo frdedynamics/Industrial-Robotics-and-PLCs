@@ -1,30 +1,285 @@
 ---
 title: Visual Components
-draft: true
---- 
+draft: false
+---
 
-- make brief overview of the Visual Components software, what it is, what it can do, and how it can be used in the course.
-- point to the Visual Components Academy and relevant learning paths, videos and docs
-- explain that we will not do a fine grained step  by step tutorial but that students are expected to use the VC material for self study and also play around with the software, which is the most effective way to learn it. 
+# Learning Visual Components
 
-- what are products and what is product type editor
+Visual Components (VC) is the main simulation environment used in this course.
+It combines layout design, production-flow simulation, robot programming,
+offline programming, component modeling, analysis tools, and connections to
+external control systems. We use **Visual Components Premium OLP 5.1**. The
+[simulation page](simulation.qmd) discusses why such tools are useful; this
+page introduces the concepts and workflows needed to use VC effectively.
 
-- what are interfaces, signals, behaviors, flows, flow groups
+VC contains far more functionality than we can cover in one course. The
+[Visual Components Academy](https://academy.visualcomponents.com/) provides
+many useful learning paths and lessons, and you are welcome to explore them.
+They are not all required course material. We have selected the lessons that
+best support the course topics and project work and placed them after the
+sections where they are most useful. Some were recorded in earlier VC versions,
+so individual buttons or panels may look different, but the main concepts and
+workflows remain relevant.
 
-- write about robots in VC, and especially on their IOs, also on programming basics
+This page is not intended as a fine-grained sequence of every mouse click.
+Learning VC is most effective when you combine the explanations and curated
+lessons with experimentation: build a small layout, inspect component
+properties, connect signals, run the simulation, and observe what changes. Use
+the [complete robot-simulation learning path](https://academy.visualcomponents.com/learning-paths/using-visual-components-for-robot-simulation/)
+and the [VC help system](https://help.visualcomponents.com/5.0/Premium/en/English/Help.htm)
+when you need more detail than this course requires.
 
+# Layouts and components {#sec-vc-layouts-components}
 
+A VC **layout** is the working model of a simulated system. It contains the
+equipment, products, robot programs, process definitions, signal connections,
+and other configuration needed to run the simulation. Most equipment is added
+from the **eCatalog**, which contains ready-made models from Visual Components
+and equipment manufacturers.
 
+A component is more than its visible 3D geometry. A conveyor must know how to
+move products, a sensor must know what to detect, and a robot must contain a
+kinematic model and a program executor. The following terms help explain how a
+VC component provides this functionality:
 
+| Term | Practical meaning | Example |
+|---|---|---|
+| **Component** | One reusable item placed in a layout. | A conveyor, robot, sensor, gripper, or machine. |
+| **Property** | A value that configures an item or reports its current state. | Conveyor speed, pedestal height, or process time. |
+| **Behavior** | Internal functionality that makes a component act during simulation. | A path moves products, a sensor detects them, and a script implements logic. |
+| **Interface** | A defined connection point between compatible components. | A conveyor end, robot flange, or connection that bundles signals. |
+| **Signal** | A value communicated during simulation. | A Boolean `PartDetected` signal or an integer command. |
 
+The **Component Graph** exposes the internal node and behavior structure of a
+selected component. You do not normally need to understand every behavior in
+an eCatalog model, but the graph is useful when you need to find a signal,
+inspect how a component works, or expose additional data for external control.
+The [VC behavior overview](https://help.visualcomponents.com/4.9/Premium/en/English/Component%20Modeling/Behaviors/Behaviors.htm)
+describes the main behavior families.
 
+## Interfaces, PnP, and signals
 
-# finds from VC academy
-- video on robot programming, programming tab, statements in robot programming editor, robot action configuration https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/?module=3&learning_path=1448
-    - write a short text  to this that it covers the basic programming and tools, also snapping. basic programming here means defining a movement by a start and end pose and a movement type. say in a sentences that this basic programming is done by jogging the robot to the final pose and then making a new movement statement. the statement will then move the robot from where ever it is before to the defined final pose. write that other programming approaches e.g. programming in accordance with part geometries are discussed in another video.
-- video on movement types, basic frames, configurations. this should be linked to the general theory we have on that topic on other pages: https://academy.visualcomponents.com/lessons/basics-of-robotics/?module=3&learning_path=1448
-- video on reachability (part 1) that talks about robot workspace and the tools and procedures used in VC to place a robot in a cell such that it can reach all necessary task points. https://academy.visualcomponents.com/lessons/robot-reachability-part-i/?module=3&learning_path=1448
-- video on reachability (part 2)  checking joint limits and configurations, discussion of singularities, wrist singularity, overhead, shoulder or polar singularity. https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/?module=4&learning_path=1448
-- video on safety measures for robot cells, also shows wall builder component https://academy.visualcomponents.com/lessons/add-safety-equipment-in-robotic-cells/?module=4&learning_path=1448
-- Video on if statements in robot programming, simple logic and also how to write the conditions: https://academy.visualcomponents.com/lessons/teach-an-if-statement/?module=5&learning_path=1448
-- video on sequences and subroutines in robot programming: https://academy.visualcomponents.com/lessons/creating-subprograms-and-calling-robot-routines/?module=5&learning_path=1448
+Interfaces define which components can connect and what the connection does.
+A physical interface can establish a parent-child relationship and align two
+components. With **PnP**, compatible interfaces guide the components together
+and make them snap into place. This is commonly used for conveyors, sensors,
+robot tools, and robot positioners.
+
+Other interfaces are logical rather than physical. They can connect signals,
+material-flow behavior, robot tools, or other functionality without moving the
+components. A signal is the value that travels through such a connection; the
+interface defines how the connection can be made. VC supports Boolean, integer,
+real, string, matrix, and component-valued signals, although Boolean and
+integer signals cover most work in this course.
+
+Properties and signals should not be confused. A property often configures a
+component, while a signal is intended to communicate a changing value during
+simulation. The distinction is not absolute because component scripts can read
+and write properties, but a visible property is not automatically an externally
+connected signal.
+
+**Curated Academy lesson:** [Signals in simulation](https://academy.visualcomponents.com/lessons/signals-in-simulation-2/)
+builds a small conveyor line and demonstrates how to connect and use component
+signals with the **Connect Signals** tool. Focus on the direction of the
+connection and on how changing one component's Boolean signal affects another
+component.
+
+# Products and production flow {#sec-vc-products-flow}
+
+In VC, the word **product** has a specific role in production simulation. A
+product type defines what can be created, while a product instance is one
+particular item that exists and moves during a simulation. A product type can
+refer to a component model for its visible geometry and can also contain data
+used by processes, filtering, and routing.
+
+The **Product Type Editor** is used to create and organize product types. It is
+important to distinguish a product's appearance from its simulation identity:
+changing the color or material of a 3D component does not by itself define a
+new product type or process route. A feeder or product creator must be
+configured to generate the intended product types.
+
+Every product type belongs to a **flow group**. Product types in the same flow
+group share a production-flow sequence and can use the same compatible
+transport links. For example, several variants of a workpiece could pass
+through the same machining and inspection steps while still carrying different
+product properties. The **Process Flow Editor** defines the sequence of process
+steps for the group.
+
+The [Product Type Editor documentation](https://help.visualcomponents.com/4.9/Premium/en/English/Process%20Modeling/Product_Type_Editor.htm)
+and [Process Flow Editor documentation](https://help.visualcomponents.com/5.0/Premium/en/English/Process%20Modeling/Process_Flow_Editor.htm)
+provide the detailed reference for these tools.
+
+**Curated Academy lesson:** [Introduction to Layout Configuration](https://academy.visualcomponents.com/lessons/introduction-to-layout-configuration/)
+develops a layout with products, processes, and material flow. It covers more
+process modeling than is needed for every course exercise, but it is the most
+useful selected resource when you need to understand how product definitions
+and flow steps turn a collection of components into a production simulation.
+
+# Robots in Visual Components {#sec-vc-robots}
+
+A VC robot component combines the robot geometry, joint and kinematic model,
+base and tool frames, motion solver, robot program, and I/O ports. This allows
+VC to calculate and display robot motion while executing a structured program.
+It does not mean that the simulated controller behaves identically to every
+real controller; vendor-specific offline programming and virtual-controller
+workflows add another layer, as discussed on the
+[robot-programming page](robot_programming.qmd).
+
+## Jogging and teaching motion {#sec-vc-robot-teaching}
+
+The **Jog** tool moves the selected robot interactively. You can jog individual
+joints or move the active TCP in Cartesian coordinates, using the selected base
+and tool frames. The concepts behind these choices are introduced on the
+[frames and poses](frames_poses.qmd) and [kinematics](kinematics.qmd) pages.
+
+Basic robot programming in VC follows the same key-point logic used with many
+industrial robots. Jog the robot to the required final pose and add a motion
+statement. The statement stores the target pose and movement type. During
+execution, it moves from the preceding program state to that target. The chosen
+movement type determines whether the controller plans mainly in joint space or
+constrains the TCP to a Cartesian path.
+
+This approach is suitable for taught pick, place, approach, and retract poses.
+Path-heavy tasks can instead use geometry-based path tools and offline
+programming workflows; those approaches are introduced on the
+[robot-programming page](robot_programming.qmd#offline-programming-and-simulation).
+
+**Curated Academy lesson:** [Introduction to Robot Teaching](https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/)
+introduces the Program tab, motion points, jogging, editing taught points,
+signal actions, exchanging a robot, and adding a tool. Watch how a motion is
+defined by jogging to its target and then creating or updating a statement.
+
+**Curated Academy lesson:** [Basics of Robotics](https://academy.visualcomponents.com/lessons/basics-of-robotics/)
+connects the VC controls to point-to-point and linear motion, base and tool
+frames, robot configurations, and joint turns. Use it together with the course
+theory pages rather than treating the software labels as a replacement for the
+underlying concepts.
+
+## Program structure and logic {#sec-vc-robot-programs}
+
+Robot programs in VC are organized into routines containing statements. Motion
+statements define robot movement, I/O statements communicate with the cell,
+and call statements execute another routine. Conditions, loops, and variables
+can be used when the sequence must make decisions or repeat work.
+
+A short demonstration may fit in one routine, but a larger program is easier to
+test and reuse when meaningful operations are placed in subroutines. Typical
+examples are picking a part, loading a machine, unloading it, and placing a
+finished part. The `Main` routine can then express the overall sequence by
+calling those operations.
+
+**Curated Academy lesson:** [Creating subprograms and calling robot routines](https://academy.visualcomponents.com/lessons/creating-subprograms-and-calling-robot-routines/)
+shows how to create, copy, modify, and call sequences in a pick-and-place
+program. It also connects routine structure to motion statements, tool setup,
+and output actions.
+
+**Curated Academy lesson:** [Teach an If Statement](https://academy.visualcomponents.com/lessons/teach-an-if-statement/)
+shows how to add `If`, `Then`, and `Else` scopes and build conditions from
+operators, variables, properties, and robot input ports. Use conditions when
+the program must choose between alternatives; do not use them merely to hide a
+sequence that would be clearer as separate routines.
+
+## Robot I/O and signal actions {#sec-vc-robot-io}
+
+Robot I/O connects the robot program to the rest of the simulated cell. The
+direction is always described from the robot's perspective:
+
+- A **robot input** is read by the robot program. A sensor output can be
+  connected to it so the robot can wait for or evaluate the sensor state.
+- A **robot output** is written by the robot program. It can be connected to an
+  actuator input, such as a gripper command or machine-door request.
+
+The component signal has a descriptive name, while the robot program normally
+addresses an I/O port number. Connecting the signal to a port creates the route
+between these two representations. A robot program can then use a **Set Binary
+Output** statement to command an output or a **Wait Binary Input** statement to
+pause until an input has the required value. @fig-vc-robot-io summarizes these
+connections and distinguishes signal wiring from an internal robot action.
+
+```{mermaid}
+%%| label: fig-vc-robot-io
+%%| fig-cap: "Robot I/O connects named component signals to numbered robot ports. A robot output can also trigger an internal VC action through Actions Configuration."
+flowchart LR
+    SENSOR["Sensor output<br/>PartDetected"] -->|Boolean signal| RIN["Robot input port"]
+    RIN -->|read or wait| PROGRAM["Robot program"]
+    PROGRAM -->|set output| ROUT["Robot output port"]
+    ROUT -->|signal connection| ACTUATOR["Component input<br/>for example a gripper"]
+    ROUT -.->|Actions Configuration| ACTION["Internal VC action<br/>for example Grasp"]
+```
+
+**Actions Configuration** is related to signal wiring but is not the same
+thing. It maps a robot output value to a simulation action such as grasping,
+releasing, tracing, or mounting a tool. The action may occur even when that
+output is not connected to another component. A movable gripper therefore
+often needs both mechanisms: the output drives the gripper joint through a
+signal connection and triggers the logical grasp action through Actions
+Configuration.
+
+Most VC robot models reserve outputs `1` to `16` for grasp and release actions,
+`17` to `32` for tracing, and `33` to `48` for tool mounting. Custom equipment
+connections commonly use ports from `100` onward so that their purpose is
+clear and they do not conflict with predefined actions. Component models can
+differ, so always inspect the robot's signal mappings and action configuration
+instead of relying only on these ranges.
+
+**Curated Academy lesson:** [Signals with robots](https://academy.visualcomponents.com/lessons/signals-with-robots/)
+continues the conveyor example from **Signals in simulation**, connects
+component signals to robot ports, assigns a product type, and creates a simple
+pick-and-place program. It is the most relevant general preparation for the
+project-specific I/O mappings on the [robot-cell page](robot_cell.qmd).
+
+# Reachability, limits, and collisions {#sec-vc-robot-analysis}
+
+A displayed robot workspace is useful for initial layout design, but it is only
+a rough envelope. A task is feasible only if the selected tool and workpiece
+can reach every required pose with acceptable joint values, robot
+configuration, clearance, and approach path. VC provides workspace profiles,
+joint-limit feedback, configuration tools, and collision detectors to support
+these checks.
+
+The most reliable workflow is to start with the workspace profile, then mount
+the real tool model, attach a representative workpiece, and jog or execute the
+important task motions. Collision detection should include the robot, tool,
+workpiece, fixtures, machines, and other nearby equipment.
+
+**Curated Academy lesson:** [Robot Reachability Part I](https://academy.visualcomponents.com/lessons/robot-reachability-part-i/)
+shows how to build the initial layout, connect interfaces, locate and raise the
+robot, jog it, and use the workspace profile as an early placement aid.
+
+**Curated Academy lesson:** [Robot Reachability Part II](https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/)
+moves from the rough workspace to joint values, joint limits, configurations,
+and singularities. It demonstrates wrist and overhead or polar singularities
+and connects these problems to choices made while teaching robot motions.
+
+# Representing safety measures {#sec-vc-safety-modeling}
+
+A simulation should show the equipment and access concept needed for the cell,
+including fences, doors, scanners, and operator routes where relevant. VC's
+**Fence and Wall Builder** is a convenient way to draw perimeter guarding, and
+signals can be used to demonstrate how modeled access equipment affects the
+cell sequence.
+
+These models support layout discussion and early safety work, but placing a
+fence or scanner model in VC does not prove that a real safety function is
+correct. Hazard identification, risk reduction, safety distances, control
+reliability, and validation still require the engineering process discussed on
+the [robot-safety page](robot_safety.qmd).
+
+**Curated Academy lesson:** [Add Safety Equipment in Robotic Cells](https://academy.visualcomponents.com/lessons/add-safety-equipment-in-robotic-cells/)
+demonstrates the Fence and Wall Builder, a rolling door, an area sensor, a
+safety laser-scanner model, signal connections, and a light tower. Treat it as
+a lesson in representing a safety concept in simulation, not as a complete
+risk assessment or validated safety design.
+
+# A practical learning strategy
+
+When learning a new VC feature, first isolate it in a small test layout. Change
+one property or signal at a time, run the simulation, and observe the 3D view,
+component properties, signal connections, and Output panel. Once the behavior
+is understood, integrate it into the larger project and test the interfaces
+again.
+
+The curated lessons on this page cover the VC knowledge most directly needed
+for the course. The wider Academy remains a useful optional resource for topics
+such as component modeling, advanced process modeling, path tools, physics,
+vendor add-ons, and other connectivity workflows.
