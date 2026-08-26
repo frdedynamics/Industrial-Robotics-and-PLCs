@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quarto Course Pages"
+  short_description: "Build and verify robotics course pages"
+  default_prompt: "Use $quarto-course-pages to revise this course page and validate the rendered result."
