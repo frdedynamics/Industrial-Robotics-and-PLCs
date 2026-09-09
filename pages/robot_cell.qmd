@@ -139,7 +139,7 @@ differs in your VC installation, search for the stated component name.
 
 # Build the simulated cell
 
-## Organize the project with sublayouts
+## Organize the project with sublayouts {#sec-cell-sublayouts}
 
 Build the robot cell in the same VC file as the completed conveyor system,
 but do not connect the two systems yet. First save a copy of the working
@@ -297,6 +297,8 @@ understand and debug the program sequence, and it makes the simulation clearer
 and more convincing in customer or sales presentations. It does not validate
 real gripping force, payload capacity, deformation, or slip.
 
+TODO we have to describe the general IO structure and function in VC. point again to intro to robot teaching video
+
 The logical grasp and release actions are configured in the robot's **Actions
 Configuration** properties. In most VC robot components, outputs `1` to `16`
 are predefined for grasping and releasing with the default tool frames. These
@@ -368,7 +370,7 @@ first observe `ProcessIsRunning = TRUE` and then wait for it to return to
 `FALSE`. Waiting only for `FALSE` could incorrectly report completion before
 the process has started.
 
-# Stage 1: internal VC control
+# Stage 1: internal VC control {#sec-cell-internal-control}
 
 Connect the pickup sensor and CNC signals to available robot input and output
 ports. The robot program is now responsible for the complete cell: it waits for
@@ -442,7 +444,7 @@ whether the robot cycle still runs, but also whether parts queue at the expected
 locations, whether upstream conveyors become blocked, and whether the timing
 between part arrival, conveyor stopping, and robot pickup remains reliable.
 
-# Stage 2: external PLC control
+# Stage 2: external PLC control {#sec-cell-external-control}
 
 The final system separates cell coordination from robot motion. Sensors and
 machine actuators are mapped to CODESYS, while the PLC and robot exchange
@@ -464,17 +466,18 @@ PLC-controlled main routine.
 
 ## Two interacting state machines
 
-The PLC and robot each need a state machine, but at different levels:
+A useful way to structure the control is to use a state machine on each side,
+but at different levels:
 
 - The **PLC FSM** represents progress through the complete material flow and
   decides which device may act next.
-- The **robot dispatcher FSM** accepts one operation request, executes the
+- The **robot-side FSM** accepts one operation request, executes the
   selected robot subroutine, and reports its status.
 
 ```{mermaid}
 flowchart LR
     PLC[PLC cell FSM]
-    ROBOT[VC robot dispatcher]
+    ROBOT[VC robot FSM]
     CONVEYOR[Conveyor and sensor]
     CNC[CNC mill]
     ROUTINES[Robot subroutines]
@@ -492,7 +495,7 @@ The PLC must not calculate robot joint motion, and the robot must not silently
 continue the complete production sequence after one requested operation. Both
 controllers should be understandable and testable independently.
 
-## Robot command properties
+## Robot command properties {#sec-cell-command-interface}
 
 On the VC **Modeling** tab, add three integer properties to the robot component.
 Place them in a group named `PLC`:
@@ -524,8 +527,10 @@ Use the following interface contract:
 | `3` | Command completed and waiting for acknowledgement |
 | `4` | Invalid command or fault |
 
-The robot program should use `PLC::ActiveCommand` in a `Switch Case` statement
-to choose the required subroutine.
+The robot program must use `PLC::ActiveCommand` to choose the required
+subroutine. You can implement this selection with `If` and `Else` statements or
+with a `Switch Case`. `Switch Case` is often compact and easy to read when each
+integer command corresponds to one operation.
 
 ## Required command handshake
 
@@ -607,7 +612,7 @@ Your submission shall include:
 
 - the VC layout with functional geometry, configured tool and signals,
 - the internally controlled robot program used for initial validation,
-- the PLC-controlled robot dispatcher and meaningful motion subroutines,
+- the PLC-controlled robot program and meaningful motion subroutines,
 - the CODESYS PLC program,
 - an I/O list showing every OPC UA variable and its direction,
 - diagrams or tables documenting the PLC and robot state machines, and

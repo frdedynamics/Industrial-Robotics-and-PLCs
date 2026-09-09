@@ -66,12 +66,18 @@ question **within the assumptions and limitations of its model**. A convincing
 3D animation can still give a wrong result.
 :::
 
-# A model built for a purpose
+# A model built for a purpose {#sec-simulation-purpose}
 
 A model is a deliberate simplification. It contains the parts of reality that
 matter for the current question and leaves other details out. A useful model is
 therefore not necessarily the most detailed model; it is detailed enough to
 support the decision you need to make.
+
+In practice, begin by stating what you want to learn or decide from the
+simulation. Then consider what result would answer that question and which
+parts and behaviors of the real system could change the result. This gives you
+a basis for choosing the model boundary, the necessary level of detail, and
+what must be checked before relying on the simulation.
 
 You have probably encountered George Box's well-known reminder: "Essentially,
 all models are wrong, but some are useful" [@BoxDraper.1987, p. 424]. Here,
