@@ -1,5 +1,46 @@
 /* css styles */
 
+.component-catalog-table .component-catalog-table__group th {
+	padding: 0.65rem 0.75rem;
+	border-top: 2px solid #7a8796;
+	border-bottom: 2px solid #7a8796;
+	background: #f4f7fa;
+	text-align: left;
+}
+
+.component-catalog-table .component-catalog-table__group strong {
+	display: inline-block;
+	margin-right: 1rem;
+}
+
+.component-catalog-table .component-catalog-table__group code {
+	font-weight: 400;
+}
+
+.component-catalog-table__preview-cell {
+	width: 6rem;
+	vertical-align: middle;
+}
+
+.component-catalog-table__preview {
+	display: block;
+	width: 5.25rem;
+	height: 4rem;
+	border: 1px solid rgba(31, 45, 61, 0.14);
+	border-radius: 2px;
+	background: #292929;
+	object-fit: contain;
+}
+
+.component-catalog-table__preview-pair {
+	display: flex;
+	gap: 0.25rem;
+}
+
+.component-catalog-table__preview-pair .component-catalog-table__preview {
+	width: 2.5rem;
+}
+
 .robot-hero {
 	margin: 2rem 0 1rem;
 	padding: 1.5rem;

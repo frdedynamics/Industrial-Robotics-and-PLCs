@@ -63,6 +63,9 @@ div.csl-indent {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -162,7 +165,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/robot_safety.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Robot safety</span></a>
+ <span class="menu-text">Robot Safety</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -194,6 +197,29 @@ div.csl-indent {
  <span class="menu-text">Simulation</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/visual_components.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visual Components</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Project</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot cell</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -213,7 +239,7 @@ div.csl-indent {
    
   <ul>
   <li><a href="#why-simulate" id="toc-why-simulate" class="nav-link active" data-scroll-target="#why-simulate">Why simulate?</a></li>
-  <li><a href="#a-model-built-for-a-purpose" id="toc-a-model-built-for-a-purpose" class="nav-link" data-scroll-target="#a-model-built-for-a-purpose">A model built for a purpose</a>
+  <li><a href="#sec-simulation-purpose" id="toc-sec-simulation-purpose" class="nav-link" data-scroll-target="#sec-simulation-purpose">A model built for a purpose</a>
   <ul class="collapse">
   <li><a href="#model-fidelity-and-the-simulation-to-reality-gap" id="toc-model-fidelity-and-the-simulation-to-reality-gap" class="nav-link" data-scroll-target="#model-fidelity-and-the-simulation-to-reality-gap">Model fidelity and the simulation-to-reality gap</a></li>
   </ul></li>
@@ -280,9 +306,10 @@ Important
 </div>
 </div>
 </section>
-<section id="a-model-built-for-a-purpose" class="level1">
+<section id="sec-simulation-purpose" class="level1">
 <h1>A model built for a purpose</h1>
 <p>A model is a deliberate simplification. It contains the parts of reality that matter for the current question and leaves other details out. A useful model is therefore not necessarily the most detailed model; it is detailed enough to support the decision you need to make.</p>
+<p>In practice, begin by stating what you want to learn or decide from the simulation. Then consider what result would answer that question and which parts and behaviors of the real system could change the result. This gives you a basis for choosing the model boundary, the necessary level of detail, and what must be checked before relying on the simulation.</p>
 <p>You have probably encountered George Box’s well-known reminder: “Essentially, all models are wrong, but some are useful” <span class="citation" data-cites="BoxDraper.1987">(<a href="#ref-BoxDraper.1987" role="doc-biblioref">Box and Draper 1987, 424</a>)</span>. Here, <strong>wrong</strong> means incomplete or simplified, not worthless.</p>
 <p>The <strong>model boundary</strong> separates what is represented inside the simulation from what is treated as an external input or left out. A robot-only model has a narrow boundary. A production-line model may include several machines, operators, material flow, and control systems.</p>
 <p>Building a working simulation has an important side effect: it forces you to make details explicit. You must decide where a sensor is located, when a part appears, which signal starts a motion, how long an operation takes, and what happens next. Questions that might remain hidden in a drawing or meeting often become visible because the simulation cannot run until some behavior has been defined.</p>
@@ -420,7 +447,7 @@ Figure&nbsp;1: The four phases of robotic-cell deployment used in Lean Robotics.
 <div id="fig-simulation-olp" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Visual Components offline programming environment showing an industrial robot, cell geometry, paths, targets, and program statements">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-simulation-olp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="img/visual_components_olp5-2.png" class="img-fluid figure-img" alt="Visual Components offline programming environment showing an industrial robot, cell geometry, paths, targets, and program statements">
+<a href="img/visual_components_olp5-2.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;2: A robot offline-programming environment in which the cell model, robot paths, targets, and program are developed together. Image source: Visual Components."><img src="img/visual_components_olp5-2.png" class="img-fluid figure-img" alt="Visual Components offline programming environment showing an industrial robot, cell geometry, paths, targets, and program statements"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simulation-olp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: A robot offline-programming environment in which the cell model, robot paths, targets, and program are developed together. Image source: <a href="https://www.visualcomponents.com/blog/steps-of-the-olp-process/">Visual Components</a>.
@@ -947,8 +974,40 @@ Box, George E. P., and Norman R. Draper. 1987. <em>Empirical Model-Building and 
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/simulation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/simulation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

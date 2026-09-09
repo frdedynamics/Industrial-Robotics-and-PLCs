@@ -63,6 +63,9 @@ div.csl-indent {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -159,7 +162,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/robot_safety.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Robot safety</span></a>
+ <span class="menu-text">Robot Safety</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -189,6 +192,29 @@ div.csl-indent {
   <div class="sidebar-item-container"> 
   <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Simulation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/visual_components.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visual Components</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Project</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot cell</span></a>
   </div>
 </li>
       </ul>
@@ -255,7 +281,7 @@ div.csl-indent {
 <div id="fig-robot-anatomy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Annotated image of a KUKA industrial robot arm showing the base, base frame, joints, links, flange, tool, and TCP frame.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-robot-anatomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="img/robot_anatomy.png" class="img-fluid figure-img" alt="Annotated image of a KUKA industrial robot arm showing the base, base frame, joints, links, flange, tool, and TCP frame.">
+<a href="img/robot_anatomy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Basic anatomy of a six-axis industrial robot arm with a milling spindle mounted as the tool. The exact mechanical shape depends on the robot model and the mounted tool, but the terms base, base frame, joints, links, flange, and TCP frame are used in most robot applications."><img src="img/robot_anatomy.png" class="img-fluid figure-img" alt="Annotated image of a KUKA industrial robot arm showing the base, base frame, joints, links, flange, tool, and TCP frame."></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-robot-anatomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Basic anatomy of a six-axis industrial robot arm with a milling spindle mounted as the tool. The exact mechanical shape depends on the robot model and the mounted tool, but the terms base, base frame, joints, links, flange, and TCP frame are used in most robot applications.
@@ -287,7 +313,7 @@ Figure&nbsp;1: Basic anatomy of a six-axis industrial robot arm with a milling s
 <div id="fig-breakeven" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-breakeven-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="img/automation_break_even_points.png" class="img-fluid figure-img">
+<a href="img/automation_break_even_points.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Break even points for different automation strategies. Based on @Matthias.2013."><img src="img/automation_break_even_points.png" class="img-fluid figure-img"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-breakeven-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: Break even points for different automation strategies. Based on <span class="citation" data-cites="Matthias.2013">Matthias et al. (<a href="#ref-Matthias.2013" role="doc-biblioref">2013</a>)</span>.
@@ -306,7 +332,7 @@ Figure&nbsp;2: Break even points for different automation strategies. Based on <
 <div id="fig-painting-robots" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-subfloat-fig figure">
 <div aria-describedby="fig-painting-robots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="img/painting_robots.png" class="img-fluid figure-img" data-ref-parent="fig-hazardous-robot-tasks">
+<a href="img/painting_robots.png" class="lightbox" data-gallery="fig-hazardous-robot-tasks" title="Figure&nbsp;3&nbsp;(a): Painting robots applying coating in a spray booth. Source"><img src="img/painting_robots.png" class="img-fluid figure-img" data-ref-parent="fig-hazardous-robot-tasks"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-painting-robots-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 (a) Painting robots applying coating in a spray booth. <a href="https://www.youtube.com/watch?v=-iEelDpKIEQ">Source</a>
@@ -318,7 +344,7 @@ Figure&nbsp;2: Break even points for different automation strategies. Based on <
 <div id="fig-welding-robot" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-subfloat-fig figure">
 <div aria-describedby="fig-welding-robot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="img/welding_robot.png" class="img-fluid figure-img" data-ref-parent="fig-hazardous-robot-tasks">
+<a href="img/welding_robot.png" class="lightbox" data-gallery="fig-hazardous-robot-tasks" title="Figure&nbsp;3&nbsp;(b): A welding robot operating in a robot cell. Source"><img src="img/welding_robot.png" class="img-fluid figure-img" data-ref-parent="fig-hazardous-robot-tasks"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-welding-robot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 (b) A welding robot operating in a robot cell. <a href="https://www.fronius.com/en-us/usa/welding-technology/product-information/welding-automation/robotic-welding">Source</a>
@@ -760,8 +786,40 @@ Matthias, Björn, Hao Ding, and Volker Miegel. 2013. <span>“Die Zukunft Der Me
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robots.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robots.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

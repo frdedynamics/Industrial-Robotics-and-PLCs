@@ -44,6 +44,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -85,7 +88,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/robot_safety.html">Robot safety</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/robot_safety.html">Robot Safety</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -140,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/robot_safety.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Robot safety</span></a>
+ <span class="menu-text">Robot Safety</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -172,6 +175,29 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Simulation</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/visual_components.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visual Components</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Project</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot cell</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item">
@@ -193,7 +219,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#start-with-tasks-and-access" id="toc-start-with-tasks-and-access" class="nav-link active" data-scroll-target="#start-with-tasks-and-access">Start with tasks and access</a></li>
   <li><a href="#identify-hazards-in-the-complete-cell" id="toc-identify-hazards-in-the-complete-cell" class="nav-link" data-scroll-target="#identify-hazards-in-the-complete-cell">Identify hazards in the complete cell</a></li>
   <li><a href="#sec-risk-assessment" id="toc-sec-risk-assessment" class="nav-link" data-scroll-target="#sec-risk-assessment">Record and evaluate the risk</a></li>
-  <li><a href="#reduce-risk-in-layers" id="toc-reduce-risk-in-layers" class="nav-link" data-scroll-target="#reduce-risk-in-layers">Reduce risk in layers</a></li>
+  <li><a href="#sec-risk-reduction" id="toc-sec-risk-reduction" class="nav-link" data-scroll-target="#sec-risk-reduction">Reduce risk in layers</a></li>
   <li><a href="#common-protective-measures" id="toc-common-protective-measures" class="nav-link" data-scroll-target="#common-protective-measures">Common protective measures</a></li>
   <li><a href="#sec-safety-io" id="toc-sec-safety-io" class="nav-link" data-scroll-target="#sec-safety-io">Safety I/O and cell-level safety logic</a>
   <ul class="collapse">
@@ -217,7 +243,7 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/robot_safety.html">Robot safety</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/robots.html">Robot Foundations</a></li><li class="breadcrumb-item"><a href="../pages/robot_safety.html">Robot Safety</a></li></ol></nav>
 <div class="quarto-title">
 <h1 class="title">Robot Safety</h1>
 </div>
@@ -303,7 +329,7 @@ Important
 <p>Consider an operator entering a cell to retrieve a dropped workpiece. The robot may be stopped, but the person could still be within reach of the robot, an automatic machine door, a pneumatic gripper, or a suspended load. The assessment must establish what prevents unexpected motion, which equipment is included in the stop, whether stored energy remains, and what must happen before restart.</p>
 <p>Many assessment methods use a matrix, colour category, or numerical score to summarize estimated risk. These formats can help compare hazards and prioritize work, but the score is not the final result. The useful result is a set of measures with traceable reasons, named owners, and evidence that the measures work. The <a href="https://www.arbeidstilsynet.no/hms/risikovurdering/">Arbeidstilsynet guidance</a> provides a practical Norwegian starting point for documenting the process. For the formal machinery-safety framework, continue with <a href="https://www.iso.org/standard/51528.html">ISO 12100</a> through authorized access.</p>
 </section>
-<section id="reduce-risk-in-layers" class="level1">
+<section id="sec-risk-reduction" class="level1">
 <h1>Reduce risk in layers</h1>
 <p>Safety is strongest when hazards are addressed by the design itself. Warnings and personal protective equipment are useful for remaining risks, but they should not be the first or only measure considered.</p>
 <p>A practical order is:</p>
@@ -413,10 +439,10 @@ Important
 </ul>
 <p>Some PLC platforms can execute the standard control program and a separately managed safety program in the same controller or industrial PC. Such a system can connect to both standard I/O modules and safety-rated I/O modules, sometimes mounted side by side in the same modular I/O station. Production sensors and actuators normally use the standard modules, while devices and outputs that form part of a safety function use suitable safety modules. Sharing a controller, engineering environment, backplane, or network does not remove this distinction. Where a response is required for safety, it must not depend only on ordinary PLC code, ordinary fieldbus data, or the robot’s task program.</p>
 <p><a href="#fig-beckhoff-standard-safety-io" class="quarto-xref">Figure&nbsp;1</a> shows one possible hardware arrangement. In this example, the safety logic is implemented in a dedicated TwinSAFE logic terminal; other Beckhoff architectures can execute the safety program in a safety runtime on an industrial PC.</p>
-<div id="fig-beckhoff-standard-safety-io" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules">
+<div id="fig-beckhoff-standard-safety-io" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-beckhoff-standard-safety-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="img/beckhoff_standard_safety_io.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules">
+<a href="img/beckhoff_standard_safety_io.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: A Beckhoff EtherCAT terminal station with grey standard I/O terminals and yellow TwinSAFE safety input, output, and logic terminals. The modules can be mounted together, but standard and safety-related signal processing remain distinct. Image excerpt from the Beckhoff EL2904 operating instructions."><img src="img/beckhoff_standard_safety_io.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beckhoff-standard-safety-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: A Beckhoff EtherCAT terminal station with grey standard I/O terminals and yellow TwinSAFE safety input, output, and logic terminals. The modules can be mounted together, but standard and safety-related signal processing remain distinct. Image excerpt from the <a href="https://download.beckhoff.com/download/Document/automation/twinsafe/el2904_en.pdf">Beckhoff EL2904 operating instructions</a>.
@@ -1001,8 +1027,40 @@ Figure&nbsp;1: A Beckhoff EtherCAT terminal station with grey standard I/O termi
   });
   </script>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robot_safety.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robot_safety.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>
