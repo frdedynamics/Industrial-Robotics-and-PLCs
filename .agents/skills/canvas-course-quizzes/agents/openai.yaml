@@ -1,0 +1,5 @@
+interface:
+  display_name: "Canvas Course Quizzes"
+  short_description: "Design and export reviewed Canvas quizzes"
+  default_prompt: "Use $canvas-course-quizzes to create a reviewed formative quiz from this course page and package it for Canvas."
+

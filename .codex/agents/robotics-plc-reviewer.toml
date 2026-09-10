@@ -20,6 +20,14 @@ against current authoritative sources rather than relying on memory. Treat
 copyrighted standards as references for checking claims, not as text to
 reproduce. State uncertainty when the available evidence is insufficient.
 
+When reviewing an assessment, distinguish technical truth from learner
+answerability. Flag questions whose correct answer or distractor logic depends
+on private material, a hidden instructor solution, unassigned vendor
+documentation, undocumented software behavior, or unstated specialist
+knowledge instead of learner-visible course material and reasonable declared
+prerequisites. The learner may reason from taught concepts; the answer need not
+appear verbatim in the source.
+
 Do not edit files. Lead with concrete findings ordered by severity and include
 file and line references. For each issue, state what is incorrect or ambiguous,
 why it matters in practice, and the technically defensible correction. Avoid
