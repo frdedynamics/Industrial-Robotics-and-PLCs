@@ -92,10 +92,15 @@ The Cell Graph tab is visible at the lower left of @fig-vc-main-window. The
 sublayouts to keep the conveyor system and robot cell manageable while they are
 developed in one simulation.
 
+**Project lesson:** [Managing larger simulations with sublayouts](https://academy.visualcomponents.com/lessons/managing-larger-simulations-with-sub-layouts/)
+demonstrates how to create sublayouts and use them to select, move, copy, and
+organize groups of components. Use it when separating the conveyor system and
+robot cell within the common project layout.
+
 The [VC behavior overview](https://help.visualcomponents.com/4.9/Premium/en/English/Component%20Modeling/Behaviors/Behaviors.htm)
 describes the main behavior families.
 
-## Interfaces, PnP, and signals
+## Interfaces, PnP, and signals {#sec-vc-interfaces}
 
 Interfaces define which components can connect and what the connection does.
 A physical interface can establish a parent-child relationship and align two
@@ -381,9 +386,46 @@ safety laser-scanner model, signal connections, and a light tower. Treat it as
 a lesson in representing a safety concept in simulation, not as a complete
 risk assessment or validated safety design.
 
-# Continue learning
+# Quick reference
 
-The curated lessons on this page cover the VC knowledge most directly needed
-for the course. The wider Academy remains a useful optional resource for topics
-such as component modeling, advanced process modeling, path tools, physics,
-vendor add-ons, and other connectivity workflows.
+The explanations above place each resource in context. The tables below provide
+a quicker way to find it again. **Project** resources support a particular
+project stage, **recommended** resources cover core course preparation, and
+**optional** resources extend beyond what is normally required.
+
+## Guided lessons
+
+| Topic | Resource | Use it when | Relevance |
+|---|---|---|---|
+| General robot simulation | [Complete robot-simulation learning path](https://academy.visualcomponents.com/learning-paths/using-visual-components-for-robot-simulation/) | Exploring the wider VC robot-simulation workflow. | Optional |
+| [Layouts and components](#sec-vc-layouts-components) | [Managing larger simulations with sublayouts](https://academy.visualcomponents.com/lessons/managing-larger-simulations-with-sub-layouts/) | Organizing the conveyor system and robot cell in one layout. | Project |
+| [Interfaces and signals](#sec-vc-interfaces) | [Signals in simulation](https://academy.visualcomponents.com/lessons/signals-in-simulation-2/) | Connecting signals between conveyors, sensors, and other components. | Recommended |
+| [Products and production flow](#sec-vc-products-flow) | [Introduction to Layout Configuration](https://academy.visualcomponents.com/lessons/introduction-to-layout-configuration/) | Exploring product definitions, processes, and material flow in more depth. | Optional |
+| [Jogging and teaching motion](#sec-vc-robot-teaching) | [Introduction to Robot Teaching](https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/) | Teaching and editing motions, exchanging a robot, and adding a tool. | Recommended |
+| [Jogging and teaching motion](#sec-vc-robot-teaching) | [Basics of Robotics](https://academy.visualcomponents.com/lessons/basics-of-robotics/) | Connecting VC controls to motion types, frames, configurations, and joint turns. | Recommended |
+| [Program structure and logic](#sec-vc-robot-programs) | [Creating subprograms and calling robot routines](https://academy.visualcomponents.com/lessons/creating-subprograms-and-calling-robot-routines/) | Dividing a robot program into meaningful operations. | Project |
+| [Program structure and logic](#sec-vc-robot-programs) | [Teach an If Statement](https://academy.visualcomponents.com/lessons/teach-an-if-statement/) | Adding conditions and branching to a robot program. | Recommended |
+| [Robot I/O and signal actions](#sec-vc-robot-io) | [Signals with robots](https://academy.visualcomponents.com/lessons/signals-with-robots/) | Connecting component signals to numbered robot ports. | Project |
+| [Robot I/O and signal actions](#sec-vc-robot-io) | [Signal grasp and release actions](https://academy.visualcomponents.com/lessons/signal-grasp-and-release-actions/) | Configuring a robot output to attach and release a product. | Project |
+| [Robot I/O and signal actions](#sec-vc-robot-io) | [Model a robot gripper, part II](https://academy.visualcomponents.com/lessons/model-a-robot-gripper-part-ii/) | Configuring gripper motion, signals, and state feedback. | Project |
+| [Reachability, limits, and collisions](#sec-vc-robot-analysis) | [Robot Reachability Part I](https://academy.visualcomponents.com/lessons/robot-reachability-part-i/) | Initial robot placement, pedestal height, jogging, and workspace profiles. | Project |
+| [Reachability, limits, and collisions](#sec-vc-robot-analysis) | [Robot Reachability Part II](https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/) | Checking joint limits, configurations, and singularities. | Recommended |
+| [Internal and external control](#sec-vc-external-control) | [Connect a remote OPC UA server](https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/) | Connecting VC and CODESYS and pairing variables. | Project |
+| [Representing safety measures](#sec-vc-safety-modeling) | [Add Safety Equipment in Robotic Cells](https://academy.visualcomponents.com/lessons/add-safety-equipment-in-robotic-cells/) | Representing fences, access sensors, and safety responses in a simulation. | Project |
+
+## Documentation and focused references
+
+| Topic | Reference | Use it when |
+|---|---|---|
+| General | [VC help system](https://help.visualcomponents.com/5.0/Premium/en/English/Help.htm) | Looking up a tool or workflow not covered by the curated lessons. |
+| [Layouts and components](#sec-vc-layouts-components) | [Behavior overview](https://help.visualcomponents.com/4.9/Premium/en/English/Component%20Modeling/Behaviors/Behaviors.htm) | Inspecting the internal functionality available to components. |
+| [Products and production flow](#sec-vc-products-flow) | [Product Type Editor](https://help.visualcomponents.com/4.9/Premium/en/English/Process%20Modeling/Product_Type_Editor.htm) | Creating and organizing product types. |
+| [Products and production flow](#sec-vc-products-flow) | [Process Flow Editor](https://help.visualcomponents.com/5.0/Premium/en/English/Process%20Modeling/Process_Flow_Editor.htm) | Defining production steps and routes. |
+| [Program structure and logic](#sec-vc-robot-programs) | [Program Editor for Motion Controller](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Program_Editor_for_Motion_Controller.htm) | Looking up routines, variables, conditions, loops, and `Switch Case`. |
+| [Jogging and teaching motion](#sec-vc-robot-teaching) | [Jog panel](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Jog_panel.htm) | Looking up Cartesian and joint jogging, active frames, and reachability feedback. |
+| [Reachability, limits, and collisions](#sec-vc-robot-analysis) | [Detecting collisions](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Detecting_collisions.htm) | Configuring collision sets and checking motions. |
+| [Reachability, limits, and collisions](#sec-vc-robot-analysis) | [Limiting a robot and its joints](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Limiting_a_robot_and_its_joints.htm) | Checking joint limits, configurations, and singularities. |
+
+The wider [Visual Components Academy](https://academy.visualcomponents.com/)
+remains useful for optional topics such as component modeling, advanced process
+modeling, path tools, physics, vendor add-ons, and other connectivity workflows.

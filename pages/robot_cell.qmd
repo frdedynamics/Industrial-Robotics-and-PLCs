@@ -156,9 +156,8 @@ sublayout after their initial placement.
 The roles of the Cell Graph, components, and sublayouts are introduced in
 [Layouts and components](visual_components.qmd#sec-vc-layouts-components).
 This structure keeps the complete system in one simulation while making each
-section easier to select, move, copy, and inspect. Visual Components
-demonstrates the relevant tools in
-[Managing larger simulations with sublayouts](https://academy.visualcomponents.com/lessons/managing-larger-simulations-with-sub-layouts/).
+section easier to select, move, copy, and inspect. The linked section also
+contains the relevant VC Academy lesson.
 Sublayout visibility is an organizational aid; hiding a sublayout does not
 replace disconnecting or stopping components when you want to test only one
 part of the system.
@@ -199,11 +198,8 @@ Use the robot's `WorkSpace2D` or `WorkSpace3D` component properties to display i
 approximate workspace, also called its work envelope. Use this envelope as
 rough guidance for the initial cell layout and for estimating basic distances
 between the robot, conveyors, and CNC mill. @fig-agilus-workspace shows the
-`WorkSpace2D` profile around the Agilus robot used in this project. The official
-Visual Components lesson
-[Robot Reachability Part I](https://academy.visualcomponents.com/lessons/robot-reachability-part-i/)
-demonstrates robot placement, pedestal height, jogging, and the workspace
-profile.
+`WorkSpace2D` profile around the Agilus robot used in this project. The linked
+VC overview contains the relevant Academy lessons.
 
 ![The approximate `WorkSpace2D` profile of the KUKA KR6 R900 Agilus displayed in Visual Components.](<img/VC Components Previews/agilus_2D_workspace.png>){#fig-agilus-workspace width=90% fig-alt="A KUKA KR6 R900 Agilus in Visual Components surrounded by the outline of its two-dimensional workspace profile."}
 
@@ -215,11 +211,13 @@ After all, it is the workpiece that must be placed at the positions and
 orientations required by the task. The cell must therefore allow the robot to
 move the workpiece through these poses without exceeding joint limits,
 approaching singularities, or colliding with the surrounding equipment. While
-jogging, use the **Jog** panel to monitor each joint's current value and
-permitted range. This shows when a target pose pushes one or more joints toward
-their limits. Enable **Color Highlight** in the **Limits** group to also mark
+jogging, use the [**Jog** panel](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Jog_panel.htm)
+to monitor each joint's current value and permitted range. This shows when a
+target pose pushes one or more joints toward their limits. Enable **Color
+Highlight** in the **Limits** group to also mark
 the affected robot geometry in red when a joint limit is exceeded. Enable a
-collision detector and start the simulation once to initialize it. You can
+[collision detector](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Detecting_collisions.htm)
+and start the simulation once to initialize it. You can
 then reset the simulation and use the detector while jogging; collisions with
 the CNC, conveyors, pedestal, and other equipment are highlighted in yellow in the 3D
 view. 
@@ -228,9 +226,7 @@ Manual jogging checks individual poses but does not validate every point along
 the programmed motion between them. After teaching representative motions, run
 the program with collision detection and the
 [**Limits** tools](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Limiting_a_robot_and_its_joints.htm)
-enabled, including the singularity check. Joint limits, robot configurations,
-and singularities are demonstrated in
-[Robot Reachability Part II](https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/).
+enabled, including the singularity check.
 
 Before teaching the complete program, verify that:
 
@@ -578,6 +574,10 @@ consuming simulation execution time.
 
 # OPC UA interface
 
+The [PLC-integration and virtual-commissioning section](simulation.qmd#sec-virtual-commissioning)
+explains the complete signal path and provides the relevant VC Academy setup
+lesson.
+
 Expose the required CODESYS variables through **Symbol Configuration** and
 connect VC to the CODESYS OPC UA server. With CODESYS Control Win SL on the same
 computer, the server address is normally:
@@ -654,27 +654,3 @@ The externally controlled solution shall satisfy these acceptance criteria:
 
 Develop the normal sequence first. Add timeouts and fault recovery only after
 the nominal cycle and communication interface are stable.
-
-# Visual Components resources
-
-- [Robot Reachability Part I](https://academy.visualcomponents.com/lessons/robot-reachability-part-i/)
-  covers robot placement, pedestal height, jogging, and workspace profiles.
-- [Robot Reachability Part II](https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/)
-  covers joint limits, robot configurations, and singularities.
-- [Jog panel](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Jog_panel.htm)
-  documents Cartesian and joint jogging, active tool and base frames, and
-  unreachable-position feedback.
-- [Detecting collisions](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Detecting_collisions.htm)
-  explains collision detectors during teaching and simulation.
-- [Signals in simulation](https://academy.visualcomponents.com/lessons/signals-in-simulation-2/)
-  demonstrates component signals using a conveyor and sensor.
-- [Signals with robots](https://academy.visualcomponents.com/lessons/signals-with-robots/)
-  connects component signals to a robot program.
-- [Signal grasp and release actions](https://academy.visualcomponents.com/lessons/signal-grasp-and-release-actions/)
-  explains VC's internal grasp and release actions.
-- [Model a robot gripper, part II](https://academy.visualcomponents.com/lessons/model-a-robot-gripper-part-ii/)
-  demonstrates gripper motion and I/O feedback.
-- [Program Editor for Motion Controller](https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Program_Editor_for_Motion_Controller.htm)
-  documents robot routines, variables, conditions, and `Switch Case`.
-- [Connect a remote OPC UA server](https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/)
-  covers OPC UA configuration and variable pairing.
