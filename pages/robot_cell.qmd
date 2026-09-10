@@ -153,6 +153,8 @@ In the **Layouts** tab of the Cell Graph, create two sublayouts named
 the first sublayout. The components for the new cell are moved into the second
 sublayout after their initial placement.
 
+The roles of the Cell Graph, components, and sublayouts are introduced in
+[Layouts and components](visual_components.qmd#sec-vc-layouts-components).
 This structure keeps the complete system in one simulation while making each
 section easier to select, move, copy, and inspect. Visual Components
 demonstrates the relevant tools in
@@ -188,6 +190,10 @@ points; you may develop another arrangement that gives a good combination of
 robot reach, clear motion paths, material flow, and access to the equipment.
 
 ### Check reachability and clearance
+
+The [VC reachability overview](visual_components.qmd#sec-vc-robot-analysis)
+explains how workspace profiles, jogging, joint checks, and collision detection
+complement one another.
 
 Use the robot's `WorkSpace2D` or `WorkSpace3D` component properties to display its
 approximate workspace, also called its work envelope. Use this envelope as
@@ -272,7 +278,6 @@ together. This physical connection makes the gripper follow the flange when
 the robot is jogged. The **Add a robot tool** chapter in the
 [Introduction to Robot Teaching](https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/)
 video demonstrates this workflow.
-approach direction.
 
 Enable automatic I/O connection when mounting the gripper. This option is
 enabled by default and avoids having to connect the gripper's input and output
@@ -297,7 +302,11 @@ understand and debug the program sequence, and it makes the simulation clearer
 and more convincing in customer or sales presentations. It does not validate
 real gripping force, payload capacity, deformation, or slip.
 
-TODO we have to describe the general IO structure and function in VC. point again to intro to robot teaching video
+The general relationship between robot I/O ports, component signals, and
+**Actions Configuration** is introduced in
+[Robot I/O and signal actions](visual_components.qmd#sec-vc-robot-io). The
+configuration below applies those mechanisms specifically to the project
+gripper.
 
 The logical grasp and release actions are configured in the robot's **Actions
 Configuration** properties. In most VC robot components, outputs `1` to `16`
@@ -372,6 +381,12 @@ the process has started.
 
 # Stage 1: internal VC control {#sec-cell-internal-control}
 
+The general workflows for creating robot motions and organizing a VC robot
+program are introduced in
+[Jogging and teaching motion](visual_components.qmd#sec-vc-robot-teaching) and
+[Program structure and logic](visual_components.qmd#sec-vc-robot-programs).
+Apply them here to build the project-specific sequence.
+
 Connect the pickup sensor and CNC signals to available robot input and output
 ports. The robot program is now responsible for the complete cell: it waits for
 a part, operates the CNC, and performs all robot and gripper motions.
@@ -445,6 +460,12 @@ locations, whether upstream conveyors become blocked, and whether the timing
 between part arrival, conveyor stopping, and robot pickup remains reliable.
 
 # Stage 2: external PLC control {#sec-cell-external-control}
+
+The distinction between VC-internal signals and values mapped to an external
+PLC is introduced in
+[Internal VC control and external PLC control](visual_components.qmd#sec-vc-external-control).
+The following sections define the project-specific control boundary and
+interface.
 
 The final system separates cell coordination from robot motion. Sensors and
 machine actuators are mapped to CODESYS, while the PLC and robot exchange
