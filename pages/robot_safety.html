@@ -194,6 +194,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/conveyor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conveyor System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Robot cell</span></a>
   </div>
@@ -439,7 +445,7 @@ Important
 </ul>
 <p>Some PLC platforms can execute the standard control program and a separately managed safety program in the same controller or industrial PC. Such a system can connect to both standard I/O modules and safety-rated I/O modules, sometimes mounted side by side in the same modular I/O station. Production sensors and actuators normally use the standard modules, while devices and outputs that form part of a safety function use suitable safety modules. Sharing a controller, engineering environment, backplane, or network does not remove this distinction. Where a response is required for safety, it must not depend only on ordinary PLC code, ordinary fieldbus data, or the robot’s task program.</p>
 <p><a href="#fig-beckhoff-standard-safety-io" class="quarto-xref">Figure&nbsp;1</a> shows one possible hardware arrangement. In this example, the safety logic is implemented in a dedicated TwinSAFE logic terminal; other Beckhoff architectures can execute the safety program in a safety runtime on an industrial PC.</p>
-<div id="fig-beckhoff-standard-safety-io" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules" data-fig-align="center">
+<div id="fig-beckhoff-standard-safety-io" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-beckhoff-standard-safety-io-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <a href="img/beckhoff_standard_safety_io.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: A Beckhoff EtherCAT terminal station with grey standard I/O terminals and yellow TwinSAFE safety input, output, and logic terminals. The modules can be mounted together, but standard and safety-related signal processing remain distinct. Image excerpt from the Beckhoff EL2904 operating instructions."><img src="img/beckhoff_standard_safety_io.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%" alt="Beckhoff EtherCAT terminal station combining grey standard I/O modules with yellow TwinSAFE safety modules"></a>

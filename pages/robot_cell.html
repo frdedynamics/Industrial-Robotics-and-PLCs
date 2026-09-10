@@ -197,6 +197,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/conveyor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conveyor System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Robot cell</span></a>
   </div>
@@ -250,7 +256,6 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#opc-ua-interface" id="toc-opc-ua-interface" class="nav-link" data-scroll-target="#opc-ua-interface">OPC UA interface</a></li>
   <li><a href="#commissioning-procedure" id="toc-commissioning-procedure" class="nav-link" data-scroll-target="#commissioning-procedure">Commissioning procedure</a></li>
   <li><a href="#requirements-and-deliverables" id="toc-requirements-and-deliverables" class="nav-link" data-scroll-target="#requirements-and-deliverables">Requirements and deliverables</a></li>
-  <li><a href="#visual-components-resources" id="toc-visual-components-resources" class="nav-link" data-scroll-target="#visual-components-resources">Visual Components resources</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robot_cell.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -492,7 +497,7 @@ Provide the cell boundary and visual context; use the Fence and Wall Builder whe
 <h2 class="anchored" data-anchor-id="sec-cell-sublayouts">Organize the project with sublayouts</h2>
 <p>Build the robot cell in the same VC file as the completed conveyor system, but do not connect the two systems yet. First save a copy of the working conveyor layout so that the original remains available as a tested backup. Place the new robot cell some distance away from the conveyor system, with enough empty space that the two material flows remain clearly separate during development.</p>
 <p>In the <strong>Layouts</strong> tab of the Cell Graph, create two sublayouts named <code>Conveyor system</code> and <code>Robot cell</code>. Move the existing conveyor components into the first sublayout. The components for the new cell are moved into the second sublayout after their initial placement.</p>
-<p>This structure keeps the complete system in one simulation while making each section easier to select, move, copy, and inspect. Visual Components demonstrates the relevant tools in <a href="https://academy.visualcomponents.com/lessons/managing-larger-simulations-with-sub-layouts/">Managing larger simulations with sublayouts</a>. Sublayout visibility is an organizational aid; hiding a sublayout does not replace disconnecting or stopping components when you want to test only one part of the system.</p>
+<p>The roles of the Cell Graph, components, and sublayouts are introduced in <a href="../pages/visual_components.html#sec-vc-layouts-components">Layouts and components</a>. This structure keeps the complete system in one simulation while making each section easier to select, move, copy, and inspect. The linked section also contains the relevant VC Academy lesson. Sublayout visibility is an organizational aid; hiding a sublayout does not replace disconnecting or stopping components when you want to test only one part of the system.</p>
 </section>
 <section id="design-the-robot-cell" class="level2">
 <h2 class="anchored" data-anchor-id="design-the-robot-cell">Design the robot cell</h2>
@@ -502,7 +507,8 @@ Provide the cell boundary and visual context; use the Fence and Wall Builder whe
 <p>The final cell layout is your design decision, and there is no prescribed arrangement. Among the choices are the relative positions and orientations of the robot, conveyors, CNC mill, and access areas. For example, the conveyors could be arranged in line or at an angle, and the CNC mill could be placed beside the robot or across from the conveyors. These are only starting points; you may develop another arrangement that gives a good combination of robot reach, clear motion paths, material flow, and access to the equipment.</p>
 <section id="check-reachability-and-clearance" class="level3">
 <h3 class="anchored" data-anchor-id="check-reachability-and-clearance">Check reachability and clearance</h3>
-<p>Use the robot’s <code>WorkSpace2D</code> or <code>WorkSpace3D</code> component properties to display its approximate workspace, also called its work envelope. Use this envelope as rough guidance for the initial cell layout and for estimating basic distances between the robot, conveyors, and CNC mill. <a href="#fig-agilus-workspace" class="quarto-xref">Figure&nbsp;1</a> shows the <code>WorkSpace2D</code> profile around the Agilus robot used in this project. The official Visual Components lesson <a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-i/">Robot Reachability Part I</a> demonstrates robot placement, pedestal height, jogging, and the workspace profile.</p>
+<p>The <a href="../pages/visual_components.html#sec-vc-robot-analysis">VC reachability overview</a> explains how workspace profiles, jogging, joint checks, and collision detection complement one another.</p>
+<p>Use the robot’s <code>WorkSpace2D</code> or <code>WorkSpace3D</code> component properties to display its approximate workspace, also called its work envelope. Use this envelope as rough guidance for the initial cell layout and for estimating basic distances between the robot, conveyors, and CNC mill. <a href="#fig-agilus-workspace" class="quarto-xref">Figure&nbsp;1</a> shows the <code>WorkSpace2D</code> profile around the Agilus robot used in this project. The linked VC overview contains the relevant Academy lessons.</p>
 <div id="fig-agilus-workspace" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A KUKA KR6 R900 Agilus in Visual Components surrounded by the outline of its two-dimensional workspace profile.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-agilus-workspace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -513,8 +519,8 @@ Figure&nbsp;1: The approximate <code>WorkSpace2D</code> profile of the KUKA KR6 
 </figcaption>
 </figure>
 </div>
-<p>For more detailed and reliable tuning of the arrangement, mount the gripper (see <a href="#sec-mount-gripper" class="quarto-xref">Section&nbsp;4.3</a> for how to mount and use it), generate one grey cylinder, and grip it. Then use the <strong>Jog</strong> tool to move the complete robot, tool, and workpiece assembly through the important task poses. After all, it is the workpiece that must be placed at the positions and orientations required by the task. The cell must therefore allow the robot to move the workpiece through these poses without exceeding joint limits, approaching singularities, or colliding with the surrounding equipment. While jogging, use the <strong>Jog</strong> panel to monitor each joint’s current value and permitted range. This shows when a target pose pushes one or more joints toward their limits. Enable <strong>Color Highlight</strong> in the <strong>Limits</strong> group to also mark the affected robot geometry in red when a joint limit is exceeded. Enable a collision detector and start the simulation once to initialize it. You can then reset the simulation and use the detector while jogging; collisions with the CNC, conveyors, pedestal, and other equipment are highlighted in yellow in the 3D view.</p>
-<p>Manual jogging checks individual poses but does not validate every point along the programmed motion between them. After teaching representative motions, run the program with collision detection and the <a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Limiting_a_robot_and_its_joints.htm"><strong>Limits</strong> tools</a> enabled, including the singularity check. Joint limits, robot configurations, and singularities are demonstrated in <a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/">Robot Reachability Part II</a>.</p>
+<p>For more detailed and reliable tuning of the arrangement, mount the gripper (see <a href="#sec-mount-gripper" class="quarto-xref">Section&nbsp;4.3</a> for how to mount and use it), generate one grey cylinder, and grip it. Then use the <strong>Jog</strong> tool to move the complete robot, tool, and workpiece assembly through the important task poses. After all, it is the workpiece that must be placed at the positions and orientations required by the task. The cell must therefore allow the robot to move the workpiece through these poses without exceeding joint limits, approaching singularities, or colliding with the surrounding equipment. While jogging, use the <a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Jog_panel.htm"><strong>Jog</strong> panel</a> to monitor each joint’s current value and permitted range. This shows when a target pose pushes one or more joints toward their limits. Enable <strong>Color Highlight</strong> in the <strong>Limits</strong> group to also mark the affected robot geometry in red when a joint limit is exceeded. Enable a <a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Detecting_collisions.htm">collision detector</a> and start the simulation once to initialize it. You can then reset the simulation and use the detector while jogging; collisions with the CNC, conveyors, pedestal, and other equipment are highlighted in yellow in the 3D view.</p>
+<p>Manual jogging checks individual poses but does not validate every point along the programmed motion between them. After teaching representative motions, run the program with collision detection and the <a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Limiting_a_robot_and_its_joints.htm"><strong>Limits</strong> tools</a> enabled, including the singularity check.</p>
 <p>Before teaching the complete program, verify that:</p>
 <ul>
 <li>the robot can reach the pickup, CNC loading, outgoing conveyor, and home poses,</li>
@@ -533,11 +539,11 @@ Figure&nbsp;1: The approximate <code>WorkSpace2D</code> profile of the KUKA KR6 
 </section>
 <section id="sec-mount-gripper" class="level2">
 <h2 class="anchored" data-anchor-id="sec-mount-gripper">Mount and configure the gripper</h2>
-<p>Mount the <strong>Generic 3 Finger Gripper</strong> directly on the robot flange using <strong>PnP</strong>. Move the gripper toward the flange until the compatible physical interfaces are highlighted, then continue moving it until the components snap together. This physical connection makes the gripper follow the flange when the robot is jogged. The <strong>Add a robot tool</strong> chapter in the <a href="https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/">Introduction to Robot Teaching</a> video demonstrates this workflow. approach direction.</p>
+<p>Mount the <strong>Generic 3 Finger Gripper</strong> directly on the robot flange using <strong>PnP</strong>. Move the gripper toward the flange until the compatible physical interfaces are highlighted, then continue moving it until the components snap together. This physical connection makes the gripper follow the flange when the robot is jogged. The <strong>Add a robot tool</strong> chapter in the <a href="https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/">Introduction to Robot Teaching</a> video demonstrates this workflow.</p>
 <p>Enable automatic I/O connection when mounting the gripper. This option is enabled by default and avoids having to connect the gripper’s input and output signals to the robot manually.</p>
 <p>Before configuring these signals, it is important to understand how standard grasping works in VC. A grasp action searches for products inside a detection volume around a selected tool frame. When a product is found, VC fixes its pose relative to that frame, so the product moves with the robot. A release action removes this logical attachment. Physical finger contact is not calculated, which is why VC can grasp a product even when no gripper model is mounted or the fingers do not touch it. VC also provides rigid-body physics for custom contact-based simulations, but that is a separate, more complex approach and is not used in this project.</p>
 <p>The finger animation is therefore not what holds the product in the standard simulation, but it is still important. Realistic open and closed widths let you check the gripper’s geometric capacity and its clearance around the workpiece. They also make collision checking more meaningful because an open gripper occupies a different volume from a closed one. Visible finger motion helps you understand and debug the program sequence, and it makes the simulation clearer and more convincing in customer or sales presentations. It does not validate real gripping force, payload capacity, deformation, or slip.</p>
-<p>TODO we have to describe the general IO structure and function in VC. point again to intro to robot teaching video</p>
+<p>The general relationship between robot I/O ports, component signals, and <strong>Actions Configuration</strong> is introduced in <a href="../pages/visual_components.html#sec-vc-robot-io">Robot I/O and signal actions</a>. The configuration below applies those mechanisms specifically to the project gripper.</p>
 <p>The logical grasp and release actions are configured in the robot’s <strong>Actions Configuration</strong> properties. In most VC robot components, outputs <code>1</code> to <code>16</code> are predefined for grasping and releasing with the default tool frames. These outputs can be used for a tool without movable joints, such as a suction cup, or even without a visible gripper. In that case, the output does not need to be connected to another component: setting it only triggers the robot’s internal grasp or release action. Always inspect the selected robot’s mappings because component models can differ.</p>
 <p>A gripper with movable fingers requires both parts of the simulation. The robot output must trigger VC’s internal grasp or release action and drive the gripper joint so that the fingers close or open. After mounting the gripper, inspect its <strong>Control</strong> properties and the robot’s signal connections. Automatically connected custom gripper I/O commonly starts at robot port <code>100</code>.</p>
 <p>In the tested cell, robot output <code>100</code> is connected to the gripper input <code>IN_J1_Action</code>: <code>TRUE</code> closes the fingers and <code>FALSE</code> opens them. Configure the same output in <strong>Actions Configuration</strong> so that <code>TRUE</code> also performs <strong>Grasp</strong> and <code>FALSE</code> performs <strong>Release</strong>. Select a tool frame at the centre of the gripping region and set a detection volume that contains the cylinder at the grasp pose without including nearby products. It is usually easiest to align one of the robot’s native tool frames with the gripper’s TCP after mounting the gripper, and then use that frame for both the grasp action and the robot motion statements. <a href="#fig-gripper-action-config" class="quarto-xref">Figure&nbsp;2</a> shows the signal connection and action configuration together. <a href="#sec-cell-tcp" class="quarto-xref">Section&nbsp;4.4</a> explains the TCP setup in more detail.</p>
@@ -613,6 +619,7 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 </section>
 <section id="sec-cell-internal-control" class="level1">
 <h1>Stage 1: internal VC control</h1>
+<p>The general workflows for creating robot motions and organizing a VC robot program are introduced in <a href="../pages/visual_components.html#sec-vc-robot-teaching">Jogging and teaching motion</a> and <a href="../pages/visual_components.html#sec-vc-robot-programs">Program structure and logic</a>. Apply them here to build the project-specific sequence.</p>
 <p>Connect the pickup sensor and CNC signals to available robot input and output ports. The robot program is now responsible for the complete cell: it waits for a part, operates the CNC, and performs all robot and gripper motions.</p>
 <p>During this stage, the detected part must remain at the taught pickup pose. The simplest option is to configure the Conveyor Sensor to <strong>StopPart</strong> when it detects a product. Alternatively, route the sensor signal so that detection sets the incoming conveyor’s <code>PowerOn</code> signal to <code>FALSE</code>. This alternative requires an inverted signal or equivalent routing logic; connecting a sensor whose active value is <code>TRUE</code> directly to <code>PowerOn</code> would have the opposite effect. In either case, verify that the part stops before teaching the pickup pose and that the conveyor does not restart while the robot is gripping it.</p>
 <section id="use-meaningful-subroutines" class="level2">
@@ -655,6 +662,7 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 </section>
 <section id="sec-cell-external-control" class="level1">
 <h1>Stage 2: external PLC control</h1>
+<p>The distinction between VC-internal signals and values mapped to an external PLC is introduced in <a href="../pages/visual_components.html#sec-vc-external-control">Internal VC control and external PLC control</a>. The following sections define the project-specific control boundary and interface.</p>
 <p>The final system separates cell coordination from robot motion. Sensors and machine actuators are mapped to CODESYS, while the PLC and robot exchange high-level operation commands and status values.</p>
 <table class="caption-top table">
 <colgroup>
@@ -842,6 +850,7 @@ Tip
 </section>
 <section id="opc-ua-interface" class="level1">
 <h1>OPC UA interface</h1>
+<p>The <a href="../pages/simulation.html#sec-virtual-commissioning">PLC-integration and virtual-commissioning section</a> explains the complete signal path and provides the relevant VC Academy setup lesson.</p>
 <p>Expose the required CODESYS variables through <strong>Symbol Configuration</strong> and connect VC to the CODESYS OPC UA server. With CODESYS Control Win SL on the same computer, the server address is normally:</p>
 <pre class="text"><code>opc.tcp://localhost:4840</code></pre>
 <p>VC acts as the OPC UA client. Use separate Connectivity variable groups for values sent in each direction.</p>
@@ -951,21 +960,6 @@ Tip
 <li>the complete material flow repeats without manual intervention.</li>
 </ul>
 <p>Develop the normal sequence first. Add timeouts and fault recovery only after the nominal cycle and communication interface are stable.</p>
-</section>
-<section id="visual-components-resources" class="level1">
-<h1>Visual Components resources</h1>
-<ul>
-<li><a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-i/">Robot Reachability Part I</a> covers robot placement, pedestal height, jogging, and workspace profiles.</li>
-<li><a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/">Robot Reachability Part II</a> covers joint limits, robot configurations, and singularities.</li>
-<li><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Jog_panel.htm">Jog panel</a> documents Cartesian and joint jogging, active tool and base frames, and unreachable-position feedback.</li>
-<li><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Detecting_collisions.htm">Detecting collisions</a> explains collision detectors during teaching and simulation.</li>
-<li><a href="https://academy.visualcomponents.com/lessons/signals-in-simulation-2/">Signals in simulation</a> demonstrates component signals using a conveyor and sensor.</li>
-<li><a href="https://academy.visualcomponents.com/lessons/signals-with-robots/">Signals with robots</a> connects component signals to a robot program.</li>
-<li><a href="https://academy.visualcomponents.com/lessons/signal-grasp-and-release-actions/">Signal grasp and release actions</a> explains VC’s internal grasp and release actions.</li>
-<li><a href="https://academy.visualcomponents.com/lessons/model-a-robot-gripper-part-ii/">Model a robot gripper, part II</a> demonstrates gripper motion and I/O feedback.</li>
-<li><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Program_Editor_for_Motion_Controller.htm">Program Editor for Motion Controller</a> documents robot routines, variables, conditions, and <code>Switch Case</code>.</li>
-<li><a href="https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/">Connect a remote OPC UA server</a> covers OPC UA configuration and variable pairing.</li>
-</ul>
 
 
 </section>

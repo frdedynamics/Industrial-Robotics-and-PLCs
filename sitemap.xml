@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://frdedynamics.github.io/Industrial-Robotics-and-PLCs/pages/visual_components.html</loc>
-    <lastmod>2026-09-09T12:17:33.138Z</lastmod>
+    <lastmod>2026-09-10T13:21:11.585Z</lastmod>
   </url>
   <url>
     <loc>https://frdedynamics.github.io/Industrial-Robotics-and-PLCs/pages/robots.html</loc>
@@ -21,6 +21,10 @@
     <lastmod>2026-05-29T12:19:51.347Z</lastmod>
   </url>
   <url>
+    <loc>https://frdedynamics.github.io/Industrial-Robotics-and-PLCs/pages/conveyor.html</loc>
+    <lastmod>2026-09-09T12:51:13.662Z</lastmod>
+  </url>
+  <url>
     <loc>https://frdedynamics.github.io/Industrial-Robotics-and-PLCs/index.html</loc>
     <lastmod>2026-06-05T08:57:14.597Z</lastmod>
   </url>
@@ -30,7 +34,7 @@
   </url>
   <url>
     <loc>https://frdedynamics.github.io/Industrial-Robotics-and-PLCs/pages/robot_cell.html</loc>
-    <lastmod>2026-09-09T12:17:03.718Z</lastmod>
+    <lastmod>2026-09-10T13:08:35.145Z</lastmod>
   </url>
   <url>
     <loc>https://frdedynamics.github.io/Industrial-Robotics-and-PLCs/pages/robot_safety.html</loc>

@@ -197,6 +197,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/conveyor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conveyor System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Robot cell</span></a>
   </div>
@@ -222,7 +228,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#learning-visual-components" id="toc-learning-visual-components" class="nav-link active" data-scroll-target="#learning-visual-components">Learning Visual Components</a></li>
   <li><a href="#sec-vc-layouts-components" id="toc-sec-vc-layouts-components" class="nav-link" data-scroll-target="#sec-vc-layouts-components">Layouts and components</a>
   <ul class="collapse">
-  <li><a href="#interfaces-pnp-and-signals" id="toc-interfaces-pnp-and-signals" class="nav-link" data-scroll-target="#interfaces-pnp-and-signals">Interfaces, PnP, and signals</a></li>
+  <li><a href="#sec-vc-interfaces" id="toc-sec-vc-interfaces" class="nav-link" data-scroll-target="#sec-vc-interfaces">Interfaces, PnP, and signals</a></li>
   </ul></li>
   <li><a href="#sec-vc-products-flow" id="toc-sec-vc-products-flow" class="nav-link" data-scroll-target="#sec-vc-products-flow">Products and production flow</a></li>
   <li><a href="#sec-vc-robots" id="toc-sec-vc-robots" class="nav-link" data-scroll-target="#sec-vc-robots">Robots in Visual Components</a>
@@ -234,7 +240,11 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#sec-vc-robot-analysis" id="toc-sec-vc-robot-analysis" class="nav-link" data-scroll-target="#sec-vc-robot-analysis">Reachability, limits, and collisions</a></li>
   <li><a href="#sec-vc-safety-modeling" id="toc-sec-vc-safety-modeling" class="nav-link" data-scroll-target="#sec-vc-safety-modeling">Representing safety measures</a></li>
-  <li><a href="#continue-learning" id="toc-continue-learning" class="nav-link" data-scroll-target="#continue-learning">Continue learning</a></li>
+  <li><a href="#quick-reference" id="toc-quick-reference" class="nav-link" data-scroll-target="#quick-reference">Quick reference</a>
+  <ul class="collapse">
+  <li><a href="#guided-lessons" id="toc-guided-lessons" class="nav-link" data-scroll-target="#guided-lessons">Guided lessons</a></li>
+  <li><a href="#documentation-and-focused-references" id="toc-documentation-and-focused-references" class="nav-link" data-scroll-target="#documentation-and-focused-references">Documentation and focused references</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/visual_components.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -340,9 +350,10 @@ Figure&nbsp;2: Exploring the properties, behaviors, and axis-level structure of 
 </figure>
 </div>
 <p>The Cell Graph tab is visible at the lower left of <a href="#fig-vc-main-window" class="quarto-xref">Figure&nbsp;1</a>. The <a href="../pages/robot_cell.html#sec-cell-sublayouts">robot-cell project</a> uses sublayouts to keep the conveyor system and robot cell manageable while they are developed in one simulation.</p>
+<p><strong>Project lesson:</strong> <a href="https://academy.visualcomponents.com/lessons/managing-larger-simulations-with-sub-layouts/">Managing larger simulations with sublayouts</a> demonstrates how to create sublayouts and use them to select, move, copy, and organize groups of components. Use it when separating the conveyor system and robot cell within the common project layout.</p>
 <p>The <a href="https://help.visualcomponents.com/4.9/Premium/en/English/Component%20Modeling/Behaviors/Behaviors.htm">VC behavior overview</a> describes the main behavior families.</p>
-<section id="interfaces-pnp-and-signals" class="level2">
-<h2 class="anchored" data-anchor-id="interfaces-pnp-and-signals">Interfaces, PnP, and signals</h2>
+<section id="sec-vc-interfaces" class="level2">
+<h2 class="anchored" data-anchor-id="sec-vc-interfaces">Interfaces, PnP, and signals</h2>
 <p>Interfaces define which components can connect and what the connection does. A physical interface can establish a parent-child relationship and align two components. With <strong>plug-and-play (PnP)</strong>, compatible interfaces guide the components together and make them snap into place. This is commonly used for conveyors, sensors, robot tools, and robot positioners.</p>
 <p>Other interfaces are logical rather than physical. They can connect signals, material-flow behavior, robot tools, or other functionality without moving the components. A signal is the value that travels through such a connection; the interface defines how the connection can be made. VC supports Boolean, integer, real, string, matrix, and component-valued signals, although Boolean and integer signals cover most work in this course.</p>
 <p>Properties and signals should not be confused. A property often configures a component, while a signal is intended to communicate a changing value during simulation. The distinction is not absolute because component scripts can read and write properties, but a visible property is not automatically an externally connected signal.</p>
@@ -481,11 +492,171 @@ Figure&nbsp;4: Signal flow when an external PLC controls simulated equipment in 
 <p>Simulation models still support layout discussion and early safety work, but placing a fence or scanner model in VC does not prove that the real safety function is correct. Hazard identification, risk reduction, safety distances, control reliability, and validation require the engineering process discussed on the <a href="../pages/robot_safety.html">robot-safety page</a>.</p>
 <p><strong>Project lesson:</strong> <a href="https://academy.visualcomponents.com/lessons/add-safety-equipment-in-robotic-cells/">Add Safety Equipment in Robotic Cells</a> demonstrates the Fence and Wall Builder, a rolling door, an area sensor, a safety laser-scanner model, signal connections, and a light tower. Treat it as a lesson in representing a safety concept in simulation, not as a complete risk assessment or validated safety design.</p>
 </section>
-<section id="continue-learning" class="level1">
-<h1>Continue learning</h1>
-<p>The curated lessons on this page cover the VC knowledge most directly needed for the course. The wider Academy remains a useful optional resource for topics such as component modeling, advanced process modeling, path tools, physics, vendor add-ons, and other connectivity workflows.</p>
+<section id="quick-reference" class="level1">
+<h1>Quick reference</h1>
+<p>The explanations above place each resource in context. The tables below provide a quicker way to find it again. <strong>Project</strong> resources support a particular project stage, <strong>recommended</strong> resources cover core course preparation, and <strong>optional</strong> resources extend beyond what is normally required.</p>
+<section id="guided-lessons" class="level2">
+<h2 class="anchored" data-anchor-id="guided-lessons">Guided lessons</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Topic</th>
+<th>Resource</th>
+<th>Use it when</th>
+<th>Relevance</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>General robot simulation</td>
+<td><a href="https://academy.visualcomponents.com/learning-paths/using-visual-components-for-robot-simulation/">Complete robot-simulation learning path</a></td>
+<td>Exploring the wider VC robot-simulation workflow.</td>
+<td>Optional</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-layouts-components">Layouts and components</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/managing-larger-simulations-with-sub-layouts/">Managing larger simulations with sublayouts</a></td>
+<td>Organizing the conveyor system and robot cell in one layout.</td>
+<td>Project</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-interfaces">Interfaces and signals</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/signals-in-simulation-2/">Signals in simulation</a></td>
+<td>Connecting signals between conveyors, sensors, and other components.</td>
+<td>Recommended</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-products-flow">Products and production flow</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/introduction-to-layout-configuration/">Introduction to Layout Configuration</a></td>
+<td>Exploring product definitions, processes, and material flow in more depth.</td>
+<td>Optional</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-robot-teaching">Jogging and teaching motion</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/introduction-to-robot-teaching/">Introduction to Robot Teaching</a></td>
+<td>Teaching and editing motions, exchanging a robot, and adding a tool.</td>
+<td>Recommended</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-robot-teaching">Jogging and teaching motion</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/basics-of-robotics/">Basics of Robotics</a></td>
+<td>Connecting VC controls to motion types, frames, configurations, and joint turns.</td>
+<td>Recommended</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-robot-programs">Program structure and logic</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/creating-subprograms-and-calling-robot-routines/">Creating subprograms and calling robot routines</a></td>
+<td>Dividing a robot program into meaningful operations.</td>
+<td>Project</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-robot-programs">Program structure and logic</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/teach-an-if-statement/">Teach an If Statement</a></td>
+<td>Adding conditions and branching to a robot program.</td>
+<td>Recommended</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-robot-io">Robot I/O and signal actions</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/signals-with-robots/">Signals with robots</a></td>
+<td>Connecting component signals to numbered robot ports.</td>
+<td>Project</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-robot-io">Robot I/O and signal actions</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/signal-grasp-and-release-actions/">Signal grasp and release actions</a></td>
+<td>Configuring a robot output to attach and release a product.</td>
+<td>Project</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-robot-io">Robot I/O and signal actions</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/model-a-robot-gripper-part-ii/">Model a robot gripper, part II</a></td>
+<td>Configuring gripper motion, signals, and state feedback.</td>
+<td>Project</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-robot-analysis">Reachability, limits, and collisions</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-i/">Robot Reachability Part I</a></td>
+<td>Initial robot placement, pedestal height, jogging, and workspace profiles.</td>
+<td>Project</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-robot-analysis">Reachability, limits, and collisions</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/">Robot Reachability Part II</a></td>
+<td>Checking joint limits, configurations, and singularities.</td>
+<td>Recommended</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-external-control">Internal and external control</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/connect-a-remote-opc-ua-server/">Connect a remote OPC UA server</a></td>
+<td>Connecting VC and CODESYS and pairing variables.</td>
+<td>Project</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-safety-modeling">Representing safety measures</a></td>
+<td><a href="https://academy.visualcomponents.com/lessons/add-safety-equipment-in-robotic-cells/">Add Safety Equipment in Robotic Cells</a></td>
+<td>Representing fences, access sensors, and safety responses in a simulation.</td>
+<td>Project</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="documentation-and-focused-references" class="level2">
+<h2 class="anchored" data-anchor-id="documentation-and-focused-references">Documentation and focused references</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Topic</th>
+<th>Reference</th>
+<th>Use it when</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>General</td>
+<td><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Help.htm">VC help system</a></td>
+<td>Looking up a tool or workflow not covered by the curated lessons.</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-layouts-components">Layouts and components</a></td>
+<td><a href="https://help.visualcomponents.com/4.9/Premium/en/English/Component%20Modeling/Behaviors/Behaviors.htm">Behavior overview</a></td>
+<td>Inspecting the internal functionality available to components.</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-products-flow">Products and production flow</a></td>
+<td><a href="https://help.visualcomponents.com/4.9/Premium/en/English/Process%20Modeling/Product_Type_Editor.htm">Product Type Editor</a></td>
+<td>Creating and organizing product types.</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-products-flow">Products and production flow</a></td>
+<td><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Process%20Modeling/Process_Flow_Editor.htm">Process Flow Editor</a></td>
+<td>Defining production steps and routes.</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-robot-programs">Program structure and logic</a></td>
+<td><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Program_Editor_for_Motion_Controller.htm">Program Editor for Motion Controller</a></td>
+<td>Looking up routines, variables, conditions, loops, and <code>Switch Case</code>.</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-robot-teaching">Jogging and teaching motion</a></td>
+<td><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Jog_panel.htm">Jog panel</a></td>
+<td>Looking up Cartesian and joint jogging, active frames, and reachability feedback.</td>
+</tr>
+<tr class="odd">
+<td><a href="#sec-vc-robot-analysis">Reachability, limits, and collisions</a></td>
+<td><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Detecting_collisions.htm">Detecting collisions</a></td>
+<td>Configuring collision sets and checking motions.</td>
+</tr>
+<tr class="even">
+<td><a href="#sec-vc-robot-analysis">Reachability, limits, and collisions</a></td>
+<td><a href="https://help.visualcomponents.com/5.0/Premium/en/English/Robot%20Programming/Other%20Operations/Limiting_a_robot_and_its_joints.htm">Limiting a robot and its joints</a></td>
+<td>Checking joint limits, configurations, and singularities.</td>
+</tr>
+</tbody>
+</table>
+<p>The wider <a href="https://academy.visualcomponents.com/">Visual Components Academy</a> remains useful for optional topics such as component modeling, advanced process modeling, path tools, physics, vendor add-ons, and other connectivity workflows.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
