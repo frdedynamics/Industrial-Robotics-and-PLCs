@@ -1,6 +1,9 @@
 ---
 title: Conveyor System
 draft: false
+format:
+  html:
+    code-copy: true
 ---
 
 # Project role
@@ -8,7 +11,7 @@ draft: false
 In this part of the project, you will build and test the conveyor system that
 supplies workpieces to the robot cell. Visual Components (VC) represents the
 physical plant: it creates products, transports them, and routes them at a
-pusher conveyor. The completed conveyor model is later connected to the
+series of pusher conveyors. The completed conveyor model is later connected to the
 [robot-cell project](robot_cell.qmd).
 
 This page guides you through the work in the intended order. First make the
@@ -35,30 +38,41 @@ The conveyor system shall repeatedly perform the following material flow:
 
 1. The Advanced Feeder creates blue, red, green, purple, and grey cylinders.
 2. A shared run signal starts and stops the ordinary conveyor paths.
-3. Blue, red, green, and purple cylinders are pushed onto a side conveyor.
-4. Grey cylinders continue through the straight outlet toward the robot cell.
+3. Four Pusher Conveyors sort the blue, red, green, and purple cylinders onto
+   separate side conveyors.
+4. Grey cylinders pass all four pushers and continue toward the robot cell.
 
 @fig-conveyor-flow summarizes both the product routes and the shared run
-command. Product routing and control of the pusher's local path remain inside
-the Pusher Conveyor in the required version.
+command. Product routing and control of each pusher's local path remain inside
+the Pusher Conveyors in the required version.
 
 ```{mermaid}
 %%| label: fig-conveyor-flow
-%%| fig-cap: "Required conveyor flow. The shared run signal controls the ordinary conveyors, while the Pusher Conveyor controls its local path and routes the products."
+%%| fig-cap: "Required conveyor flow. The shared run signal controls the ordinary conveyors, while each Pusher Conveyor controls its local path and routes one product type."
 flowchart LR
     FEEDER[Advanced Feeder] --> IN[Incoming conveyor]
-    IN --> PUSHER[Pusher Conveyor]
-    PUSHER -->|grey cylinders| ROBOT[Robot-cell pickup conveyor]
-    PUSHER -->|blue, red, green, purple| SIDE[Side conveyor]
+    IN --> BLUE[Pusher 1]
+    BLUE -->|straight| RED[Pusher 2]
+    RED -->|straight| GREEN[Pusher 3]
+    GREEN -->|straight| PURPLE[Pusher 4]
+    PURPLE -->|grey| ROBOT[Robot-cell pickup conveyor]
+
+    BLUE -->|push| BLUEOUT[Blue side conveyor]
+    RED -->|push| REDOUT[Red side conveyor]
+    GREEN -->|push| GREENOUT[Green side conveyor]
+    PURPLE -->|push| PURPLEOUT[Purple side conveyor]
 
     RUN[Shared run signal] -.-> IN
     RUN -.-> ROBOT
-    RUN -.-> SIDE
+    RUN -.-> BLUEOUT
+    RUN -.-> REDOUT
+    RUN -.-> GREENOUT
+    RUN -.-> PURPLEOUT
 ```
 
-For this first model, the side conveyor represents downstream storage with
+For this first model, each side conveyor represents downstream storage with
 unlimited capacity. You do not need to model storage limits or congestion after
-a product has left the sorting conveyor.
+a product has left its sorting station.
 
 The conveyor system does not use the VC Conveyor Motor component. Conveyor
 motion is controlled through the conveyors' path signals, and conveyor fault
@@ -66,17 +80,63 @@ handling is not part of this stage.
 
 # Components
 
-Most components are found below `Models by Manufacturer > Visual Components`
-in the eCatalog. If a category differs in your VC installation, search for the
-stated component name.
+The manufacturer row gives the common eCatalog path. Continue from that path
+into the subdirectory shown for each component. If the category structure
+differs in your VC installation, search for the stated component name.
 
-| Quantity | Component | eCatalog subdirectory | Purpose |
-|---:|---|---|---|
-| 5 templates | Cylinder | `Basic Shapes` | Provide the geometry and material for the five product types. |
-| 1 | Advanced Feeder | `Feeders` | Generate the product mixture. |
-| As needed | Conveyor | `Conveyors` | Form the incoming, straight outgoing, and side transport paths. |
-| 1 | Pusher Conveyor | `Conveyors` | Route selected products to the side conveyor. |
-| 1 optional | Conveyor Sensor | `Conveyor Utilities` | Investigate colour detection and prepare for a possible later control extension. |
+<div class="table-responsive">
+<table class="table component-catalog-table">
+<thead>
+<tr>
+<th class="text-end" scope="col">Quantity</th>
+<th scope="col">Preview</th>
+<th scope="col">Component</th>
+<th scope="col">eCatalog subdirectory</th>
+<th scope="col">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="component-catalog-table__group">
+<th colspan="5" scope="colgroup"><strong>Visual Components</strong><code>Models by Manufacturer &gt; Visual Components</code></th>
+</tr>
+<tr>
+<td class="text-end">5 templates</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/cylinder.png" alt="Preview of the Cylinder component" loading="lazy"></td>
+<td>Cylinder</td>
+<td><code>Basic Shapes</code></td>
+<td>Provide the geometry and material for the five product types.</td>
+</tr>
+<tr>
+<td class="text-end">1</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/advanced_feeder.png" alt="Preview of the Advanced Feeder component" loading="lazy"></td>
+<td>Advanced Feeder</td>
+<td><code>Feeders</code></td>
+<td>Generate the product mixture.</td>
+</tr>
+<tr>
+<td class="text-end">As needed</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/conveyor.png" alt="Preview of the Conveyor component" loading="lazy"></td>
+<td>Conveyor</td>
+<td><code>Conveyors</code></td>
+<td>Form the incoming, side, and final transport paths.</td>
+</tr>
+<tr>
+<td class="text-end">4</td>
+<td class="component-catalog-table__preview-cell" aria-label="No preview available">&mdash;</td>
+<td>Pusher Conveyor</td>
+<td><code>Conveyors</code></td>
+<td>Route one selected product type at each sorting station.</td>
+</tr>
+<tr>
+<td class="text-end">1 optional</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/conveyor_sensor.png" alt="Preview of the Conveyor Sensor component" loading="lazy"></td>
+<td>Conveyor Sensor</td>
+<td><code>Conveyor Utilities</code></td>
+<td>Investigate colour detection for a possible later control extension.</td>
+</tr>
+</tbody>
+</table>
+</div>
 
 The [Layouts and components](visual_components.qmd#sec-vc-layouts-components),
 [interfaces and signals](visual_components.qmd#sec-vc-interfaces), and
@@ -87,13 +147,9 @@ sections introduce the general VC concepts used below.
 
 ## Organize the conveyor sublayout {#sec-conveyor-sublayout}
 
-Build the conveyor system in the VC file that will later contain the robot
-cell. In the **Layouts** tab of the Cell Graph, create a sublayout named
-`Conveyor system`. You can place components in the 3D world first and then use
-**Move to Layout** to assign them to this sublayout.
-
-Keep the downstream end accessible so that the robot cell can be connected
-later.
+Start with an empty VC layout. In the **Layouts** tab of the Cell Graph, create
+a sublayout named `Conveyor system`. You can place components in the 3D world
+first and then use **Move to Layout** to assign them to this sublayout.
 
 ## Create the product types
 
@@ -112,11 +168,11 @@ Create the five types as follows:
 
 | Product type | Material colour | Internal route |
 |---|---|---|
-| `Cylinder_blue` | Blue | Pusher outlet |
-| `Cylinder_red` | Red | Pusher outlet |
-| `Cylinder_green` | Green | Pusher outlet |
-| `Cylinder_purple` | Purple | Pusher outlet |
-| `Cylinder_grey` | Grey | Straight outlet |
+| `Cylinder_blue` | Blue | Side outlet at pusher 1 |
+| `Cylinder_red` | Red | Side outlet at pusher 2 |
+| `Cylinder_green` | Green | Side outlet at pusher 3 |
+| `Cylinder_purple` | Purple | Side outlet at pusher 4 |
+| `Cylinder_grey` | Grey | Straight through all pushers |
 
 : Conveyor product types and their required routes. {#tbl-conveyor-products}
 
@@ -126,43 +182,62 @@ product type and appearance.
 
 ## Configure the Advanced Feeder
 
-Place an **Advanced Feeder** at the beginning of the incoming conveyor and
-connect the compatible interfaces. In the feeder's component properties:
+Add an **Advanced Feeder** to the layout. Its position and connection are
+handled when you build the first sorting station. In the feeder's component
+properties:
 
 1. Set `CreationMode` to `Distribution`.
 2. Open the `DistributionBook` tab.
 3. Select **Open in Editor**.
 4. Keep the first two column headings exactly as `ProductType` and
    `Probability`.
-5. Enter the product types and probabilities from @tbl-feeder-distribution.
+5. Copy the following CSV data into the editor:
 
-| Product type | Probability (%) |
-|---|---:|
-| `Cylinder_blue` | 23.75 |
-| `Cylinder_red` | 23.75 |
-| `Cylinder_green` | 23.75 |
-| `Cylinder_purple` | 23.75 |
-| `Cylinder_grey` | 5.00 |
-
-: Initial feeder distribution. {#tbl-feeder-distribution}
+```ini
+ProductType,Probability
+Cylinder_blue,23.75
+Cylinder_red,23.75
+Cylinder_green,23.75
+Cylinder_purple,23.75
+Cylinder_grey,5.00
+```
 
 The distribution is useful for repeated mixed-flow testing. While testing one
 route, you may temporarily increase the probability of the relevant product
 type instead of waiting for it to occur randomly. Restore the intended
 distribution before validating the complete system.
 
-## Assemble the transport path
+## Build and configure one sorting station
 
-Arrange the incoming conveyor, Pusher Conveyor, straight outgoing conveyor,
-and side conveyor. Connect their compatible interfaces and check that the path
-directions are consistent. The exact lengths and arrangement are design
-choices, but leave enough straight path before the pusher for products to enter
+Place an incoming Conveyor, one Pusher Conveyor, and one side Conveyor.
+Position the configured feeder at the beginning of the incoming Conveyor, then
+connect all compatible interfaces and check that the path directions are
+consistent. Leave enough straight path before the pusher for products to enter
 its detection region reliably.
 
-Run the simulation before configuring the routing. Confirm that products pass
-from the feeder onto the incoming path and can move through each connected
-conveyor without jumping, rotating unexpectedly, or becoming stuck at an
-interface.
+Configure the physical properties that should be common to every station, such
+as conveyor dimensions, height, and speed. On the Pusher Conveyor, set `RouteBy`
+to `RoutingRule`, open the
+[`RoutingRule` editor](https://help.visualcomponents.com/5.1/Premium/en/English/Component%20Modeling/Behaviors/Material%20Flow/Routing_Rule.htm),
+select **Product Type Rule**, and set the default connection to `Out`. Do not
+assign a product type yet.
+
+Run the simulation and confirm that products pass through the station without
+jumping, rotating unexpectedly, or becoming stuck at an interface. Correct the
+common settings before creating copies.
+
+## Duplicate and connect the sorting stations
+
+Select the configured Pusher Conveyor together with its side Conveyor and
+duplicate the pair three times. Connect the straight `Out` interface of each
+Pusher Conveyor to the input of the next one, forming a line of four sorting
+stations. Add an ordinary conveyor after the final `Out` connection for the
+grey cylinders.
+
+Because the shared physical settings and the Product Type Rule were configured
+before duplication, only the station-specific routing now needs to be changed.
+Adjust spacing or conveyor lengths where needed, then run products through the
+complete line once with all four rules still using their default `Out` route.
 
 ## Configure run control for the ordinary conveyors
 
@@ -192,24 +267,22 @@ separately.
 
 The standard Pusher Conveyor contains internal logic that detects, attaches,
 moves, and transfers a product to the selected outgoing path. Use that complete
-behavior for the first project stage:
+behavior at each station:
 
-1. In the Pusher Conveyor properties, set `RouteBy` to `RoutingRule`.
-2. Open the
-   [`RoutingRule` editor](https://help.visualcomponents.com/5.1/Premium/en/English/Component%20Modeling/Behaviors/Material%20Flow/Routing_Rule.htm).
-3. Select **Product Type Rule** as the routing rule.
-4. Set the default connection to `Out`, the straight outlet.
-5. Add `Cylinder_blue`, `Cylinder_red`, `Cylinder_green`, and
-   `Cylinder_purple`, and assign each one to `Pusher`.
-6. Leave `Cylinder_grey` on the default `Out` route.
+1. At pusher 1, assign `Cylinder_blue` to `Pusher`.
+2. At pusher 2, assign `Cylinder_red` to `Pusher`.
+3. At pusher 3, assign `Cylinder_green` to `Pusher`.
+4. At pusher 4, assign `Cylinder_purple` to `Pusher`.
+5. Keep `Out` as the default connection in every rule so that all other product
+   types continue to the next station.
 
 Do not replace this behavior by controlling only the visible pusher joint. The
 joint motion alone does not perform the product attachment and transfer between
 conveyor paths.
 
-Run the system until every product type has reached the pusher. Confirm that
-the four coloured types leave through the side conveyor and that grey cylinders
-continue through the straight outlet.
+Run the system until every product type has passed through the sorting line.
+Confirm that each coloured type leaves at its assigned side conveyor and that
+grey cylinders pass all four pushers and continue through the final outlet.
 
 # Validate the internal model
 
@@ -219,8 +292,8 @@ Verify that:
 - the feeder creates all five product types with the intended appearance,
 - the shared run signal starts and stops every ordinary conveyor path,
 - products cross each conveyor interface reliably,
-- the pusher completes its full extension, transfer, and retraction sequence,
-- coloured products enter the side path,
+- every pusher completes its full extension, transfer, and retraction sequence,
+- each coloured product enters its assigned side path,
 - grey products continue through the straight path, and
 - resetting and restarting the simulation produces repeatable behavior.
 
@@ -235,7 +308,7 @@ Before continuing to the robot cell, you should be able to demonstrate:
 - the configured product types and feeder distribution,
 - the complete conveyor layout in the `Conveyor system` sublayout,
 - common start and stop behavior for the ordinary conveyors,
-- correct internal routing for all five product types, and
+- correct internal routing at all four sorting stations, and
 - repeatable operation after a simulation reset.
 
 Save a checkpoint copy of the layout and document the important component

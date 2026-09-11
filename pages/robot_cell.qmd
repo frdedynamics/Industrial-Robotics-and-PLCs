@@ -142,16 +142,17 @@ differs in your VC installation, search for the stated component name.
 ## Organize the project with sublayouts {#sec-cell-sublayouts}
 
 Build the robot cell in the same VC file as the completed conveyor system,
-but do not connect the two systems yet. First save a copy of the working
-conveyor layout so that the original remains available as a tested backup.
+but do not connect the two systems yet. Begin from the conveyor checkpoint and
+keep its saved copy unchanged as a tested backup.
 Place the new robot cell some distance away from the conveyor system, with
 enough empty space that the two material flows remain clearly separate during
 development.
 
-In the **Layouts** tab of the Cell Graph, create two sublayouts named
-`Conveyor system` and `Robot cell`. Move the existing conveyor components into
-the first sublayout. The components for the new cell are moved into the second
-sublayout after their initial placement.
+The [conveyor-system instructions](conveyor.qmd#sec-conveyor-sublayout) create a
+`Conveyor system` sublayout. Confirm that the completed conveyor components are
+assigned to it, then create a second sublayout named `Robot cell`. Components
+for the new cell are moved into this second sublayout after their initial
+placement.
 
 The roles of the Cell Graph, components, and sublayouts are introduced in
 [Layouts and components](visual_components.qmd#sec-vc-layouts-components).
@@ -172,9 +173,9 @@ joint configurations, not only whether the TCP can reach them at all.
 Next, add a short incoming conveyor and place a Conveyor Sensor close to its
 downstream end. This sensor defines the repeatable pickup location. Copy and
 paste the Advanced Feeder that is already configured in the conveyor system,
-and configure the copy to generate only grey cylinders by removing the other
-product variants. This provides test parts immediately while the robot cell is
-developed on its own.
+and configure only this copy to generate grey cylinders. Keep the original
+mixed feeder unchanged in the `Conveyor system` sublayout. The temporary feeder
+provides test parts immediately while the robot cell is developed on its own.
 
 Place the CNC mill and outgoing conveyor provisionally. Their first positions
 do not need to be final. Leave enough room to open and access the CNC door, and
@@ -442,13 +443,13 @@ relevant equipment instead. A pose defined relative to a CNC fixture then moves
 with that fixture, which can make later layout changes easier. Choose the method
 that reflects which physical relationship should remain fixed.
 
-## Integrate the conveyor and robot-cell sublayouts
+## Integrate the conveyor and robot-cell sublayouts {#sec-cell-integrate}
 
 After the internally controlled robot program works reliably with the temporary
 feeder, connect the two subsystems. Disconnect or remove the robot cell's feeder,
 move the `Conveyor system` and `Robot cell` sublayouts together, and connect the
-appropriate conveyor paths. Reintroduce the mixed product flow only after this
-connection is working.
+appropriate conveyor paths. Start the original mixed feeder in the `Conveyor
+system` sublayout only after this connection is working.
 
 Run the complete material flow again before adding PLC control. Check not only
 whether the robot cycle still runs, but also whether parts queue at the expected
@@ -469,12 +470,13 @@ high-level operation commands and status values.
 
 | Controller | Responsibility |
 |---|---|
-| PLC | Conveyor control, pickup-sensor evaluation, CNC door and process control, overall operation order, and later timeout or fault handling. |
+| PLC | Run and stop control for the ordinary conveyors, pickup-sensor evaluation, CNC door and process control, overall operation order, and later timeout or fault handling. Product routing and the complete pusher transfer remain internal to VC. |
 | Robot program | Robot motion, approach and retract paths, gripper actions, and gripper feedback within each requested operation. |
 
 The gripper remains under robot control because its actions are tightly coupled
-to the pick and place motions. The conveyor and CNC are separate cell equipment
-and therefore belong to the PLC sequence.
+to the pick and place motions. The PLC sequence controls the ordinary conveyor
+run command and CNC equipment, while the Pusher Conveyor retains its internal
+routing and transfer behavior.
 
 Remove the direct conveyor-sensor and CNC connections from the active robot
 program. Retain the local robot-to-gripper connections. Keep the internally
@@ -495,7 +497,7 @@ but at different levels:
 flowchart LR
     PLC[PLC cell FSM]
     ROBOT[VC robot FSM]
-    CONVEYOR[Conveyor and sensor]
+    CONVEYOR[Ordinary conveyors and pickup sensor]
     CNC[CNC mill]
     ROUTINES[Robot subroutines]
 
@@ -592,7 +594,7 @@ values sent in each direction.
 | PLC variable | VC property or signal | Direction |
 |---|---|---|
 | `iRobotCommand` | `PLC::Command` | PLC to VC |
-| `xConveyorRun` | Conveyor `PowerOnSignal` | PLC to VC |
+| `xConveyorRun` | Shared `PowerOnSignal` for the ordinary conveyors | PLC to VC |
 | `xCncOpenDoor` | `FROM_PLC_OpenDoor` | PLC to VC |
 | `xCncCloseDoor` | `FROM_PLC_CloseDoor` | PLC to VC |
 | `xCncStartProcess` | `FROM_PLC_StartProcess` | PLC to VC |
@@ -641,7 +643,8 @@ Your submission shall include:
 
 The externally controlled solution shall satisfy these acceptance criteria:
 
-- the PLC, not the robot, coordinates the conveyor and CNC,
+- the PLC, not the robot, coordinates ordinary conveyor motion and the CNC,
+- the Pusher Conveyor retains its tested internal routing and transfer behavior,
 - the robot accepts only defined operation commands,
 - every command follows the specified acknowledgement handshake,
 - robot commands are held until acknowledged rather than sent as short pulses,
