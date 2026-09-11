@@ -1,6 +1,18 @@
 ---
 title: Project
 draft: true
-----
+---
 
-- describe the project
+- describe the role of the project in the course. we do a project that runs along the progression plan and ideally integrates the different topics and skills that are taught in the course. The project is a way to apply the knowledge and skills learned in the course to a practical problem. The project combines PLC programming in codesys with modeling, simulation and robot programming in visual components.
+
+- describe the project, what is the task, what is the goal, what are the requirements, what are the constraints, what are the deliverables, what are the milestones, what are the deadlines, what are the evaluation criteria. describe how the project maps to the gatherings and the real robot cell: the project simulates the whole conveyor line with the robot at the end. In the second gathering we will have a real robot cell that corresponds to the simulated cell and students have the chance to transfer their simulated program to the real robot cell and test it. 
+
+- include the two screenshots of the codesys visualization
+- Students will get the simulator implemented in codesys for the conveyor and the robot, and have to make the FSM/control for them as exercises. When this is in place or maybe already in parallel, they will start to model the conveyor system with the robot cell at the end also in VC. The signals from codesys will be connected to the VC model via OPCUA. 
+
+- will we only connect the control FB made by the students or do we always need the full simulation in codesys?
+
+- describe the overall simulation architecture, maybe with mermaid diagram. showing PLC with codesys and runtime, simulated cell and robot in VC, connection between them (on PC it is OPCUA in a real setup the PLC would connected via fieldbus). 
+
+- the project has to be documented in a report and will count 50% towards the final grade.
+- we must detail the report expectations. besides general report stuff and things that are implied from the robot cell and conveyor page, this includes also gathering statistcs of the plant and discussions in terms of lean robotics
