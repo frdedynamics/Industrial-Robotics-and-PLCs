@@ -470,7 +470,7 @@ high-level operation commands and status values.
 
 | Controller | Responsibility |
 |---|---|
-| PLC | Run and stop control for the ordinary conveyors, pickup-sensor evaluation, CNC door and process control, overall operation order, and later timeout or fault handling. Product routing and the complete pusher transfer remain internal to VC. |
+| PLC | Run and stop control for the ordinary conveyors, pickup-sensor evaluation, CNC door and process control, and overall operation order. Product routing and the complete pusher transfer remain internal to VC; timeout and fault handling are optional extensions. |
 | Robot program | Robot motion, approach and retract paths, gripper actions, and gripper feedback within each requested operation. |
 
 The gripper remains under robot control because its actions are tightly coupled
@@ -655,5 +655,6 @@ The externally controlled solution shall satisfy these acceptance criteria:
   and
 - the complete material flow repeats without manual intervention.
 
-Develop the normal sequence first. Add timeouts and fault recovery only after
-the nominal cycle and communication interface are stable.
+Develop the normal sequence first. Timeouts and fault recovery are optional
+extensions and should be added only after the nominal cycle and communication
+interface are stable.

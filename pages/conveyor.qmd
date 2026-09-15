@@ -20,7 +20,7 @@ begin with PLC communication. A working internal model gives you a known plant
 before an external controller and communication delays are introduced.
 
 The required version uses the standard Pusher Conveyor's internal routing
-logic. When the conveyor is integrated with the robot cell, a PLC can later
+logic. When the conveyor is integrated with the robot cell, the PLC will
 command the ordinary conveyors without replacing this routing. PLC control of
 the complete push cycle is a separate possible extension.
 
@@ -341,8 +341,8 @@ page, while the
 [PLC-integration section](simulation.qmd#sec-virtual-commissioning) explains the
 wider purpose of connecting CODESYS and the simulation.
 
-In the robot cell's external-control stage, the shared `PowerOnSignal` can be
-mapped to CODESYS so that the PLC starts and stops the ordinary conveyors.
+In the robot cell's external-control stage, map the shared `PowerOnSignal` to
+CODESYS so that the PLC starts and stops the ordinary conveyors.
 Product routing and the pusher's local path control remain internal to VC. This
 adds PLC line control without introducing another pusher state machine.
 
@@ -352,9 +352,9 @@ Full PLC control of the push cycle requires a tested interface that requests
 one complete transfer and receives completion feedback. Directly commanding
 the pusher joint is not sufficient.
 
-Full PLC control of the push cycle is not part of the required stage. If it is
-assigned as an extension, you will receive a prepared VC interface, its I/O
-contract, and acceptance tests before implementation.
+Full PLC control of the push cycle is not part of the required stage. Treat it
+as an extension only after the required conveyor and robot-cell coordination
+works reliably.
 
 ## Optional signal investigations
 
