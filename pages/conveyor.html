@@ -23,6 +23,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -43,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-2c169b83e1fc2996b25bcc8774810429.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -194,6 +229,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Project</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/conveyor.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Conveyor System</span></a>
   </div>
@@ -222,17 +263,27 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#open-design-choices" id="toc-open-design-choices" class="nav-link active" data-scroll-target="#open-design-choices">open design choices</a></li>
-  <li><a href="#make-our-products" id="toc-make-our-products" class="nav-link" data-scroll-target="#make-our-products">Make our products</a></li>
-  <li><a href="#feeder" id="toc-feeder" class="nav-link" data-scroll-target="#feeder">Feeder</a></li>
-  <li><a href="#conveyor" id="toc-conveyor" class="nav-link" data-scroll-target="#conveyor">Conveyor</a></li>
-  <li><a href="#conveyor-motor" id="toc-conveyor-motor" class="nav-link" data-scroll-target="#conveyor-motor">Conveyor motor</a></li>
-  <li><a href="#conveyor-sensor-for-color-detection" id="toc-conveyor-sensor-for-color-detection" class="nav-link" data-scroll-target="#conveyor-sensor-for-color-detection">Conveyor sensor for color detection</a></li>
-  <li><a href="#pusher-conveyor" id="toc-pusher-conveyor" class="nav-link" data-scroll-target="#pusher-conveyor">Pusher conveyor</a>
+  <li><a href="#project-role" id="toc-project-role" class="nav-link active" data-scroll-target="#project-role">Project role</a></li>
+  <li><a href="#required-behavior" id="toc-required-behavior" class="nav-link" data-scroll-target="#required-behavior">Required behavior</a></li>
+  <li><a href="#components" id="toc-components" class="nav-link" data-scroll-target="#components">Components</a></li>
+  <li><a href="#build-and-test-in-visual-components" id="toc-build-and-test-in-visual-components" class="nav-link" data-scroll-target="#build-and-test-in-visual-components">Build and test in Visual Components</a>
   <ul class="collapse">
-  <li><a href="#how-the-conveyor-and-motor-behave" id="toc-how-the-conveyor-and-motor-behave" class="nav-link" data-scroll-target="#how-the-conveyor-and-motor-behave">How the conveyor and motor behave</a></li>
+  <li><a href="#sec-conveyor-sublayout" id="toc-sec-conveyor-sublayout" class="nav-link" data-scroll-target="#sec-conveyor-sublayout">Organize the conveyor sublayout</a></li>
+  <li><a href="#create-the-product-types" id="toc-create-the-product-types" class="nav-link" data-scroll-target="#create-the-product-types">Create the product types</a></li>
+  <li><a href="#configure-the-advanced-feeder" id="toc-configure-the-advanced-feeder" class="nav-link" data-scroll-target="#configure-the-advanced-feeder">Configure the Advanced Feeder</a></li>
+  <li><a href="#build-and-configure-one-sorting-station" id="toc-build-and-configure-one-sorting-station" class="nav-link" data-scroll-target="#build-and-configure-one-sorting-station">Build and configure one sorting station</a></li>
+  <li><a href="#duplicate-and-connect-the-sorting-stations" id="toc-duplicate-and-connect-the-sorting-stations" class="nav-link" data-scroll-target="#duplicate-and-connect-the-sorting-stations">Duplicate and connect the sorting stations</a></li>
+  <li><a href="#configure-run-control-for-the-ordinary-conveyors" id="toc-configure-run-control-for-the-ordinary-conveyors" class="nav-link" data-scroll-target="#configure-run-control-for-the-ordinary-conveyors">Configure run control for the ordinary conveyors</a></li>
+  <li><a href="#configure-internal-pusher-routing" id="toc-configure-internal-pusher-routing" class="nav-link" data-scroll-target="#configure-internal-pusher-routing">Configure internal pusher routing</a></li>
   </ul></li>
-  <li><a href="#plc-connectivity" id="toc-plc-connectivity" class="nav-link" data-scroll-target="#plc-connectivity">PLC connectivity</a></li>
+  <li><a href="#validate-the-internal-model" id="toc-validate-the-internal-model" class="nav-link" data-scroll-target="#validate-the-internal-model">Validate the internal model</a></li>
+  <li><a href="#checkpoint-before-robot-cell-integration" id="toc-checkpoint-before-robot-cell-integration" class="nav-link" data-scroll-target="#checkpoint-before-robot-cell-integration">Checkpoint before robot-cell integration</a></li>
+  <li><a href="#connect-the-robot-cell" id="toc-connect-the-robot-cell" class="nav-link" data-scroll-target="#connect-the-robot-cell">Connect the robot cell</a></li>
+  <li><a href="#external-control-boundary" id="toc-external-control-boundary" class="nav-link" data-scroll-target="#external-control-boundary">External control boundary</a>
+  <ul class="collapse">
+  <li><a href="#possible-extension-plc-controlled-pushing" id="toc-possible-extension-plc-controlled-pushing" class="nav-link" data-scroll-target="#possible-extension-plc-controlled-pushing">Possible extension: PLC-controlled pushing</a></li>
+  <li><a href="#optional-signal-investigations" id="toc-optional-signal-investigations" class="nav-link" data-scroll-target="#optional-signal-investigations">Optional signal investigations</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/conveyor.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -258,320 +309,370 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<section id="project-role" class="level1">
+<h1>Project role</h1>
+<p>In this part of the project, you will build and test the conveyor system that supplies workpieces to the robot cell. Visual Components (VC) represents the physical plant: it creates products, transports them, and routes them at a series of pusher conveyors. The completed conveyor model is later connected to the <a href="../pages/robot_cell.html">robot-cell project</a>.</p>
+<p>This page guides you through the work in the intended order. First make the complete conveyor system work using VC’s internal component behavior. Do not begin with PLC communication. A working internal model gives you a known plant before an external controller and communication delays are introduced.</p>
+<p>The required version uses the standard Pusher Conveyor’s internal routing logic. When the conveyor is integrated with the robot cell, the PLC will command the ordinary conveyors without replacing this routing. PLC control of the complete push cycle is a separate possible extension.</p>
+<p>By completing this stage, you should be able to:</p>
 <ul>
-<li>describe the modeling task of the conveyor system</li>
-<li>define the IO list to exchange data with the PLC, and the signals to be used in the VC model</li>
-<li>the VC model is a simulated hardware plant of the conveyor and a testbed for the PLC controller.</li>
-<li>we work mostly with visual components generic components, since they are customizable and easy to use. They can be found in the eCatalog under Models by Manufacturer &gt; Visual Components &gt; …
-<ul>
-<li>Conveyors</li>
-<li>Conveyor utilities</li>
-<li>Feeders</li>
-</ul></li>
-</ul>
-<section id="open-design-choices" class="level1">
-<h1>open design choices</h1>
-<ul>
-<li>are we generating workpieces in VC or in PLC sim?</li>
-<li>do we use timing to push off the correct workpiece or sensor? How to sync time between VC and PLC sim?</li>
-<li>do we generate a full, independent simulation in VC at first and then later connect to the PLC control</li>
-<li>do we need to customize parts pyhton scripts? if so, it is good to start with one conveyor section and then copy the others. think of teaching a good modeling workflow.</li>
+<li>create product types and generate a defined product mixture,</li>
+<li>assemble connected conveyor components,</li>
+<li>use component properties, behaviors, interfaces, and signals,</li>
+<li>configure and test product routing, and</li>
+<li>prepare a tested conveyor sublayout for integration with the robot cell.</li>
 </ul>
 </section>
-<section id="make-our-products" class="level1">
-<h1>Make our products</h1>
-<ul>
-<li>Home tab add a cylinder, eCatalog &gt; Models by Manufacturer &gt; Visual Components &gt; Basic Shapes &gt; Cylinder</li>
-<li>click on the cylinder and in component properties, change its material to one of the colors we want to use for our workpieces. e.g.&nbsp;start with “blue”</li>
-<li>Go to Process tab &gt; Product Type Editor and click on the small plus sign to add a new product type.
-<ul>
-<li>Name it “Cylinder_blue”.</li>
-<li>In the ComponentUri field click on the “Pick Component”-icon and select the cylinder we just created.</li>
-</ul></li>
-<li>repeat the process for the other colors:
-<ul>
-<li>Cylinder_red</li>
-<li>Cylinder_green</li>
-<li>Cylinder_purple</li>
-<li>Cylinder_grey</li>
-</ul></li>
-</ul>
-</section>
-<section id="feeder" class="level1">
-<h1>Feeder</h1>
-<ul>
-<li>for generating workpieces, an <strong>advanced feeder</strong> can be used.</li>
-<li>Make sure that in the component properties, the <strong>CreationMode</strong> is set to <strong>Distribution</strong>.</li>
-<li>Define the parts and their probabilities in the <strong>DistributionBook</strong>.</li>
-<li>In Component Properties, go to the DistributionBook tab and then Open In Editor. The following table can be used to define the parts, probabilities and colours:</li>
-</ul>
-<pre><code>ProductType, Probability
-Cylinder_blue, 23.75
-Cylinder_red, 23.75
-Cylinder_green, 23.75
-Cylinder_purple, 23.75
-Cylinder_grey, 5</code></pre>
-</section>
-<section id="conveyor" class="level1">
-<h1>Conveyor</h1>
-<ul>
-<li>eCatalog &gt; Models by Manufacturer &gt; Visual Components &gt; Conveyors &gt; Conveyor</li>
-<li>add a conveyor motor to the conveyor:
-<ul>
-<li>eCatalog &gt; Models by Manufacturer &gt; Visual Components &gt; Conveyor Utilities &gt; Conveyor Motor</li>
-</ul></li>
-<li>connect the conveyor to the advanced feeder</li>
-<li>View the signals (with simulation stopped):
-<ul>
-<li>Draw a connecttion from runForward signal of the motor to the PowerOnSignal of the conveyor</li>
-</ul></li>
-</ul>
-</section>
-<section id="conveyor-motor" class="level1">
-<h1>Conveyor motor</h1>
-<ul>
-<li>VC Conveyor motor is <strong>JUNK</strong> and should not be used.
-<ul>
-<li>Inconsistent state machine in terms of fault handling.</li>
-<li>MTBF Failures only triggered during speed changes.</li>
-<li>Conveyor can be started without fault being cleared.</li>
-<li>Sometimes fault property “bricks” and can’t be cleared at all.</li>
-<li>Inconsistent behaviour for starting stopping in combination with the parent conveyor’s powerOn signal.</li>
-</ul></li>
-<li>We only use conveyor and their powerOn signal to start and stop. No error handling for conveyors.</li>
-</ul>
-</section>
-<section id="conveyor-sensor-for-color-detection" class="level1">
-<h1>Conveyor sensor for color detection</h1>
-<ul>
-<li>add as standard conveyor</li>
-<li>add to that a converor sensor: eCatalog &gt; Models by Manufacturer &gt; Visual Components &gt; Conveyor Utilities &gt; Conveyor Sensor</li>
-<li>In the component properties panel, go to the RGB tab and click enable</li>
-<li>with the sim reset, add a generic shape component (eCatalog &gt; Models by Manufacturer &gt; Visual Components &gt; Basic Shapes &gt; Cylinder)</li>
-<li>change the cylinders material to the first of our colors</li>
-<li>move the cylinder into the sensor</li>
-<li>select the sensor again and press “teach in color 1”</li>
-<li>repeat for the other colors.</li>
-</ul>
-</section>
-<section id="pusher-conveyor" class="level1">
-<h1>Pusher conveyor</h1>
-<ul>
-<li>eCatalog &gt; Models by Manufacturer &gt; Visual Components &gt; Conveyors &gt; Pusher Conveyor</li>
-<li>For switching on and off:
-<ul>
-<li>Modeling tab &gt; Behaviors &gt; BooleanSignal
-<ul>
-<li>Name it PowerOnSignal</li>
-<li>Connections: Select “One-WayPath”</li>
-</ul></li>
-<li>Show component signals and connect the powerOnSignal to the other conveyors.</li>
-</ul></li>
-<li>Add another plain conveyor to the side of the pusher conveyor to make a transport for the pushed off workpieces.</li>
-<li>For exposing built in sensor signal:
-<ul>
-<li>Modeling tab &gt; Behaviors &gt; BooleanSignal
-<ul>
-<li>Name it PartDetected</li>
-<li>Open the ComponentPathSensor behaviour and set its BoolSignal property to PartDetected</li>
-</ul></li>
-</ul></li>
-<li>For controlling the pusher:
-<ul>
-<li>Modeling tab &gt; Wizards &gt; IO Control
-<ul>
-<li>InputSignals One ActionSignal</li>
-<li>PusherJoint: CurrentState: Closed</li>
-</ul></li>
-<li>click Apply</li>
-<li>This adds three new BooleanSignals: IN_PusherJoint_Action, OUT_PusherJoint_OpenState and OUT_PusherJoint_ClosedState. We use these to control the pusher from the PLC.</li>
-<li>Make sure that the RouteBy property of the pusher conveyor is set to routingrule and the routing rule is empty.</li>
-</ul></li>
-<li><strong>Controlling the pusher from PLC is not possible without modifying the python scripts inside the pusher conveyor. This can be done but it is maybe easy to make a mistake and it is not worth it in terms of a learning outcome. Another alternative is to do a physical simulation, using the physics pusher and conveyor from the physics section. But this makes the simulation more complex.</strong></li>
-<li>If controlling the pusher from PLC is too complicated we could use the product type rule and select the different products we created.
-<ul>
-<li>go to component properties, set RouteBy to RoutingRule</li>
-<li>go to the RoutingRule tab, choose product type
-<ul>
-<li>select the default connection as “Out”</li>
-<li>select the first product type and assign the connection “Pusher”</li>
-</ul></li>
-</ul></li>
-</ul>
-<section id="how-the-conveyor-and-motor-behave" class="level2">
-<h2 class="anchored" data-anchor-id="how-the-conveyor-and-motor-behave">How the conveyor and motor behave</h2>
-<p>The conveyor and conveyor motor do not form one self-contained component. The motor has a Python-scripted state machine, while the conveyor owns the motion path that actually transports products. Connecting the motor with the plug-and-play interface gives its script a reference to this path. A separate signal connection from <code>RunForward</code> to the conveyor’s <code>PowerOnSignal</code> can also enable or disable the path. <a href="#fig-vc-conveyor-motor" class="quarto-xref">Figure&nbsp;1</a> shows the resulting internal state logic.</p>
+<section id="required-behavior" class="level1">
+<h1>Required behavior</h1>
+<p>The conveyor system shall repeatedly perform the following material flow:</p>
+<ol type="1">
+<li>The Advanced Feeder creates blue, red, green, purple, and grey cylinders.</li>
+<li>A shared run signal starts and stops the ordinary conveyor paths.</li>
+<li>Four Pusher Conveyors sort the blue, red, green, and purple cylinders onto separate side conveyors.</li>
+<li>Grey cylinders pass all four pushers and continue toward the robot cell.</li>
+</ol>
+<p><a href="#fig-conveyor-flow" class="quarto-xref">Figure&nbsp;1</a> summarizes both the product routes and the shared run command. Product routing and control of each pusher’s local path remain inside the Pusher Conveyors in the required version.</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
-<div id="fig-vc-conveyor-motor" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-conveyor-flow" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-vc-conveyor-motor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="fig-conveyor-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
-<pre class="mermaid mermaid-js" data-label="fig-vc-conveyor-motor">stateDiagram-v2
-    direction LR
+<pre class="mermaid mermaid-js" data-label="fig-conveyor-flow">flowchart LR
+    FEEDER[Advanced Feeder] --&gt; IN[Incoming conveyor]
+    IN --&gt; BLUE[Pusher 1]
+    BLUE --&gt;|straight| RED[Pusher 2]
+    RED --&gt;|straight| GREEN[Pusher 3]
+    GREEN --&gt;|straight| PURPLE[Pusher 4]
+    PURPLE --&gt;|grey| ROBOT[Robot-cell pickup conveyor]
 
-    state "Conveyor Motor: PythonScript" as Motor {
-        direction TB
-        state InitialState &lt;&lt;choice&gt;&gt;
-        state "Off" as MotorOff
-        state "Idle" as MotorIdle
-        state "Running" as MotorRunning
-        state "Fault" as MotorFault
+    BLUE --&gt;|push| BLUEOUT[Blue side conveyor]
+    RED --&gt;|push| REDOUT[Red side conveyor]
+    GREEN --&gt;|push| GREENOUT[Green side conveyor]
+    PURPLE --&gt;|push| PURPLEOUT[Purple side conveyor]
 
-        [*] --&gt; InitialState
-        InitialState --&gt; MotorRunning: Running (default)
-        InitialState --&gt; MotorIdle: Idle
-        InitialState --&gt; MotorOff: Off
-        InitialState --&gt; MotorFault: Fault
-
-        MotorOff --&gt; MotorRunning: PowerOn = TRUE
-        MotorRunning --&gt; MotorOff: PowerOn = FALSE
-        MotorIdle --&gt; MotorOff: PowerOn = FALSE
-
-        MotorIdle --&gt; MotorRunning: RunForward = TRUE
-        MotorRunning --&gt; MotorIdle: RunForward = FALSE
-
-        MotorRunning --&gt; MotorFault: ExternalFault = TRUE
-        MotorIdle --&gt; MotorFault: ExternalFault = TRUE
-        MotorRunning --&gt; MotorFault: simulated MTBF failure
-
-        MotorFault --&gt; MotorIdle: reset or repair; PowerOn = TRUE
-        MotorFault --&gt; MotorOff: reset; PowerOn = FALSE
-
-        note right of MotorRunning
-            Enables the path and ramps
-            toward TargetSpeed.
-        end note
-        note right of MotorIdle
-            The state changes to Idle, but the
-            supplied script does not itself
-            command zero speed here.
-        end note
-        note right of MotorFault
-            Fault becomes TRUE and the script
-            commands speed toward zero.
-        end note
-    }
-
-    state "Conveyor: Path behaviour" as Conveyor {
-        direction TB
-        state "Enabled" as PathEnabled
-        state "Disabled" as PathDisabled
-
-        [*] --&gt; PathEnabled: default / Running startup
-        PathEnabled --&gt; PathDisabled: PowerOnSignal = FALSE event
-        PathDisabled --&gt; PathEnabled: PowerOnSignal = TRUE event
-        PathEnabled --&gt; PathDisabled: motor sets Enabled = FALSE
-        PathDisabled --&gt; PathEnabled: motor starts ramp-up
-
-        note right of PathEnabled
-            Products move when Speed is non-zero.
-            A product crossing a path boundary
-            emits TransitionSignal without
-            changing this state.
-        end note
-    }
+    RUN[Shared run signal] -.-&gt; IN
+    RUN -.-&gt; ROBOT
+    RUN -.-&gt; BLUEOUT
+    RUN -.-&gt; REDOUT
+    RUN -.-&gt; GREENOUT
+    RUN -.-&gt; PURPLEOUT
 </pre>
 </div>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vc-conveyor-motor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Effective internal state logic of the Visual Components 5.1 Conveyor Motor and Conveyor components. The motor has named states; the conveyor is represented by the enabled state of its Path behaviour.
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-conveyor-flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Required conveyor flow. The shared run signal controls the ordinary conveyors, while each Pusher Conveyor controls its local path and routes one product type.
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
-<p>The supplied motor component defaults to <code>OnStart::InitialState = Running</code>, <code>OnStart::InitialSpeed = 200 mm/s</code>, and <code>PowerOn = TRUE</code>. Its startup script therefore enables the attached path and sends a <code>RunForward</code> signal. If a PLC variable is already <code>FALSE</code> when the connection is established, that value may not create a new signal event in the conveyor. This explains why cycling the command once can make subsequent starting and stopping behave differently.</p>
-<p>For the first PLC exercise, only the following interface is needed:</p>
+<p>For this first model, each side conveyor represents downstream storage with unlimited capacity. You do not need to model storage limits or congestion after a product has left its sorting station.</p>
+<p>The conveyor system does not use the VC Conveyor Motor component. Conveyor motion is controlled through the conveyors’ path signals, and conveyor fault handling is not part of this stage.</p>
+</section>
+<section id="components" class="level1">
+<h1>Components</h1>
+<p>The manufacturer row gives the common eCatalog path. Continue from that path into the subdirectory shown for each component. If the category structure differs in your VC installation, search for the stated component name.</p>
+<div class="table-responsive">
+<table class="table component-catalog-table">
+<thead>
+<tr>
+<th class="text-end" scope="col">
+Quantity
+</th>
+<th scope="col">
+Preview
+</th>
+<th scope="col">
+Component
+</th>
+<th scope="col">
+eCatalog subdirectory
+</th>
+<th scope="col">
+Purpose
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="component-catalog-table__group">
+<th colspan="5" scope="colgroup">
+<strong>Visual Components</strong><code>Models by Manufacturer &gt; Visual Components</code>
+</th>
+</tr>
+<tr>
+<td class="text-end">
+5 templates
+</td>
+<td class="component-catalog-table__preview-cell">
+<img class="component-catalog-table__preview" src="img/VC Components Previews/cylinder.png" alt="Preview of the Cylinder component" loading="lazy">
+</td>
+<td>
+Cylinder
+</td>
+<td>
+<code>Basic Shapes</code>
+</td>
+<td>
+Provide the geometry and material for the five product types.
+</td>
+</tr>
+<tr>
+<td class="text-end">
+1
+</td>
+<td class="component-catalog-table__preview-cell">
+<img class="component-catalog-table__preview" src="img/VC Components Previews/advanced_feeder.png" alt="Preview of the Advanced Feeder component" loading="lazy">
+</td>
+<td>
+Advanced Feeder
+</td>
+<td>
+<code>Feeders</code>
+</td>
+<td>
+Generate the product mixture.
+</td>
+</tr>
+<tr>
+<td class="text-end">
+As needed
+</td>
+<td class="component-catalog-table__preview-cell">
+<img class="component-catalog-table__preview" src="img/VC Components Previews/conveyor.png" alt="Preview of the Conveyor component" loading="lazy">
+</td>
+<td>
+Conveyor
+</td>
+<td>
+<code>Conveyors</code>
+</td>
+<td>
+Form the incoming, side, and final transport paths.
+</td>
+</tr>
+<tr>
+<td class="text-end">
+4
+</td>
+<td class="component-catalog-table__preview-cell" aria-label="No preview available">
+—
+</td>
+<td>
+Pusher Conveyor
+</td>
+<td>
+<code>Conveyors</code>
+</td>
+<td>
+Route one selected product type at each sorting station.
+</td>
+</tr>
+<tr>
+<td class="text-end">
+1 optional
+</td>
+<td class="component-catalog-table__preview-cell">
+<img class="component-catalog-table__preview" src="img/VC Components Previews/conveyor_sensor.png" alt="Preview of the Conveyor Sensor component" loading="lazy">
+</td>
+<td>
+Conveyor Sensor
+</td>
+<td>
+<code>Conveyor Utilities</code>
+</td>
+<td>
+Investigate colour detection for a possible later control extension.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="../pages/visual_components.html#sec-vc-layouts-components">Layouts and components</a>, <a href="../pages/visual_components.html#sec-vc-interfaces">interfaces and signals</a>, and <a href="../pages/visual_components.html#sec-vc-products-flow">products and production flow</a> sections introduce the general VC concepts used below.</p>
+</section>
+<section id="build-and-test-in-visual-components" class="level1">
+<h1>Build and test in Visual Components</h1>
+<section id="sec-conveyor-sublayout" class="level2">
+<h2 class="anchored" data-anchor-id="sec-conveyor-sublayout">Organize the conveyor sublayout</h2>
+<p>Start with an empty VC layout. In the <strong>Layouts</strong> tab of the Cell Graph, create a sublayout named <code>Conveyor system</code>. You can place components in the 3D world first and then use <strong>Move to Layout</strong> to assign them to this sublayout.</p>
+</section>
+<section id="create-the-product-types" class="level2">
+<h2 class="anchored" data-anchor-id="create-the-product-types">Create the product types</h2>
+<p>The product types define the identity and geometry of the items generated by the feeder. A product’s colour alone does not define a product type.</p>
+<p>Create the five types as follows:</p>
+<ol type="1">
+<li>Add a Cylinder from <code>Basic Shapes</code> to the layout.</li>
+<li>Set its material to the first required colour.</li>
+<li>Open <strong>Process &gt; Product Type Editor</strong> and select the plus button.</li>
+<li>Name the new product type according to <a href="#tbl-conveyor-products" class="quarto-xref">Table&nbsp;1</a>.</li>
+<li>In <code>ComponentUri</code>, use <strong>Pick Component</strong> and select the corresponding coloured cylinder.</li>
+<li>Repeat the process for the other four colours.</li>
+</ol>
+<div id="tbl-conveyor-products" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-conveyor-products-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Conveyor product types and their required routes.
+</figcaption>
+<div aria-describedby="tbl-conveyor-products-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
 <thead>
 <tr class="header">
-<th>Purpose</th>
-<th>Visual Components object</th>
-<th>Kind</th>
-<th>Direction</th>
+<th>Product type</th>
+<th>Material colour</th>
+<th>Internal route</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Start or stop the conveyor</td>
-<td><code>Conveyor Motor.RunForward</code></td>
-<td>Boolean signal</td>
-<td>PLC to VC</td>
+<td><code>Cylinder_blue</code></td>
+<td>Blue</td>
+<td>Side outlet at pusher 1</td>
 </tr>
 <tr class="even">
-<td>Report a motor fault</td>
-<td><code>Conveyor Motor.Fault</code></td>
-<td>Boolean property</td>
-<td>VC to PLC</td>
+<td><code>Cylinder_red</code></td>
+<td>Red</td>
+<td>Side outlet at pusher 2</td>
 </tr>
 <tr class="odd">
-<td>Reset a motor fault</td>
-<td><code>Conveyor Motor.FaultReset</code></td>
-<td>Boolean signal</td>
-<td>PLC to VC</td>
+<td><code>Cylinder_green</code></td>
+<td>Green</td>
+<td>Side outlet at pusher 3</td>
 </tr>
 <tr class="even">
-<td>Inject a test fault</td>
-<td><code>Conveyor Motor.ExternalFault</code></td>
-<td>Boolean signal</td>
-<td>Inside VC</td>
+<td><code>Cylinder_purple</code></td>
+<td>Purple</td>
+<td>Side outlet at pusher 4</td>
+</tr>
+<tr class="odd">
+<td><code>Cylinder_grey</code></td>
+<td>Grey</td>
+<td>Straight through all pushers</td>
 </tr>
 </tbody>
 </table>
-<p>The distinction matters when testing. Sending a signal triggers connected behaviours, whereas changing or reading a property only changes or observes a stored value. The motor’s <code>Fault</code> property is therefore feedback; writing to it is not equivalent to triggering <code>ExternalFault</code> or <code>FaultReset</code>.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
 </div>
-<div class="callout-title-container flex-fill">
-Warning
+</figure>
 </div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The unmodified Visual Components 5.1 eCatalog file examined for this page stores the motor’s <code>Fault</code> property as <code>TRUE</code>, even though its initial state is <code>Running</code>. Check this value before using it as PLC feedback. This appears in both the downloaded eCatalog component and the copied <code>.vcmx</code> file, not only in the current layout.</p>
-</div>
-</div>
+<p>Keep the five template cylinders away from the transport path. After configuring the feeder, verify that the generated instances have the expected product type and appearance.</p>
+</section>
+<section id="configure-the-advanced-feeder" class="level2">
+<h2 class="anchored" data-anchor-id="configure-the-advanced-feeder">Configure the Advanced Feeder</h2>
+<p>Add an <strong>Advanced Feeder</strong> to the layout. Its position and connection are handled when you build the first sorting station. In the feeder’s component properties:</p>
+<ol type="1">
+<li>Set <code>CreationMode</code> to <code>Distribution</code>.</li>
+<li>Open the <code>DistributionBook</code> tab.</li>
+<li>Select <strong>Open in Editor</strong>.</li>
+<li>Keep the first two column headings exactly as <code>ProductType</code> and <code>Probability</code>.</li>
+<li>Copy the following CSV data into the editor:</li>
+</ol>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode ini code-with-copy"><code class="sourceCode ini"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">ProductType,Probability</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="dt">Cylinder_blue,23.75</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="dt">Cylinder_red,23.75</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">Cylinder_green,23.75</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="dt">Cylinder_purple,23.75</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="dt">Cylinder_grey,5.00</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The distribution is useful for repeated mixed-flow testing. While testing one route, you may temporarily increase the probability of the relevant product type instead of waiting for it to occur randomly. Restore the intended distribution before validating the complete system.</p>
+</section>
+<section id="build-and-configure-one-sorting-station" class="level2">
+<h2 class="anchored" data-anchor-id="build-and-configure-one-sorting-station">Build and configure one sorting station</h2>
+<p>Place an incoming Conveyor, one Pusher Conveyor, and one side Conveyor. Position the configured feeder at the beginning of the incoming Conveyor, then connect all compatible interfaces and check that the path directions are consistent. Leave enough straight path before the pusher for products to enter its detection region reliably.</p>
+<p>Configure the physical properties that should be common to every station, such as conveyor dimensions, height, and speed. On the Pusher Conveyor, set <code>RouteBy</code> to <code>RoutingRule</code>, open the <a href="https://help.visualcomponents.com/5.1/Premium/en/English/Component%20Modeling/Behaviors/Material%20Flow/Routing_Rule.htm"><code>RoutingRule</code> editor</a>, select <strong>Product Type Rule</strong>, and set the default connection to <code>Out</code>. Do not assign a product type yet.</p>
+<p>Run the simulation and confirm that products pass through the station without jumping, rotating unexpectedly, or becoming stuck at an interface. Correct the common settings before creating copies.</p>
+</section>
+<section id="duplicate-and-connect-the-sorting-stations" class="level2">
+<h2 class="anchored" data-anchor-id="duplicate-and-connect-the-sorting-stations">Duplicate and connect the sorting stations</h2>
+<p>Select the configured Pusher Conveyor together with its side Conveyor and duplicate the pair three times. Connect the straight <code>Out</code> interface of each Pusher Conveyor to the input of the next one, forming a line of four sorting stations. Add an ordinary conveyor after the final <code>Out</code> connection for the grey cylinders.</p>
+<p>Because the shared physical settings and the Product Type Rule were configured before duplication, only the station-specific routing now needs to be changed. Adjust spacing or conveyor lengths where needed, then run products through the complete line once with all four rules still using their default <code>Out</code> route.</p>
+</section>
+<section id="configure-run-control-for-the-ordinary-conveyors" class="level2">
+<h2 class="anchored" data-anchor-id="configure-run-control-for-the-ordinary-conveyors">Configure run control for the ordinary conveyors</h2>
+<p>Use one of the ordinary conveyors’ existing Boolean <code>PowerOnSignal</code> values as the shared run command:</p>
+<ol type="1">
+<li>Select an ordinary conveyor and show its component signals.</li>
+<li>Draw signal connections from its <code>PowerOnSignal</code> to the <code>PowerOnSignal</code> of each remaining ordinary conveyor.</li>
+<li>Use the selected conveyor’s signal as the single run command for the line.</li>
+</ol>
+<p>Change the shared value manually and verify that all connected paths start and stop together. Test this again after resetting the simulation. Some component behaviors react when a signal value changes, so explicitly toggle the command once rather than assuming that its initial value has already been applied.</p>
+<p>Do not connect this signal to the Pusher Conveyor’s <code>One-WayPath</code>. Its internal script temporarily stops and restarts that path while transferring a product. Connecting another signal to the same <code>Enabled</code> property would create two independent writers whose commands can overwrite one another.</p>
+<p>The shared signal provides one clear line-level command for the ordinary conveyors. It can later be mapped to the PLC without mapping those conveyors separately.</p>
+</section>
+<section id="configure-internal-pusher-routing" class="level2">
+<h2 class="anchored" data-anchor-id="configure-internal-pusher-routing">Configure internal pusher routing</h2>
+<p>The standard Pusher Conveyor contains internal logic that detects, attaches, moves, and transfers a product to the selected outgoing path. Use that complete behavior at each station:</p>
+<ol type="1">
+<li>At pusher 1, assign <code>Cylinder_blue</code> to <code>Pusher</code>.</li>
+<li>At pusher 2, assign <code>Cylinder_red</code> to <code>Pusher</code>.</li>
+<li>At pusher 3, assign <code>Cylinder_green</code> to <code>Pusher</code>.</li>
+<li>At pusher 4, assign <code>Cylinder_purple</code> to <code>Pusher</code>.</li>
+<li>Keep <code>Out</code> as the default connection in every rule so that all other product types continue to the next station.</li>
+</ol>
+<p>Do not replace this behavior by controlling only the visible pusher joint. The joint motion alone does not perform the product attachment and transfer between conveyor paths.</p>
+<p>Run the system until every product type has passed through the sorting line. Confirm that each coloured type leaves at its assigned side conveyor and that grey cylinders pass all four pushers and continue through the final outlet.</p>
 </section>
 </section>
-<section id="plc-connectivity" class="level1">
-<h1>PLC connectivity</h1>
+<section id="validate-the-internal-model" class="level1">
+<h1>Validate the internal model</h1>
+<p>Test the conveyor system incrementally and then run a longer mixed sequence. Verify that:</p>
 <ul>
-<li>in Codesys:
-<ul>
-<li>right click application &gt; Add Object &gt; Symbol Configuration</li>
-<li>build the application</li>
-<li>check the variables you want to expose through OPC UA</li>
-<li>Double click the device in the device tree &gt; Communication settings &gt; Device &gt; Change Runtime Security Policy &gt; activate <strong>allow for anonymous login</strong></li>
-<li>make sure SoftPLC is running, login, run application</li>
-</ul></li>
-<li>in Visual Components:
-<ul>
-<li>Configure the server:
-<ul>
-<li>Connectivity tab (while sim is reset) select OPC UA from the list and click add Server.</li>
-<li>the server name does not matter. the server address is opc.tcp://localhost:4840</li>
-<li>Use secure endpoint: no</li>
-<li>Authentication: None</li>
-<li>Test the connection. If successful, click Apply.</li>
-<li><strong>Connect to the server by clicking on the white circle icon next to the OPC UA server in the left sidebar</strong></li>
-</ul></li>
-<li>Map signals:
-<ul>
-<li>right click the simulation to server or server to simulation group and click add variables.</li>
-<li>Choose the signals you want to map</li>
-</ul></li>
-</ul></li>
+<li>the feeder creates all five product types with the intended appearance,</li>
+<li>the shared run signal starts and stops every ordinary conveyor path,</li>
+<li>products cross each conveyor interface reliably,</li>
+<li>every pusher completes its full extension, transfer, and retraction sequence,</li>
+<li>each coloured product enters its assigned side path,</li>
+<li>grey products continue through the straight path, and</li>
+<li>resetting and restarting the simulation produces repeatable behavior.</li>
 </ul>
+<p>Save this working version before adding the robot cell or external communication. It becomes the known-working conveyor plant used in the next project stage.</p>
+</section>
+<section id="checkpoint-before-robot-cell-integration" class="level1">
+<h1>Checkpoint before robot-cell integration</h1>
+<p>Before continuing to the robot cell, you should be able to demonstrate:</p>
+<ul>
+<li>the configured product types and feeder distribution,</li>
+<li>the complete conveyor layout in the <code>Conveyor system</code> sublayout,</li>
+<li>common start and stop behavior for the ordinary conveyors,</li>
+<li>correct internal routing at all four sorting stations, and</li>
+<li>repeatable operation after a simulation reset.</li>
+</ul>
+<p>Save a checkpoint copy of the layout and document the important component settings and tests. Use this copy to return to the independently working conveyor if a later integration change causes a problem.</p>
+</section>
+<section id="connect-the-robot-cell" class="level1">
+<h1>Connect the robot cell</h1>
+<p>Build the robot cell in the same VC file but initially leave space between the two sublayouts. The <a href="../pages/robot_cell.html#sec-cell-sublayouts">robot-cell instructions</a> explain how to create the <code>Robot cell</code> sublayout and develop it with a copied feeder that produces only grey cylinders. This avoids waiting for a rare grey part while robot poses and motions are being tested. Keep the original feeder and its mixed distribution unchanged; modify only the temporary copy in the robot-cell sublayout.</p>
+<p>After the robot-cell program works independently, follow <a href="../pages/robot_cell.html#sec-cell-integrate">Integrate the conveyor and robot-cell sublayouts</a> to remove the temporary feeder and connect the straight conveyor outlet to the robot pickup conveyor. Start the original mixed feeder again and confirm that the sorting stage removes the coloured products while grey cylinders reach the robot.</p>
+</section>
+<section id="external-control-boundary" class="level1">
+<h1>External control boundary</h1>
+<p>The internally controlled pusher is the required and testable starting point. The distinction between <a href="../pages/visual_components.html#sec-vc-external-control">internal VC control and external PLC control</a> is explained on the VC page, while the <a href="../pages/simulation.html#sec-virtual-commissioning">PLC-integration section</a> explains the wider purpose of connecting CODESYS and the simulation.</p>
+<p>In the robot cell’s external-control stage, map the shared <code>PowerOnSignal</code> to CODESYS so that the PLC starts and stops the ordinary conveyors. Product routing and the pusher’s local path control remain internal to VC. This adds PLC line control without introducing another pusher state machine.</p>
+<section id="possible-extension-plc-controlled-pushing" class="level2">
+<h2 class="anchored" data-anchor-id="possible-extension-plc-controlled-pushing">Possible extension: PLC-controlled pushing</h2>
+<p>Full PLC control of the push cycle requires a tested interface that requests one complete transfer and receives completion feedback. Directly commanding the pusher joint is not sufficient.</p>
+<p>Full PLC control of the push cycle is not part of the required stage. Treat it as an extension only after the required conveyor and robot-cell coordination works reliably.</p>
+</section>
+<section id="optional-signal-investigations" class="level2">
+<h2 class="anchored" data-anchor-id="optional-signal-investigations">Optional signal investigations</h2>
+<p>The internally routed model does not require an external colour signal. The following investigations are relevant only if you want to inspect the component in more detail or if a later PLC extension is assigned.</p>
+<p>To expose the Pusher Conveyor’s built-in product detector as a Boolean signal:</p>
+<ol type="1">
+<li>Add a <code>BooleanSignal</code> behavior named <code>PartDetected</code>.</li>
+<li>Open the <code>ComponentPathSensor</code> behavior.</li>
+<li>Set its <code>BoolSignal</code> property to <code>PartDetected</code>.</li>
+<li>Run products through the pusher and verify the signal transition.</li>
+</ol>
+<p>You can also investigate the <strong>Conveyor Sensor</strong> component’s RGB detection:</p>
+<ol type="1">
+<li>Add the sensor to an ordinary conveyor and reset the simulation.</li>
+<li>Open the sensor’s <code>RGB</code> properties and enable colour detection.</li>
+<li>Place one of the coloured template cylinders inside the detection area.</li>
+<li>Select <strong>Teach in color 1</strong>.</li>
+<li>Repeat for the remaining colours and observe the resulting outputs.</li>
+</ol>
+<p>The RGB sensor reads the simulated material in its detection area, not the product-type name. Therefore, verify its outputs with products generated by the feeder before using them in control logic. RGB detection does not replace the product-type routing used in the required model.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

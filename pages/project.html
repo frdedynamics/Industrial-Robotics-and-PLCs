@@ -1,2 +1,994 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"></html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Project – Industrial Robotics and PLCs</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/project.html">Project</a></li><li class="breadcrumb-item"><a href="../pages/project.html">Project</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Industrial Robotics and PLCs</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Robot Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automation with Robots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot Programming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot Safety</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/frames_poses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Frames and Poses</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/kinematics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinematics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Simulation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Simulation</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/visual_components.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visual Components</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Project</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/project.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Project</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/conveyor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conveyor System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot cell</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/further_reading.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Further Reading</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#project-purpose" id="toc-project-purpose" class="nav-link active" data-scroll-target="#project-purpose">Project purpose</a></li>
+  <li><a href="#production-task" id="toc-production-task" class="nav-link" data-scroll-target="#production-task">Production task</a></li>
+  <li><a href="#sec-project-architecture" id="toc-sec-project-architecture" class="nav-link" data-scroll-target="#sec-project-architecture">System architecture</a></li>
+  <li><a href="#development-stages" id="toc-development-stages" class="nav-link" data-scroll-target="#development-stages">Development stages</a></li>
+  <li><a href="#required-scope-and-extensions" id="toc-required-scope-and-extensions" class="nav-link" data-scroll-target="#required-scope-and-extensions">Required scope and extensions</a></li>
+  <li><a href="#provided-plc-reference-programs" id="toc-provided-plc-reference-programs" class="nav-link" data-scroll-target="#provided-plc-reference-programs">Provided PLC reference programs</a></li>
+  <li><a href="#sec-project-evaluation" id="toc-sec-project-evaluation" class="nav-link" data-scroll-target="#sec-project-evaluation">Evaluate the simulated system</a></li>
+  <li><a href="#sec-project-safety-review" id="toc-sec-project-safety-review" class="nav-link" data-scroll-target="#sec-project-safety-review">Preliminary safety review</a></li>
+  <li><a href="#submission" id="toc-submission" class="nav-link" data-scroll-target="#submission">Submission</a></li>
+  <li><a href="#sec-project-report" id="toc-sec-project-report" class="nav-link" data-scroll-target="#sec-project-report">Writing the report</a></li>
+  <li><a href="#relation-to-the-physical-cell" id="toc-relation-to-the-physical-cell" class="nav-link" data-scroll-target="#relation-to-the-physical-cell">Relation to the physical cell</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/project.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/project.html">Project</a></li><li class="breadcrumb-item"><a href="../pages/project.html">Project</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Project</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="project-purpose" class="level1">
+<h1>Project purpose</h1>
+<p>This individual project brings together the main topics of the course in one simulated production system. You will model material flow and a robot cell in Visual Components (VC), program the robot, develop the coordinating PLC program in CODESYS, and connect the two systems through OPC UA. The project runs alongside the course so that concepts can be applied as they are introduced.</p>
+<p>The objective is not only to make the simulation move. You should develop a clear control structure, test it systematically, and use observations from the working system to evaluate your design. The project therefore combines implementation with engineering reasoning: what belongs in the PLC, what belongs in VC or the robot program, how the controllers coordinate, how you know that the system works, and what limits its performance.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Project at a glance</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Submission</td>
+<td>Individual</td>
+</tr>
+<tr class="even">
+<td>Deadline</td>
+<td>30 November</td>
+</tr>
+<tr class="odd">
+<td>Project report</td>
+<td>50% of the final course grade</td>
+</tr>
+<tr class="even">
+<td>Oral examination</td>
+<td>50% of the final course grade</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="production-task" class="level1">
+<h1>Production task</h1>
+<p>The complete system sorts a mixture of coloured and grey cylinders. Four pusher stations route the coloured products to separate outgoing conveyors. Grey cylinders continue to a robot cell, where a robot loads each cylinder into a CNC mill, waits for machining, unloads it, and places the finished part on an outgoing conveyor.</p>
+<p>Develop the system in two connected parts:</p>
+<ol type="1">
+<li>Follow the <a href="../pages/conveyor.html">conveyor-system project</a> to build and verify the product generation, transport, and sorting.</li>
+<li>Follow the <a href="../pages/robot_cell.html">robot-cell project</a> to design the cell, program and test the robot, connect the sublayouts, and introduce PLC coordination.</li>
+</ol>
+<p>The detailed pages guide you through the work in a useful development order. They define required behavior and interfaces, but many decisions about layout, robot motions, program organization, and implementation remain yours.</p>
+</section>
+<section id="sec-project-architecture" class="level1">
+<h1>System architecture</h1>
+<p><a href="#fig-project-architecture" class="quarto-xref">Figure&nbsp;1</a> focuses on where the two programs run and which control data passes between them. The PLC application runs in CODESYS Control Win SL, while Visual Components represents the plant and executes the robot program. The arrows show commands and feedback communicated through OPC UA; they do not represent the movement of products through the cell.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-project-architecture" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-project-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-project-architecture">flowchart LR
+    PLC["CODESYS Control Win SL&lt;br/&gt;&lt;br/&gt;PLC state machine&lt;br/&gt;Overall cell coordination&lt;br/&gt;OPC UA server"]
+    VC["Visual Components&lt;br/&gt;&lt;br/&gt;OPC UA client&lt;br/&gt;Simulated equipment&lt;br/&gt;Robot program&lt;br/&gt;Local pusher behavior"]
+
+    PLC --&gt;|"Robot-operation command&lt;br/&gt;Conveyor run command&lt;br/&gt;CNC actuator requests"| VC
+    VC --&gt;|"Robot operation state&lt;br/&gt;Pickup-sensor state&lt;br/&gt;CNC feedback"| PLC
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-project-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Runtime architecture and control-data flow. CODESYS Control Win SL and Visual Components run separate programs and exchange commands and feedback through OPC UA.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The required control boundary is:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>System</th>
+<th>Required responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PLC</td>
+<td>Start and stop the ordinary conveyors, evaluate the robot-cell pickup sensor, coordinate CNC operation, request robot operations, and control the overall sequence.</td>
+</tr>
+<tr class="even">
+<td>Robot program in VC</td>
+<td>Execute complete robot operations, including motions and gripper actions, and report the operation state to the PLC.</td>
+</tr>
+<tr class="odd">
+<td>VC component behavior</td>
+<td>Simulate products, conveyors, sensors, CNC behavior, and the local sorting and transfer behavior of the pusher conveyors.</td>
+</tr>
+<tr class="even">
+<td>OPC UA interface</td>
+<td>Transfer the defined commands, states, actuator requests, and feedback between CODESYS and VC.</td>
+</tr>
+</tbody>
+</table>
+<p>The PLC and robot program are two interacting state machines. They coordinate through a persistent command handshake rather than short signal pulses. The required interface and sequence are defined in <a href="../pages/robot_cell.html#two-interacting-state-machines">Two interacting state machines</a> and <a href="../pages/robot_cell.html#required-command-handshake">Required command handshake</a>.</p>
+</section>
+<section id="development-stages" class="level1">
+<h1>Development stages</h1>
+<p>Build and test the system incrementally. Each stage should provide a known-working starting point for the next one.</p>
+<ol type="1">
+<li><strong>Conveyor system:</strong> build the conveyor sublayout and verify product generation, common run control, and internal sorting.</li>
+<li><strong>Robot cell:</strong> build the separate robot-cell sublayout and verify the complete robot and CNC sequence using internal VC control.</li>
+<li><strong>Integrated VC model:</strong> connect the two sublayouts and verify the complete material flow before introducing external communication.</li>
+<li><strong>PLC coordination:</strong> develop the PLC state machine, implement the robot command interface, map the required variables through OPC UA, and commission one operation at a time.</li>
+<li><strong>System evaluation:</strong> verify repeatable operation, investigate the performance of the complete system, and reflect on the resulting design.</li>
+</ol>
+<p>Keep checkpoint copies after the independently working conveyor, robot-cell, and integrated VC stages. This makes later communication or control problems easier to isolate.</p>
+</section>
+<section id="required-scope-and-extensions" class="level1">
+<h1>Required scope and extensions</h1>
+<p>The required project includes:</p>
+<ul>
+<li>a functional conveyor and robot-cell model in one VC layout;</li>
+<li>internal VC validation before external control is introduced;</li>
+<li>PLC coordination of the robot cell;</li>
+<li>PLC start and stop control of the ordinary conveyors;</li>
+<li>an OPC UA interface with documented signal directions;</li>
+<li>repeatable execution of the complete production sequence;</li>
+<li>a small performance study; and</li>
+<li>a preliminary safety review of the proposed cell.</li>
+</ul>
+<p>You receive a library containing PLC elements that may be reused, but no project-specific starter program. Select, adapt, and integrate reusable parts only where they fit your own program structure.</p>
+<p>The pusher system will be familiar from the CODESYS conveyor exercise: a workpiece is detected and a sequence moves it from the main conveyor to the correct side conveyor. In the required VC model, this sequence is not executed by your PLC program. Each standard Pusher Conveyor component is instead configured in VC to recognize one product type and complete the entire diversion. Products of other types continue straight to the next station. This is what <strong>internal sorting and transfer behavior</strong> means in this project.</p>
+<p>This control boundary also reflects a technical limitation of the standard VC component. An ordinary conveyor provides a simple run input, but the Pusher Conveyor does not provide a corresponding external command and completion signal for its complete product-transfer cycle. Additional interface logic would therefore be needed before a PLC could control that cycle reliably.</p>
+<p>The CODESYS exercise can still help you reason about the sequence while setting up and testing the VC-internal behavior, but its PLC controller and I/O are not reused in the project. Full PLC control of the pusher sequence is therefore not required. The following are possible extensions after the required system works:</p>
+<ul>
+<li>PLC control of the complete pusher sequence;</li>
+<li>an operator HMI;</li>
+<li>timeout monitoring and diagnostic messages; and</li>
+<li>fault detection and recovery sequences.</li>
+</ul>
+<p>An extension should solve a clear problem and be tested. Additional features do not compensate for an unreliable required sequence or an unexplained control design.</p>
+</section>
+<section id="provided-plc-reference-programs" class="level1">
+<h1>Provided PLC reference programs</h1>
+<p>You will receive CODESYS reference programs that can be inspected for examples of PLC program structure, state-based control, and visualization. They are not starter programs for the project and do not represent the required final HMI or the final VC layout.</p>
+<p><a href="#fig-codesys-transport-reference" class="quarto-xref">Figure&nbsp;2</a> shows the visualization supplied with the conveyor exercise. Its sensors, motors, and pushers provide a useful reference for understanding the sorting sequence and how it can be divided into control states. In the project, however, the detailed pusher sequence runs inside the standard VC components. The exercise’s PLC controller is not connected to the VC model, and its actuators and I/O do not directly match the project system.</p>
+<div id="fig-codesys-transport-reference" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-codesys-transport-reference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/codesys_transport_viz.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;2: Visualization supplied with the conveyor reference program."><img src="img/codesys_transport_viz.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-codesys-transport-reference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Visualization supplied with the conveyor reference program.
+</figcaption>
+</figure>
+</div>
+<p>The robot-cell exercise continues the same example, as shown in <a href="#fig-codesys-robot-reference" class="quarto-xref">Figure&nbsp;3</a>. Grey products that were not removed by a pusher are handled by a robot in a simple machine-tending process. This makes the exercise useful for studying how a PLC can coordinate conveyors, a robot, and a gripper. Its simulated cell, robot operations, and I/O differ from the VC project, however, so its controller is a conceptual reference rather than a program to reuse directly.</p>
+<div id="fig-codesys-robot-reference" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-codesys-robot-reference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/codesys_robot_viz.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;3: Visualization supplied with the CODESYS robot-cell exercise."><img src="img/codesys_robot_viz.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-codesys-robot-reference-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Visualization supplied with the CODESYS robot-cell exercise.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-project-evaluation" class="level1">
+<h1>Evaluate the simulated system</h1>
+<p>Once the complete PLC-controlled system operates repeatedly, use the simulation to answer a focused engineering question: <strong>What currently limits the output of the production system, and what change could improve it?</strong></p>
+<p>Use the mixed product distribution to verify sorting and integration. For the performance study, use a controlled supply of grey parts so that random and infrequent arrivals do not dominate the behavior of the robot cell. State the simulation condition and record only:</p>
+<ol type="1">
+<li>the production rate of finished parts; and</li>
+<li>how the robot and CNC divide their time between working and waiting.</li>
+</ol>
+<p>These two measurements are sufficient to investigate whether the robot, CNC, or supply of parts is limiting the system. A queue length, part waiting time, or detailed robot cycle time may be included when it helps explain the result, but it is not an additional required measurement.</p>
+<p>Use the VC Statistics dashboard or appropriate Statistics behaviors to obtain the measurements. The <a href="https://help.visualcomponents.com/5.1/Premium/en/English/Component%20Modeling/Behaviors/Misc/Statistics.htm">Visual Components statistics documentation</a> and <a href="https://academy.visualcomponents.com/app/uploads/2021/02/Using-Statistics-Templates.pdf">statistics-template guide</a> describe available production-rate, utilization, state, part-count, and part-time statistics.</p>
+<p>Then choose one realistic change, state what effect you expect, and repeat the test under comparable conditions. For example, the change could concern robot placement, a motion path, process timing, conveyor speed, or buffering. Change only what is needed to test your explanation. A detailed statistical study is not required.</p>
+<p>Do not treat maximum robot utilization as the objective. A robot may wait because the CNC is the bottleneck, and making the robot faster may then have no effect on production. Support a bottleneck claim by showing where repeated waiting or queueing occurs and whether the tested change affects total output. Discuss what the measurements say about the complete system rather than presenting numbers without interpretation. The distinction between robot-level and production-level simulation is developed in <a href="../pages/simulation.html#cell-and-production-flow-simulation">Cell and production-flow simulation</a>.</p>
+<p>For a brief business perspective, convert the measured production rate into an estimated output per shift. Explain whether this would meet a stated production target or, if no target is available, what target would be needed to judge the capacity. Also identify information that simulation throughput alone cannot provide, such as investment cost, demand, staffing, maintenance, availability, or quality losses. A complete profitability calculation is not required.</p>
+<p>Connect the evaluation to Lean Robotics by distinguishing time spent machining, handling or transporting, and waiting based on your measurements and observations; no additional time study is required. Explain whether the tested change reduces waiting, unnecessary movement, or work in progress, and note any trade-offs. The role of simulation across a Lean Robotics project is introduced in <a href="../pages/simulation.html#simulation-through-a-lean-robotics-project">Simulation through a Lean Robotics project</a>.</p>
+</section>
+<section id="sec-project-safety-review" class="level1">
+<h1>Preliminary safety review</h1>
+<p>The project does not require a complete risk assessment. Instead, identify two or three hazardous situations in your proposed cell. Include at least one from normal automatic operation and one from an intervention such as teaching, clearing a blocked or dropped part, cleaning, or maintenance.</p>
+<p>For each situation, briefly record:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Task or situation</th>
+<th>Hazard and possible harm</th>
+<th>Proposed measure</th>
+<th>What can be checked in simulation?</th>
+<th>What requires physical verification?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Example: clearing a part at the CNC</td>
+<td>Complete with your application-specific reasoning.</td>
+<td>Complete</td>
+<td>Complete</td>
+<td>Complete</td>
+</tr>
+</tbody>
+</table>
+<p>Mark the relevant locations in a screenshot of your layout and explain at least one design or safeguarding decision. Do not assign numerical risk scores or conclude that the simulated cell has been validated as safe. The purpose is to demonstrate task-based safety reasoning and to distinguish what a simulation can show from what must be assessed and validated on real equipment. Use the <a href="../pages/robot_safety.html#sec-risk-assessment">robot-safety process</a> and its Universal Robots e-learning activity as preparation.</p>
+</section>
+<section id="submission" class="level1">
+<h1>Submission</h1>
+<p>Submit the individual report together with the VC layout and CODESYS project. The technical project files make the result reproducible, while the report must show your own understanding and evaluation of the work.</p>
+<p>Your implementation evidence should include:</p>
+<ul>
+<li>the internally validated conveyor and robot-cell behavior;</li>
+<li>the final PLC-controlled sequence;</li>
+<li>the PLC and robot state-machine structures;</li>
+<li>the OPC UA I/O list with signal directions;</li>
+<li>the tests used to verify important operations and interfaces; and</li>
+<li>the results of the performance study and preliminary safety review.</li>
+</ul>
+</section>
+<section id="sec-project-report" class="level1">
+<h1>Writing the report</h1>
+<p>The report should explain and evaluate the solution, not reproduce every mouse click or list the work in the order you completed it. Organize it around the engineering questions below. You may choose your own chapter structure as long as the reasoning remains easy to follow.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Engineering question</th>
+<th>What the report should communicate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>What problem does the system solve?</td>
+<td>Summarize the required material flow, important constraints, and your completed concept. Do not repeat the full project instructions.</td>
+</tr>
+<tr class="even">
+<td>Why was the cell designed this way?</td>
+<td>Explain the layout and equipment decisions that most affected reachability, flow, control, or safety. Discuss meaningful alternatives or trade-offs rather than every placement step.</td>
+</tr>
+<tr class="odd">
+<td>How is the system controlled?</td>
+<td>Explain the division of responsibility between PLC, robot program, and VC components. Use state diagrams and the I/O contract to make the coordination and handshake understandable.</td>
+</tr>
+<tr class="even">
+<td>How do you know that it works?</td>
+<td>Present selected tests and results for normal operation, interfaces, and important boundary conditions. Explain what each test establishes; screenshots alone are not test results.</td>
+</tr>
+<tr class="odd">
+<td>What limits its performance?</td>
+<td>Interpret the required measurements, identify the likely bottleneck, and compare the original system with one justified change. Relate the result to production flow and Lean Robotics.</td>
+</tr>
+<tr class="even">
+<td>What are the important safety concerns?</td>
+<td>Present the preliminary safety review and distinguish simulated checks from measures that require a physical assessment and validation.</td>
+</tr>
+<tr class="odd">
+<td>What did you learn from the result?</td>
+<td>Discuss limitations, assumptions, unexpected behavior, decisions you would change, and the next improvement you would prioritize. Be specific to your system.</td>
+</tr>
+</tbody>
+</table>
+<p>Use diagrams, tables, plots, and screenshots when they provide evidence or make the design easier to understand. Introduce each item in the text and explain what the reader should notice. Avoid long software walkthroughs, collections of uninterpreted screenshots, and descriptions of routine actions that do not support an engineering decision. Complete code, detailed I/O tables, and extensive test records can be placed in appendices.</p>
+<p>The report is evaluated primarily on:</p>
+<ul>
+<li>correct and repeatable system behavior;</li>
+<li>a coherent control architecture and interface;</li>
+<li>justified design and implementation decisions;</li>
+<li>appropriate verification and use of evidence;</li>
+<li><strong>interpretation, critical reflection, and awareness of limitations;</strong> and</li>
+<li>clear technical communication.</li>
+</ul>
+</section>
+<section id="relation-to-the-physical-cell" class="level1">
+<h1>Relation to the physical cell</h1>
+<p>Course activities may use a physical robot cell with related automation concepts. The physical layout, robot program, controller interfaces, and I/O can differ from the simulated project, so the VC programs and signal mappings should not be expected to transfer directly. The transferable learning is the method: divide responsibilities, define interfaces, program meaningful robot operations, commission incrementally, and verify behavior. Work on the physical cell is not part of the project assessment.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/frdedynamics\.github\.io\/Industrial-Robotics-and-PLCs\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/project.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

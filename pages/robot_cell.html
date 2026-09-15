@@ -197,6 +197,12 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../pages/project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Project</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../pages/conveyor.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Conveyor System</span></a>
   </div>
@@ -245,7 +251,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#use-meaningful-subroutines" id="toc-use-meaningful-subroutines" class="nav-link" data-scroll-target="#use-meaningful-subroutines">Use meaningful subroutines</a></li>
   <li><a href="#validate-before-continuing" id="toc-validate-before-continuing" class="nav-link" data-scroll-target="#validate-before-continuing">Validate before continuing</a></li>
   <li><a href="#moving-equipment-after-teaching-positions" id="toc-moving-equipment-after-teaching-positions" class="nav-link" data-scroll-target="#moving-equipment-after-teaching-positions">Moving equipment after teaching positions</a></li>
-  <li><a href="#integrate-the-conveyor-and-robot-cell-sublayouts" id="toc-integrate-the-conveyor-and-robot-cell-sublayouts" class="nav-link" data-scroll-target="#integrate-the-conveyor-and-robot-cell-sublayouts">Integrate the conveyor and robot-cell sublayouts</a></li>
+  <li><a href="#sec-cell-integrate" id="toc-sec-cell-integrate" class="nav-link" data-scroll-target="#sec-cell-integrate">Integrate the conveyor and robot-cell sublayouts</a></li>
   </ul></li>
   <li><a href="#sec-cell-external-control" id="toc-sec-cell-external-control" class="nav-link" data-scroll-target="#sec-cell-external-control">Stage 2: external PLC control</a>
   <ul class="collapse">
@@ -495,14 +501,14 @@ Provide the cell boundary and visual context; use the Fence and Wall Builder whe
 <h1>Build the simulated cell</h1>
 <section id="sec-cell-sublayouts" class="level2">
 <h2 class="anchored" data-anchor-id="sec-cell-sublayouts">Organize the project with sublayouts</h2>
-<p>Build the robot cell in the same VC file as the completed conveyor system, but do not connect the two systems yet. First save a copy of the working conveyor layout so that the original remains available as a tested backup. Place the new robot cell some distance away from the conveyor system, with enough empty space that the two material flows remain clearly separate during development.</p>
-<p>In the <strong>Layouts</strong> tab of the Cell Graph, create two sublayouts named <code>Conveyor system</code> and <code>Robot cell</code>. Move the existing conveyor components into the first sublayout. The components for the new cell are moved into the second sublayout after their initial placement.</p>
+<p>Build the robot cell in the same VC file as the completed conveyor system, but do not connect the two systems yet. Begin from the conveyor checkpoint and keep its saved copy unchanged as a tested backup. Place the new robot cell some distance away from the conveyor system, with enough empty space that the two material flows remain clearly separate during development.</p>
+<p>The <a href="../pages/conveyor.html#sec-conveyor-sublayout">conveyor-system instructions</a> create a <code>Conveyor system</code> sublayout. Confirm that the completed conveyor components are assigned to it, then create a second sublayout named <code>Robot cell</code>. Components for the new cell are moved into this second sublayout after their initial placement.</p>
 <p>The roles of the Cell Graph, components, and sublayouts are introduced in <a href="../pages/visual_components.html#sec-vc-layouts-components">Layouts and components</a>. This structure keeps the complete system in one simulation while making each section easier to select, move, copy, and inspect. The linked section also contains the relevant VC Academy lesson. Sublayout visibility is an organizational aid; hiding a sublayout does not replace disconnecting or stopping components when you want to test only one part of the system.</p>
 </section>
 <section id="design-the-robot-cell" class="level2">
 <h2 class="anchored" data-anchor-id="design-the-robot-cell">Design the robot cell</h2>
 <p>Start with the Simple Robot Pedestal and the KUKA robot. Place the pedestal in the 3D world and position the robot on top; you can use the attach tool to be able to move them together. The height of the pedestal can be adjusted as needed, and it is part of the cell design: it determines whether the robot can approach the conveyor and CNC at useful joint configurations, not only whether the TCP can reach them at all.</p>
-<p>Next, add a short incoming conveyor and place a Conveyor Sensor close to its downstream end. This sensor defines the repeatable pickup location. Copy and paste the Advanced Feeder that is already configured in the conveyor system, and configure the copy to generate only grey cylinders by removing the other product variants. This provides test parts immediately while the robot cell is developed on its own.</p>
+<p>Next, add a short incoming conveyor and place a Conveyor Sensor close to its downstream end. This sensor defines the repeatable pickup location. Copy and paste the Advanced Feeder that is already configured in the conveyor system, and configure only this copy to generate grey cylinders. Keep the original mixed feeder unchanged in the <code>Conveyor system</code> sublayout. The temporary feeder provides test parts immediately while the robot cell is developed on its own.</p>
 <p>Place the CNC mill and outgoing conveyor provisionally. Their first positions do not need to be final. Leave enough room to open and access the CNC door, and provide clearance for the gripper, workpiece, and approach and retract motions.</p>
 <p>The final cell layout is your design decision, and there is no prescribed arrangement. Among the choices are the relative positions and orientations of the robot, conveyors, CNC mill, and access areas. For example, the conveyors could be arranged in line or at an angle, and the CNC mill could be placed beside the robot or across from the conveyors. These are only starting points; you may develop another arrangement that gives a good combination of robot reach, clear motion paths, material flow, and access to the equipment.</p>
 <section id="check-reachability-and-clearance" class="level3">
@@ -654,9 +660,9 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 <p>If you must relocate or rotate the robot after teaching positions, change <strong>Lock Positions</strong> from <strong>To reference</strong> to <strong>To World</strong> before moving it. Change the setting back afterwards. This holds the taught poses fixed in the world while the robot base moves.</p>
 <p>For equipment-relative tasks, consider defining robot base frames on the relevant equipment instead. A pose defined relative to a CNC fixture then moves with that fixture, which can make later layout changes easier. Choose the method that reflects which physical relationship should remain fixed.</p>
 </section>
-<section id="integrate-the-conveyor-and-robot-cell-sublayouts" class="level2">
-<h2 class="anchored" data-anchor-id="integrate-the-conveyor-and-robot-cell-sublayouts">Integrate the conveyor and robot-cell sublayouts</h2>
-<p>After the internally controlled robot program works reliably with the temporary feeder, connect the two subsystems. Disconnect or remove the robot cell’s feeder, move the <code>Conveyor system</code> and <code>Robot cell</code> sublayouts together, and connect the appropriate conveyor paths. Reintroduce the mixed product flow only after this connection is working.</p>
+<section id="sec-cell-integrate" class="level2">
+<h2 class="anchored" data-anchor-id="sec-cell-integrate">Integrate the conveyor and robot-cell sublayouts</h2>
+<p>After the internally controlled robot program works reliably with the temporary feeder, connect the two subsystems. Disconnect or remove the robot cell’s feeder, move the <code>Conveyor system</code> and <code>Robot cell</code> sublayouts together, and connect the appropriate conveyor paths. Start the original mixed feeder in the <code>Conveyor system</code> sublayout only after this connection is working.</p>
 <p>Run the complete material flow again before adding PLC control. Check not only whether the robot cycle still runs, but also whether parts queue at the expected locations, whether upstream conveyors become blocked, and whether the timing between part arrival, conveyor stopping, and robot pickup remains reliable.</p>
 </section>
 </section>
@@ -678,7 +684,7 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 <tbody>
 <tr class="odd">
 <td>PLC</td>
-<td>Conveyor control, pickup-sensor evaluation, CNC door and process control, overall operation order, and later timeout or fault handling.</td>
+<td>Run and stop control for the ordinary conveyors, pickup-sensor evaluation, CNC door and process control, and overall operation order. Product routing and the complete pusher transfer remain internal to VC; timeout and fault handling are optional extensions.</td>
 </tr>
 <tr class="even">
 <td>Robot program</td>
@@ -686,7 +692,7 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 </tr>
 </tbody>
 </table>
-<p>The gripper remains under robot control because its actions are tightly coupled to the pick and place motions. The conveyor and CNC are separate cell equipment and therefore belong to the PLC sequence.</p>
+<p>The gripper remains under robot control because its actions are tightly coupled to the pick and place motions. The PLC sequence controls the ordinary conveyor run command and CNC equipment, while the Pusher Conveyor retains its internal routing and transfer behavior.</p>
 <p>Remove the direct conveyor-sensor and CNC connections from the active robot program. Retain the local robot-to-gripper connections. Keep the internally controlled routine as a tested reference while developing a separate PLC-controlled main routine.</p>
 <section id="two-interacting-state-machines" class="level2">
 <h2 class="anchored" data-anchor-id="two-interacting-state-machines">Two interacting state machines</h2>
@@ -703,7 +709,7 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 <pre class="mermaid mermaid-js">flowchart LR
     PLC[PLC cell FSM]
     ROBOT[VC robot FSM]
-    CONVEYOR[Conveyor and sensor]
+    CONVEYOR[Ordinary conveyors and pickup sensor]
     CNC[CNC mill]
     ROUTINES[Robot subroutines]
 
@@ -855,6 +861,11 @@ Tip
 <pre class="text"><code>opc.tcp://localhost:4840</code></pre>
 <p>VC acts as the OPC UA client. Use separate Connectivity variable groups for values sent in each direction.</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>PLC variable</th>
@@ -870,7 +881,7 @@ Tip
 </tr>
 <tr class="even">
 <td><code>xConveyorRun</code></td>
-<td>Conveyor <code>PowerOnSignal</code></td>
+<td>Shared <code>PowerOnSignal</code> for the ordinary conveyors</td>
 <td>PLC to VC</td>
 </tr>
 <tr class="odd">
@@ -950,7 +961,8 @@ Tip
 </ul>
 <p>The externally controlled solution shall satisfy these acceptance criteria:</p>
 <ul>
-<li>the PLC, not the robot, coordinates the conveyor and CNC,</li>
+<li>the PLC, not the robot, coordinates ordinary conveyor motion and the CNC,</li>
+<li>the Pusher Conveyor retains its tested internal routing and transfer behavior,</li>
 <li>the robot accepts only defined operation commands,</li>
 <li>every command follows the specified acknowledgement handshake,</li>
 <li>robot commands are held until acknowledged rather than sent as short pulses,</li>
@@ -959,7 +971,7 @@ Tip
 <li>the robot and gripper finish each requested operation in a predictable state, and</li>
 <li>the complete material flow repeats without manual intervention.</li>
 </ul>
-<p>Develop the normal sequence first. Add timeouts and fault recovery only after the nominal cycle and communication interface are stable.</p>
+<p>Develop the normal sequence first. Timeouts and fault recovery are optional extensions and should be added only after the nominal cycle and communication interface are stable.</p>
 
 
 </section>
