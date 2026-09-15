@@ -31,12 +31,14 @@ website:
           
       - section: Simulation
         contents: 
-          - pages/simulation.qmd
+          - text: "Overview"
+            href: pages/simulation.qmd
           - pages/visual_components.qmd
 
       - section: Project
         contents: 
-          - pages/project.qmd
+          - text: "Overview"
+            href: pages/project.qmd
           - pages/conveyor.qmd
           - pages/robot_cell.qmd   
           

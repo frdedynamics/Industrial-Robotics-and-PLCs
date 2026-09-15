@@ -1,5 +1,5 @@
 ---
-title: Project
+title: Integrated Automation Project
 draft: false
 ---
 
