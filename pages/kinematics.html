@@ -222,7 +222,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Simulation</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -245,7 +245,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/project.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Project</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -284,6 +284,8 @@ window.Quarto = {
   <li><a href="#robot-models-and-dh-parameters" id="toc-robot-models-and-dh-parameters" class="nav-link" data-scroll-target="#robot-models-and-dh-parameters">Robot models and DH parameters</a></li>
   <li><a href="#inverse-kinematics" id="toc-inverse-kinematics" class="nav-link" data-scroll-target="#inverse-kinematics">Inverse kinematics</a>
   <ul class="collapse">
+  <li><a href="#sec-workspace-types" id="toc-sec-workspace-types" class="nav-link" data-scroll-target="#sec-workspace-types">Reachable and dexterous workspace</a></li>
+  <li><a href="#multiple-inverse-kinematic-solutions" id="toc-multiple-inverse-kinematic-solutions" class="nav-link" data-scroll-target="#multiple-inverse-kinematic-solutions">Multiple inverse-kinematic solutions</a></li>
   <li><a href="#sec-redundancy-nullspace" id="toc-sec-redundancy-nullspace" class="nav-link" data-scroll-target="#sec-redundancy-nullspace">Redundancy and nullspace</a></li>
   </ul></li>
   <li><a href="#path-trajectory-and-movement-type" id="toc-path-trajectory-and-movement-type" class="nav-link" data-scroll-target="#path-trajectory-and-movement-type">Path, trajectory, and movement type</a></li>
@@ -414,9 +416,17 @@ Figure&nbsp;1: Machine tending with a KUKA KR AGILUS robot. Image source: <a hre
 <li>There may be several solutions for the same TCP pose.</li>
 <li>A mathematical solution may violate joint limits or collide with equipment.</li>
 </ul>
+<section id="sec-workspace-types" class="level2">
+<h2 class="anchored" data-anchor-id="sec-workspace-types">Reachable and dexterous workspace</h2>
+<p>The word <strong>workspace</strong> needs some qualification. The <strong>reachable workspace</strong> is the set of positions that the selected robot point, such as the flange or TCP, can reach with at least one orientation and robot configuration. A workspace profile or work envelope normally provides this kind of position-based overview.</p>
+<p>The <strong>dexterous workspace</strong> is smaller: at every position in this region, the robot can also achieve all possible tool orientations. A point can therefore be inside the reachable workspace while the robot is unable to hold the tool at the orientation required by the task.</p>
+<p>Most industrial tasks do not require every possible orientation. They require specific poses and approach directions for operations such as gripping, welding, or machine loading. The useful task workspace is therefore determined by the required TCP poses, the mounted tool and workpiece, joint limits, singularities, and surrounding equipment. A position-only workspace profile is good initial guidance, but it cannot by itself prove that the task is feasible.</p>
+</section>
+<section id="multiple-inverse-kinematic-solutions" class="level2">
+<h2 class="anchored" data-anchor-id="multiple-inverse-kinematic-solutions">Multiple inverse-kinematic solutions</h2>
 <p>The second point is especially important in industrial robotics. A six-axis arm can often reach the same TCP pose with different shoulder, elbow, and wrist configurations. On a planar arm this appears as an elbow-up or elbow-down solution. On a real robot, the equivalent configuration choices can decide whether the robot avoids a fixture, stays away from a singularity, or approaches the part from the correct side.</p>
 <p>The demo below uses a three-joint planar arm to control a three-coordinate planar TCP pose: <code>x</code>, <code>y</code>, and tool angle. In that sense, the example is non-redundant: there are three joint variables available and three task coordinates to control. Still, non-redundant does not always mean unique. The geometry can give a small number of separate inverse kinematics solutions.</p>
-<p>In the demo, this appears as the <code>Elbow down</code> and <code>Elbow up</code> buttons. The TCP pose is the same, but the joint solution is different. This is a discrete switch between solution branches. It is different from redundancy and nullspace motion, which are discussed in <a href="#sec-redundancy-nullspace" class="quarto-xref">Section&nbsp;5.1</a>.</p>
+<p>In the demo, this appears as the <code>Elbow down</code> and <code>Elbow up</code> buttons. The TCP pose is the same, but the joint solution is different. This is a discrete switch between solution branches. It is different from redundancy and nullspace motion, which are discussed in <a href="#sec-redundancy-nullspace" class="quarto-xref">Section&nbsp;5.3</a>.</p>
 <p>The cross is the desired TCP pose. Drag it to a new position and the robot solves for joint angles that move the TCP toward that goal. The small delay is intentional: it shows that the robot is not being dragged directly; an inverse kinematics calculation is being performed between the target pose and the joint angles. Move the target toward the edge of the workspace and the demo will indicate when the requested pose is not reachable. The demo only checks reach and joint geometry; it does not check for self-collision or collision with external equipment.</p>
 <div id="kinematics-ik-demo" class="kinematics-demo"></div>
 <noscript><p>JavaScript is required to use the inverse kinematics demo.</p></noscript>
@@ -431,6 +441,7 @@ q_solution, status = inverse_kinematics(
     configuration="elbow_down"
 )</code></pre>
 <p>The returned <code>q_solution</code> is a set of joint positions. The <code>status</code> tells whether the solver found an acceptable solution.</p>
+</section>
 <section id="sec-redundancy-nullspace" class="level2">
 <h2 class="anchored" data-anchor-id="sec-redundancy-nullspace">Redundancy and nullspace</h2>
 <p>It is useful to relate inverse kinematics to the number of independent joint motions available for the task:</p>

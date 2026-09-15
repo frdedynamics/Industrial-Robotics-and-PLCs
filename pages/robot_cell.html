@@ -175,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Simulation</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -198,7 +198,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/project.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Project</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -515,6 +515,7 @@ Provide the cell boundary and visual context; use the Fence and Wall Builder whe
 <h3 class="anchored" data-anchor-id="check-reachability-and-clearance">Check reachability and clearance</h3>
 <p>The <a href="../pages/visual_components.html#sec-vc-robot-analysis">VC reachability overview</a> explains how workspace profiles, jogging, joint checks, and collision detection complement one another.</p>
 <p>Use the robot’s <code>WorkSpace2D</code> or <code>WorkSpace3D</code> component properties to display its approximate workspace, also called its work envelope. Use this envelope as rough guidance for the initial cell layout and for estimating basic distances between the robot, conveyors, and CNC mill. <a href="#fig-agilus-workspace" class="quarto-xref">Figure&nbsp;1</a> shows the <code>WorkSpace2D</code> profile around the Agilus robot used in this project. The linked VC overview contains the relevant Academy lessons.</p>
+<p>This profile approximates position reach; it does not prove that the robot can achieve the required tool orientation at every point. The distinction between <a href="../pages/kinematics.html#sec-workspace-types">reachable and dexterous workspace</a> explains why checking the complete task poses is necessary.</p>
 <div id="fig-agilus-workspace" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A KUKA KR6 R900 Agilus in Visual Components surrounded by the outline of its two-dimensional workspace profile.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-agilus-workspace-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">

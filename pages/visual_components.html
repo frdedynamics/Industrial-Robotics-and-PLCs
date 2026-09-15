@@ -175,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Simulation</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -198,7 +198,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../pages/project.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Project</span></a>
+ <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -486,7 +486,7 @@ Figure&nbsp;4: Signal flow when an external PLC controls simulated equipment in 
 </section>
 <section id="sec-vc-robot-analysis" class="level1">
 <h1>Reachability, limits, and collisions</h1>
-<p>A displayed robot workspace is useful for initial layout design, but it is only a rough envelope. A task is feasible only if the selected tool and workpiece can reach every required pose with acceptable joint values, robot configuration, clearance, and approach path. VC provides workspace profiles, joint-limit feedback, configuration tools, and collision detectors to support these checks.</p>
+<p>Treat a displayed robot workspace as a rough, position-based reach envelope for initial layout design. It does not show that every tool orientation is possible at every position. The <a href="../pages/kinematics.html#sec-workspace-types">difference between reachable and dexterous workspace</a> explains this limitation. A task is feasible only if the selected tool and workpiece can reach every required pose with acceptable joint values, robot configuration, clearance, and approach path. VC provides workspace profiles, joint-limit feedback, configuration tools, and collision detectors to support these checks.</p>
 <p>The most reliable workflow is to start with the workspace profile, then mount the real tool model, attach a representative workpiece, and jog or execute the important task motions. Collision detection should include the robot, tool, workpiece, fixtures, machines, and other nearby equipment.</p>
 <p><strong>Project lesson:</strong> <a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-i/">Robot Reachability Part I</a> shows how to build the initial layout, connect interfaces, locate and raise the robot, jog it, and use the workspace profile as an early placement aid. Use it while arranging the robot and equipment in the project cell.</p>
 <p><strong>Recommended lesson:</strong> <a href="https://academy.visualcomponents.com/lessons/robot-reachability-part-ii/">Robot Reachability Part II</a> moves from the rough workspace to joint values, joint limits, configurations, and singularities. It demonstrates wrist and overhead or polar singularities and connects these problems to choices made while teaching robot motions. You should be able to explain why being inside the workspace envelope does not guarantee that a complete task motion is feasible.</p>
