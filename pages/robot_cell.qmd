@@ -202,6 +202,11 @@ between the robot, conveyors, and CNC mill. @fig-agilus-workspace shows the
 `WorkSpace2D` profile around the Agilus robot used in this project. The linked
 VC overview contains the relevant Academy lessons.
 
+This profile approximates position reach; it does not prove that the robot can
+achieve the required tool orientation at every point. The distinction between
+[reachable and dexterous workspace](kinematics.qmd#sec-workspace-types) explains
+why checking the complete task poses is necessary.
+
 ![The approximate `WorkSpace2D` profile of the KUKA KR6 R900 Agilus displayed in Visual Components.](<img/VC Components Previews/agilus_2D_workspace.png>){#fig-agilus-workspace width=90% fig-alt="A KUKA KR6 R900 Agilus in Visual Components surrounded by the outline of its two-dimensional workspace profile."}
 
 For more detailed and reliable tuning of the arrangement, mount the gripper

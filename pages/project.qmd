@@ -291,7 +291,7 @@ The report is evaluated primarily on:
 - a coherent control architecture and interface;
 - justified design and implementation decisions;
 - appropriate verification and use of evidence;
-- interpretation, critical reflection, and awareness of limitations; and
+- **interpretation, critical reflection, and awareness of limitations;** and
 - clear technical communication.
 
 # Relation to the physical cell

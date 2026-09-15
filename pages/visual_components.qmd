@@ -334,12 +334,14 @@ the cell and robot program, and then changes to
 
 # Reachability, limits, and collisions {#sec-vc-robot-analysis}
 
-A displayed robot workspace is useful for initial layout design, but it is only
-a rough envelope. A task is feasible only if the selected tool and workpiece
-can reach every required pose with acceptable joint values, robot
-configuration, clearance, and approach path. VC provides workspace profiles,
-joint-limit feedback, configuration tools, and collision detectors to support
-these checks.
+Treat a displayed robot workspace as a rough, position-based reach envelope for
+initial layout design. It does not show that every tool orientation is possible
+at every position. The [difference between reachable and dexterous
+workspace](kinematics.qmd#sec-workspace-types) explains this limitation. A task
+is feasible only if the selected tool and workpiece can reach every required
+pose with acceptable joint values, robot configuration, clearance, and
+approach path. VC provides workspace profiles, joint-limit feedback,
+configuration tools, and collision detectors to support these checks.
 
 The most reliable workflow is to start with the workspace profile, then mount
 the real tool model, attach a representative workpiece, and jog or execute the

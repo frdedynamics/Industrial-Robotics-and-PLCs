@@ -191,6 +191,27 @@ practical reasons:
 - There may be several solutions for the same TCP pose.
 - A mathematical solution may violate joint limits or collide with equipment.
 
+## Reachable and dexterous workspace {#sec-workspace-types}
+
+The word **workspace** needs some qualification. The **reachable workspace** is
+the set of positions that the selected robot point, such as the flange or TCP,
+can reach with at least one orientation and robot configuration. A workspace
+profile or work envelope normally provides this kind of position-based overview.
+
+The **dexterous workspace** is smaller: at every position in this region, the
+robot can also achieve all possible tool orientations. A point can
+therefore be inside the reachable workspace while the robot is unable to hold
+the tool at the orientation required by the task.
+
+Most industrial tasks do not require every possible orientation. They require
+specific poses and approach directions for operations such as gripping,
+welding, or machine loading. The useful task workspace is therefore determined
+by the required TCP poses, the mounted tool and workpiece, joint limits,
+singularities, and surrounding equipment. A position-only workspace profile is
+good initial guidance, but it cannot by itself prove that the task is feasible.
+
+## Multiple inverse-kinematic solutions
+
 The second point is especially important in industrial robotics. A six-axis arm
 can often reach the same TCP pose with different shoulder, elbow, and wrist
 configurations. On a planar arm this appears as an elbow-up or elbow-down
