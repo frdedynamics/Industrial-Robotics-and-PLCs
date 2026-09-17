@@ -256,7 +256,11 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#sec-cell-external-control" id="toc-sec-cell-external-control" class="nav-link" data-scroll-target="#sec-cell-external-control">Stage 2: external PLC control</a>
   <ul class="collapse">
   <li><a href="#two-interacting-state-machines" id="toc-two-interacting-state-machines" class="nav-link" data-scroll-target="#two-interacting-state-machines">Two interacting state machines</a></li>
-  <li><a href="#sec-cell-command-interface" id="toc-sec-cell-command-interface" class="nav-link" data-scroll-target="#sec-cell-command-interface">Robot command properties</a></li>
+  <li><a href="#sec-cell-command-interface" id="toc-sec-cell-command-interface" class="nav-link" data-scroll-target="#sec-cell-command-interface">Robot command properties</a>
+  <ul class="collapse">
+  <li><a href="#example-requesting-the-load-operation" id="toc-example-requesting-the-load-operation" class="nav-link" data-scroll-target="#example-requesting-the-load-operation">Example: requesting the load operation</a></li>
+  </ul></li>
+  <li><a href="#implement-the-robot-side-fsm-in-vc" id="toc-implement-the-robot-side-fsm-in-vc" class="nav-link" data-scroll-target="#implement-the-robot-side-fsm-in-vc">Implement the robot-side FSM in VC</a></li>
   <li><a href="#required-command-handshake" id="toc-required-command-handshake" class="nav-link" data-scroll-target="#required-command-handshake">Required command handshake</a></li>
   </ul></li>
   <li><a href="#opc-ua-interface" id="toc-opc-ua-interface" class="nav-link" data-scroll-target="#opc-ua-interface">OPC UA interface</a></li>
@@ -697,22 +701,28 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 <p>Remove the direct conveyor-sensor and CNC connections from the active robot program. Retain the local robot-to-gripper connections. Keep the internally controlled routine as a tested reference while developing a separate PLC-controlled main routine.</p>
 <section id="two-interacting-state-machines" class="level2">
 <h2 class="anchored" data-anchor-id="two-interacting-state-machines">Two interacting state machines</h2>
-<p>A useful way to structure the control is to use a state machine on each side, but at different levels:</p>
+<p>A <strong>finite-state machine (FSM)</strong> organizes a sequence into a small number of states. At any moment, one state is active. That state describes what the controller is doing or waiting for, and a defined event causes the transition to another state. Here, states such as <code>Ready</code>, <code>Busy</code>, and <code>Done</code> describe the status of the command interface. They are not robot poses.</p>
+<p>Use a state machine on each side of the interface, but at different levels:</p>
 <ul>
 <li>The <strong>PLC FSM</strong> represents progress through the complete material flow and decides which device may act next.</li>
 <li>The <strong>robot-side FSM</strong> accepts one operation request, executes the selected robot subroutine, and reports its status.</li>
 </ul>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
+<div id="fig-cell-control-boundary" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cell-control-boundary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div>
-<p></p><figure class="figure"><p></p>
-<div>
-<pre class="mermaid mermaid-js">flowchart LR
+<pre class="mermaid mermaid-js" data-label="fig-cell-control-boundary">flowchart LR
     PLC[PLC cell FSM]
-    ROBOT[VC robot FSM]
     CONVEYOR[Ordinary conveyors and pickup sensor]
     CNC[CNC mill]
-    ROUTINES[Robot subroutines]
+
+    subgraph VC[VC robot program]
+        ROBOT[Command-interface FSM]
+        ROUTINES[Motion and gripper subroutines]
+        ROBOT --&gt;|Call operation| ROUTINES
+    end
 
     PLC --&gt;|Command| ROBOT
     ROBOT --&gt;|State and active command| PLC
@@ -720,10 +730,41 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
     CONVEYOR --&gt;|Part detected| PLC
     PLC --&gt;|Door and process commands| CNC
     CNC --&gt;|Door and process feedback| PLC
-    ROBOT --&gt;|Call operation| ROUTINES
 </pre>
 </div>
-<p></p></figure><p></p>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cell-control-boundary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: The PLC coordinates the cell, while the robot-side state machine turns each accepted command into one complete robot operation.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The arrows in <a href="#fig-cell-control-boundary" class="quarto-xref">Figure&nbsp;3</a> show the division of responsibility and the information exchanged between the controllers. The command sequence inside the robot-side FSM is shown in <a href="#fig-cell-robot-fsm" class="quarto-xref">Figure&nbsp;4</a>. In the normal path, the robot repeatedly accepts one command, executes it, and waits until the PLC acknowledges completion before becoming ready again.</p>
+<p>The figure focuses on the PLC-to-robot interface. The Pusher Conveyor’s local routing and transfer behavior remains inside VC as described earlier and is not part of this command exchange.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-cell-robot-fsm" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cell-robot-fsm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<pre class="mermaid mermaid-js" data-label="fig-cell-robot-fsm">stateDiagram-v2
+    direction LR
+    state "Invalid command" as InvalidCommand
+    [*] --&gt; Initializing
+    Initializing --&gt; Ready: Initialization complete&lt;br/&gt;and Command = 0
+    Ready --&gt; Busy: Valid command accepted
+    Busy --&gt; Done: Robot subroutine complete
+    Done --&gt; Ready: Command = 0&lt;br/&gt;acknowledgement
+    Ready --&gt; InvalidCommand: Non-zero Command&lt;br/&gt;outside 1 to 4
+    InvalidCommand --&gt; Ready: Command = 0
+</pre>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cell-robot-fsm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: States and transitions of the robot command interface, including rejection of an undefined command.
+</figcaption>
+</figure>
 </div>
 </div>
 </div>
@@ -731,7 +772,8 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 </section>
 <section id="sec-cell-command-interface" class="level2">
 <h2 class="anchored" data-anchor-id="sec-cell-command-interface">Robot command properties</h2>
-<p>On the VC <strong>Modeling</strong> tab, add three integer properties to the robot component. Place them in a group named <code>PLC</code>:</p>
+<p>To realize the robot-side FSM in the VC Program Editor, the robot program needs values through which it can receive a request and report its current state. A local program line or routine name is not automatically visible to CODESYS. Component properties solve this problem: the robot program can read and write them in expressions, and VC Connectivity can map them to PLC variables through OPC UA. Together, the properties form a small command-and-status interface between the two state machines.</p>
+<p>On the VC <strong>Modeling</strong> tab, add three integer properties to the robot component and place them in a group named <code>PLC</code>. Set the initial value of all three properties to <code>0</code>:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -749,21 +791,22 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 <tr class="odd">
 <td><code>PLC::Command</code></td>
 <td>PLC to robot</td>
-<td>Requested operation; zero means no command.</td>
+<td>The robot’s request input. The PLC writes the number of the operation it wants; zero means no active request.</td>
 </tr>
 <tr class="even">
 <td><code>PLC::RobotState</code></td>
 <td>Robot to PLC</td>
-<td>State of the robot command interface.</td>
+<td>The robot’s status output. The robot program writes the current interface state so the PLC knows whether it may send, wait, or continue.</td>
 </tr>
 <tr class="odd">
 <td><code>PLC::ActiveCommand</code></td>
 <td>Robot to PLC</td>
-<td>Command accepted and currently being handled.</td>
+<td>The robot’s latched-command output. The robot copies a non-zero request here and keeps it while that request is being checked and handled.</td>
 </tr>
 </tbody>
 </table>
 <p><code>PLC</code> is only the property-group name. In a robot-program expression, the <code>::</code> syntax separates the group and property names.</p>
+<p>The ownership of the properties is deliberate: the PLC writes <code>Command</code>, while the robot writes <code>RobotState</code> and <code>ActiveCommand</code>. <code>Command</code> is the request that has arrived from outside the robot program. <code>ActiveCommand</code> is the robot’s latched record and echo of that request. For a valid request, it identifies the operation throughout both <code>Busy</code> and <code>Done</code>, lets the PLC verify what was accepted and completed, and prevents an unexpected later change to <code>Command</code> from changing the operation already underway. For an undefined request, <code>ActiveCommand</code> identifies the rejected value while <code>RobotState = 4</code> reports that it was not accepted. The robot should therefore select an operation from <code>ActiveCommand</code>, not continuously from the externally written <code>Command</code>.</p>
 <p>Use the following interface contract:</p>
 <table class="caption-top table">
 <thead>
@@ -775,7 +818,7 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 <tbody>
 <tr class="odd">
 <td style="text-align: right;"><code>0</code></td>
-<td>No command or PLC acknowledgement</td>
+<td>No active request</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;"><code>1</code></td>
@@ -821,24 +864,79 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
 </tr>
 <tr class="odd">
 <td style="text-align: right;"><code>4</code></td>
-<td>Invalid command or fault</td>
+<td>Invalid command</td>
 </tr>
 </tbody>
 </table>
-<p>The robot program must use <code>PLC::ActiveCommand</code> to choose the required subroutine. You can implement this selection with <code>If</code> and <code>Else</code> statements or with a <code>Switch Case</code>. <code>Switch Case</code> is often compact and easy to read when each integer command corresponds to one operation.</p>
+<section id="example-requesting-the-load-operation" class="level3">
+<h3 class="anchored" data-anchor-id="example-requesting-the-load-operation">Example: requesting the load operation</h3>
+<p>Suppose the robot reports <code>RobotState = 1</code>, meaning <code>Ready</code>, and the PLC wants it to load the CNC:</p>
+<ol type="1">
+<li>The PLC writes <code>Command = 2</code> and keeps that value active.</li>
+<li>The robot detects the request, checks that <code>2</code> is valid, copies it to <code>ActiveCommand</code>, and changes <code>RobotState</code> to <code>2</code> (<code>Busy</code>).</li>
+<li>The PLC waits until it sees <code>ActiveCommand = 2</code> together with a robot state of <code>Busy</code> or <code>Done</code>. <code>ActiveCommand</code> identifies which request was accepted, while the state confirms that the robot accepted it. Together, these values form the <strong>robot acceptance confirmation</strong>.</li>
+<li>The robot selects the case for <code>ActiveCommand = 2</code> and calls the subroutine that loads the CNC.</li>
+<li>When the subroutine returns, the robot changes <code>RobotState</code> to <code>3</code> (<code>Done</code>) while <code>ActiveCommand</code> remains <code>2</code>.</li>
+<li>After seeing <code>Done</code> for the expected active command, the PLC writes <code>Command = 0</code>. This is the <strong>PLC completion acknowledgement</strong>.</li>
+<li>The robot clears <code>ActiveCommand</code> and returns <code>RobotState</code> to <code>1</code> (<code>Ready</code>).</li>
+</ol>
+<p>This exchange lets the PLC coordinate the overall process without controlling the individual robot motions. It also prevents the robot from starting the next production step on its own.</p>
+</section>
+</section>
+<section id="implement-the-robot-side-fsm-in-vc" class="level2">
+<h2 class="anchored" data-anchor-id="implement-the-robot-side-fsm-in-vc">Implement the robot-side FSM in VC</h2>
+<p>VC does not provide a special state-machine object. Build the FSM in the robot program from property assignments, conditions, loops, routine calls, and either <code>If</code>/<code>Else</code> or <code>Switch Case</code> statements. The <a href="../pages/visual_components.html#sec-vc-robot-programs">VC program-structure section</a> introduces these statements and links to the relevant VC lessons and documentation.</p>
+<p>The state diagram defines the observable behavior of the interface; it does not require one <code>Switch Case</code> with one case for every state. A simpler implementation uses the order of statements in a repeating loop to move through the states. <code>RobotState</code> then reports where that sequence currently is, while one <code>Switch Case</code> on <code>ActiveCommand</code> selects the requested robot operation.</p>
+<p>In the VC Program Editor, use <strong>Set Property</strong> statements for assignments such as <code>PLC::ActiveCommand = PLC::Command</code> and <code>PLC::RobotState = 2</code>. The following outline follows this sequential implementation. It adds an explicit validity check before reporting <code>Busy</code>, so an undefined command cannot briefly appear to have been accepted. The outline illustrates the structure; it is not source code that can be pasted into VC.</p>
+<pre class="text"><code>Set Property: PLC::RobotState = 0 (Initializing)
+Set Property: PLC::ActiveCommand = 0
+perform the required initialization
+
+While PLC::Command is not 0
+  Delay 0.05 s
+Set Property: PLC::RobotState = 1 (Ready)
+
+While the robot program is running
+  While PLC::Command is 0
+    Delay 0.05 s
+
+  Set Property: PLC::ActiveCommand = PLC::Command
+
+  If PLC::ActiveCommand is in the range 1 to 4
+    Set Property: PLC::RobotState = 2 (Busy)
+
+    Switch Case PLC::ActiveCommand
+      Case 1: call the pick subroutine
+      Case 2: call the load subroutine
+      Case 3: call the unload subroutine
+      Case 4: call the home subroutine
+
+    Set Property: PLC::RobotState = 3 (Done)
+  Else
+    Set Property: PLC::RobotState = 4 (Invalid command)
+
+  While PLC::Command is not 0
+    Delay 0.05 s
+
+  Set Property: PLC::ActiveCommand = 0
+  Set Property: PLC::RobotState = 1 (Ready)</code></pre>
+<p>The first waiting loop holds <code>Ready</code> until a command arrives. The robot then latches and checks the request. For values <code>1</code> to <code>4</code>, it reports <code>Busy</code> and selects one operation from <code>ActiveCommand</code>. Because a call does not return until its subroutine has finished, the next assignment changes the state to <code>Done</code>. An undefined value instead changes the state directly from <code>Ready</code> to <code>Invalid command</code> without calling a motion routine. In both paths, the last waiting loop holds the result until the PLC clears <code>Command</code>.</p>
+<p>Each robot operation remains a separate subroutine, so the dispatcher is easy to read and the motions can still be tested independently. An explicit state-driven <code>Switch Case</code> is also possible, but it adds another level of nesting without improving this small interface.</p>
+<p>State <code>4</code> only handles an undefined command in the required implementation. It does not automatically detect a failed robot motion or an unsuccessful grip. Detecting such failures, reporting them, and defining a safe recovery sequence belong to the optional timeout and fault-handling extension.</p>
 </section>
 <section id="required-command-handshake" class="level2">
 <h2 class="anchored" data-anchor-id="required-command-handshake">Required command handshake</h2>
-<p>For every robot operation:</p>
+<p>The load example above can be generalized into the following reusable protocol. For every robot operation:</p>
 <ol type="1">
 <li>The PLC waits for robot state <code>Ready</code>.</li>
 <li>The PLC writes and holds the requested command.</li>
-<li>The robot copies it to <code>ActiveCommand</code> and reports <code>Busy</code>.</li>
-<li>The PLC verifies that the intended command was accepted.</li>
+<li>The robot copies it to <code>ActiveCommand</code> and reports <code>Busy</code> as its acceptance confirmation.</li>
+<li>The PLC verifies the matching <code>ActiveCommand</code>. It accepts either <code>Busy</code> or <code>Done</code> as proof that the command was accepted.</li>
 <li>The robot executes the complete subroutine and reports <code>Done</code>.</li>
-<li>The PLC clears <code>Command</code> to <code>0</code> as acknowledgement.</li>
+<li>After observing <code>Done</code> with the matching <code>ActiveCommand</code>, the PLC clears <code>Command</code> to <code>0</code> as its completion acknowledgement.</li>
 <li>The robot clears <code>ActiveCommand</code> and returns to <code>Ready</code>.</li>
 </ol>
+<p><code>Busy</code> is useful for monitoring, but the PLC must not depend on observing it. A short robot routine could reach <code>Done</code> between two OPC UA updates. The held <code>ActiveCommand</code> and <code>Done</code> values still prove which operation completed.</p>
 <p>This level-based handshake is preferable to short pulses because a pulse could be missed between an OPC UA update and a PLC scan.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -850,7 +948,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>VC robot programs provide a dedicated wait statement only for binary robot inputs. To wait for an integer component property, use a <code>While</code> loop with a short delay, for example <code>0.05 s</code>. The loop condition should describe when the program must continue waiting. The delay prevents an empty polling loop from consuming simulation execution time.</p>
+<p>VC robot programs provide a dedicated wait statement only for binary robot inputs. To wait for an integer component property, use a <code>While</code> loop with a short delay, for example <code>0.05 s</code>. The loop condition should describe when the program must continue waiting. The delay prevents an empty polling loop from consuming simulation execution time. Use such delayed waits in the <code>Ready</code>, <code>Done</code>, and invalid-command parts of the sequential loop shown above.</p>
 </div>
 </div>
 </section>
