@@ -35,7 +35,7 @@ By completing the project, you should be able to:
 - connect CODESYS and VC using OPC UA, and
 - commission the system incrementally rather than debugging everything at once.
 
-# Required cell behavior
+# Required cell behavior {#sec-cell-required-behavior}
 
 The completed system shall repeat the following material flow:
 
@@ -778,12 +778,12 @@ values sent in each direction.
 | `xCncOpenDoor` | `FROM_PLC_OpenDoor` | PLC to VC |
 | `xCncCloseDoor` | `FROM_PLC_CloseDoor` | PLC to VC |
 | `xCncStartProcess` | `FROM_PLC_StartProcess` | PLC to VC |
-| `PLC::RobotState` | `iRobotState` | VC to PLC |
-| `PLC::ActiveCommand` | `iRobotActiveCommand` | VC to PLC |
-| Pickup sensor | `xPartAtPick` | VC to PLC |
-| `TO_PLC_DoorsOpen` | `xCncDoorOpen` | VC to PLC |
-| `TO_PLC_DoorsClosed` | `xCncDoorClosed` | VC to PLC |
-| `TO_PLC_ProcessIsRunning` | `xCncProcessRunning` | VC to PLC |
+| `iRobotState` | `PLC::RobotState` | VC to PLC |
+| `iRobotActiveCommand` | `PLC::ActiveCommand` | VC to PLC |
+| `xPartAtPick` | Pickup sensor's `SensorBooleanSignal` | VC to PLC |
+| `xCncDoorOpen` | `TO_PLC_DoorsOpen` | VC to PLC |
+| `xCncDoorClosed` | `TO_PLC_DoorsClosed` | VC to PLC |
+| `xCncProcessRunning` | `TO_PLC_ProcessIsRunning` | VC to PLC |
 
 If you retained the sensor's internal **StopPart** action from Stage 1, it can
 continue to hold the product at the exact taught pose despite communication
@@ -809,32 +809,20 @@ sensor, conveyor output, CNC door feedback, and process-running feedback. When
 the system stops, first identify which controller and state is waiting, then
 check the condition required to leave that state.
 
-# Requirements and deliverables
+# Submission
 
-Your submission shall include:
+Submit the functioning PLC-controlled version described on this page. The
+submission consists of the VC model, including its robot program and configured
+signals, together with the CODESYS PLC program that coordinates the cell.
 
-- the VC layout with functional geometry, configured tool and signals,
-- the internally controlled robot program used for initial validation,
-- the PLC-controlled robot program and meaningful motion subroutines,
-- the CODESYS PLC program,
-- an I/O list showing every OPC UA variable and its direction,
-- diagrams or tables documenting the PLC and robot state machines, and
-- evidence that the internal and externally controlled cycles were tested.
+Also document the interface between VC and the PLC. Use an I/O list or OPC UA
+mapping that shows the connected variables and their directions. This can be a
+table or a readable screenshot from the configured tools.
 
-The externally controlled solution shall satisfy these acceptance criteria:
+The submitted system should perform the basic sequence described in
+@sec-cell-required-behavior using the external PLC control developed in
+@sec-cell-external-control. The sequence and division of control described in
+those sections define the expected behavior.
 
-- the PLC, not the robot, coordinates ordinary conveyor motion and the CNC,
-- the Pusher Conveyor retains its tested internal routing and transfer behavior,
-- the robot accepts only defined operation commands,
-- every command follows the specified acknowledgement handshake,
-- robot commands are held until acknowledged rather than sent as short pulses,
-- the CNC process is confirmed to start before completion is evaluated,
-- disabling production prevents another cycle without interrupting an active
-  robot or CNC operation,
-- the robot and gripper finish each requested operation in a predictable state,
-  and
-- the complete material flow repeats without manual intervention.
-
-Develop the normal sequence first. Timeouts and fault recovery are optional
-extensions and should be added only after the nominal cycle and communication
-interface are stable.
+Timeouts and fault recovery are optional extensions. Develop and verify the
+normal sequence and communication interface before considering adding them.
