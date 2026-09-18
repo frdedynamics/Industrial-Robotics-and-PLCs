@@ -232,7 +232,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#project-objective" id="toc-project-objective" class="nav-link active" data-scroll-target="#project-objective">Project objective</a></li>
-  <li><a href="#required-cell-behavior" id="toc-required-cell-behavior" class="nav-link" data-scroll-target="#required-cell-behavior">Required cell behavior</a></li>
+  <li><a href="#sec-cell-required-behavior" id="toc-sec-cell-required-behavior" class="nav-link" data-scroll-target="#sec-cell-required-behavior">Required cell behavior</a></li>
   <li><a href="#components" id="toc-components" class="nav-link" data-scroll-target="#components">Components</a></li>
   <li><a href="#build-the-simulated-cell" id="toc-build-the-simulated-cell" class="nav-link" data-scroll-target="#build-the-simulated-cell">Build the simulated cell</a>
   <ul class="collapse">
@@ -265,7 +265,7 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#opc-ua-interface" id="toc-opc-ua-interface" class="nav-link" data-scroll-target="#opc-ua-interface">OPC UA interface</a></li>
   <li><a href="#commissioning-procedure" id="toc-commissioning-procedure" class="nav-link" data-scroll-target="#commissioning-procedure">Commissioning procedure</a></li>
-  <li><a href="#requirements-and-deliverables" id="toc-requirements-and-deliverables" class="nav-link" data-scroll-target="#requirements-and-deliverables">Requirements and deliverables</a></li>
+  <li><a href="#submission" id="toc-submission" class="nav-link" data-scroll-target="#submission">Submission</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/robot_cell.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -311,7 +311,7 @@ ul.task-list li input[type="checkbox"] {
 <li>commission the system incrementally rather than debugging everything at once.</li>
 </ul>
 </section>
-<section id="required-cell-behavior" class="level1">
+<section id="sec-cell-required-behavior" class="level1">
 <h1>Required cell behavior</h1>
 <p>The completed system shall repeat the following material flow:</p>
 <ol type="1">
@@ -724,6 +724,8 @@ Figure&nbsp;2: Robot output <code>100</code> is connected to the movable gripper
         ROBOT --&gt;|Call operation| ROUTINES
     end
 
+    style VC fill:#f4f7fa,stroke:#7a8796,color:#111827
+
     PLC --&gt;|Command| ROBOT
     ROBOT --&gt;|State and active command| PLC
     PLC --&gt;|Run| CONVEYOR
@@ -887,39 +889,48 @@ Figure&nbsp;4: States and transitions of the robot command interface, including 
 <h2 class="anchored" data-anchor-id="implement-the-robot-side-fsm-in-vc">Implement the robot-side FSM in VC</h2>
 <p>VC does not provide a special state-machine object. Build the FSM in the robot program from property assignments, conditions, loops, routine calls, and either <code>If</code>/<code>Else</code> or <code>Switch Case</code> statements. The <a href="../pages/visual_components.html#sec-vc-robot-programs">VC program-structure section</a> introduces these statements and links to the relevant VC lessons and documentation.</p>
 <p>The state diagram defines the observable behavior of the interface; it does not require one <code>Switch Case</code> with one case for every state. A simpler implementation uses the order of statements in a repeating loop to move through the states. <code>RobotState</code> then reports where that sequence currently is, while one <code>Switch Case</code> on <code>ActiveCommand</code> selects the requested robot operation.</p>
-<p>In the VC Program Editor, use <strong>Set Property</strong> statements for assignments such as <code>PLC::ActiveCommand = PLC::Command</code> and <code>PLC::RobotState = 2</code>. The following outline follows this sequential implementation. It adds an explicit validity check before reporting <code>Busy</code>, so an undefined command cannot briefly appear to have been accepted. The outline illustrates the structure; it is not source code that can be pasted into VC.</p>
-<pre class="text"><code>Set Property: PLC::RobotState = 0 (Initializing)
-Set Property: PLC::ActiveCommand = 0
-perform the required initialization
+<p>In the VC Program Editor, use <strong>Assign Variable</strong> statements for assignments such as <code>PLC::ActiveCommand = PLC::Command</code> and <code>PLC::RobotState = 2</code>. The following outline shows one possible implementation of the sequential FSM. It adds an explicit validity check before reporting <code>Busy</code>, so an undefined command cannot briefly appear to have been accepted. This is explanatory pseudocode, not valid VC syntax, and it cannot be pasted into the Program Editor. The connecting lines visualize the hierarchy that you would build in VC. Uppercase lines represent actions or control structures, while lines marked with <code>//</code> explain the purpose of the following actions.</p>
+<pre class="text vc-pseudocode"><code>// Clear status from an earlier run and establish a known robot state.
+ASSIGN: PLC::RobotState = 0 (Initializing)
+ASSIGN: PLC::ActiveCommand = 0
+SET ROBOT OUTPUT: command the gripper open
+WAIT for gripper-open feedback
+CALL the move-home routine
 
-While PLC::Command is not 0
-  Delay 0.05 s
-Set Property: PLC::RobotState = 1 (Ready)
+// Do not accept a command that was already active during startup.
+WHILE PLC::Command is not 0
+└─ DELAY 0.05 s
+ASSIGN: PLC::RobotState = 1 (Ready)
 
-While the robot program is running
-  While PLC::Command is 0
-    Delay 0.05 s
-
-  Set Property: PLC::ActiveCommand = PLC::Command
-
-  If PLC::ActiveCommand is in the range 1 to 4
-    Set Property: PLC::RobotState = 2 (Busy)
-
-    Switch Case PLC::ActiveCommand
-      Case 1: call the pick subroutine
-      Case 2: call the load subroutine
-      Case 3: call the unload subroutine
-      Case 4: call the home subroutine
-
-    Set Property: PLC::RobotState = 3 (Done)
-  Else
-    Set Property: PLC::RobotState = 4 (Invalid command)
-
-  While PLC::Command is not 0
-    Delay 0.05 s
-
-  Set Property: PLC::ActiveCommand = 0
-  Set Property: PLC::RobotState = 1 (Ready)</code></pre>
+// Repeat the command dispatcher for as long as the program runs.
+WHILE TRUE
+├─ WHILE PLC::Command is 0
+│  └─ DELAY 0.05 s
+│
+├─ // Latch and validate the new request.
+├─ ASSIGN: PLC::ActiveCommand = PLC::Command
+│
+├─ IF PLC::ActiveCommand is in the range 1 to 4
+│  ├─ ASSIGN VARIABLE: PLC::RobotState = 2 (Busy)
+│  │
+│  ├─ SWITCH CASE PLC::ActiveCommand
+│  │  ├─ CASE 1: CALL the pick subroutine
+│  │  ├─ CASE 2: CALL the load subroutine
+│  │  ├─ CASE 3: CALL the unload subroutine
+│  │  └─ CASE 4: CALL the home subroutine
+│  │
+│  └─ ASSIGN: PLC::RobotState = 3 (Done)
+│
+├─ ELSE
+│  └─ ASSIGN: PLC::RobotState = 4 (Invalid command)
+│
+├─ // Hold the result until the PLC acknowledges it by clearing Command.
+├─ WHILE PLC::Command is not 0
+│  └─ DELAY 0.05 s
+│
+├─ ASSIGN: PLC::ActiveCommand = 0
+└─ ASSIGN: PLC::RobotState = 1 (Ready)</code></pre>
+<p>The exact gripper output and feedback names depend on the signal mapping. The important point is that initialization establishes a known gripper state and a known robot pose before the program reports <code>Ready</code>.</p>
 <p>The first waiting loop holds <code>Ready</code> until a command arrives. The robot then latches and checks the request. For values <code>1</code> to <code>4</code>, it reports <code>Busy</code> and selects one operation from <code>ActiveCommand</code>. Because a call does not return until its subroutine has finished, the next assignment changes the state to <code>Done</code>. An undefined value instead changes the state directly from <code>Ready</code> to <code>Invalid command</code> without calling a motion routine. In both paths, the last waiting loop holds the result until the PLC clears <code>Command</code>.</p>
 <p>Each robot operation remains a separate subroutine, so the dispatcher is easy to read and the motions can still be tested independently. An explicit state-driven <code>Switch Case</code> is also possible, but it adds another level of nesting without improving this small interface.</p>
 <p>State <code>4</code> only handles an undefined command in the required implementation. It does not automatically detect a failed robot motion or an unsuccessful grip. Detecting such failures, reporting them, and defining a safe recovery sequence belong to the optional timeout and fault-handling extension.</p>
@@ -999,33 +1010,33 @@ Tip
 <td>PLC to VC</td>
 </tr>
 <tr class="even">
-<td><code>PLC::RobotState</code></td>
 <td><code>iRobotState</code></td>
+<td><code>PLC::RobotState</code></td>
 <td>VC to PLC</td>
 </tr>
 <tr class="odd">
-<td><code>PLC::ActiveCommand</code></td>
 <td><code>iRobotActiveCommand</code></td>
+<td><code>PLC::ActiveCommand</code></td>
 <td>VC to PLC</td>
 </tr>
 <tr class="even">
-<td>Pickup sensor</td>
 <td><code>xPartAtPick</code></td>
+<td>Pickup sensor’s <code>SensorBooleanSignal</code></td>
 <td>VC to PLC</td>
 </tr>
 <tr class="odd">
-<td><code>TO_PLC_DoorsOpen</code></td>
 <td><code>xCncDoorOpen</code></td>
+<td><code>TO_PLC_DoorsOpen</code></td>
 <td>VC to PLC</td>
 </tr>
 <tr class="even">
-<td><code>TO_PLC_DoorsClosed</code></td>
 <td><code>xCncDoorClosed</code></td>
+<td><code>TO_PLC_DoorsClosed</code></td>
 <td>VC to PLC</td>
 </tr>
 <tr class="odd">
-<td><code>TO_PLC_ProcessIsRunning</code></td>
 <td><code>xCncProcessRunning</code></td>
+<td><code>TO_PLC_ProcessIsRunning</code></td>
 <td>VC to PLC</td>
 </tr>
 </tbody>
@@ -1046,36 +1057,108 @@ Tip
 </ol>
 <p>Monitor the PLC FSM state, robot command, robot state, active command, pickup sensor, conveyor output, CNC door feedback, and process-running feedback. When the system stops, first identify which controller and state is waiting, then check the condition required to leave that state.</p>
 </section>
-<section id="requirements-and-deliverables" class="level1">
-<h1>Requirements and deliverables</h1>
-<p>Your submission shall include:</p>
-<ul>
-<li>the VC layout with functional geometry, configured tool and signals,</li>
-<li>the internally controlled robot program used for initial validation,</li>
-<li>the PLC-controlled robot program and meaningful motion subroutines,</li>
-<li>the CODESYS PLC program,</li>
-<li>an I/O list showing every OPC UA variable and its direction,</li>
-<li>diagrams or tables documenting the PLC and robot state machines, and</li>
-<li>evidence that the internal and externally controlled cycles were tested.</li>
-</ul>
-<p>The externally controlled solution shall satisfy these acceptance criteria:</p>
-<ul>
-<li>the PLC, not the robot, coordinates ordinary conveyor motion and the CNC,</li>
-<li>the Pusher Conveyor retains its tested internal routing and transfer behavior,</li>
-<li>the robot accepts only defined operation commands,</li>
-<li>every command follows the specified acknowledgement handshake,</li>
-<li>robot commands are held until acknowledged rather than sent as short pulses,</li>
-<li>the CNC process is confirmed to start before completion is evaluated,</li>
-<li>disabling production prevents another cycle without interrupting an active robot or CNC operation,</li>
-<li>the robot and gripper finish each requested operation in a predictable state, and</li>
-<li>the complete material flow repeats without manual intervention.</li>
-</ul>
-<p>Develop the normal sequence first. Timeouts and fault recovery are optional extensions and should be added only after the nominal cycle and communication interface are stable.</p>
+<section id="submission" class="level1">
+<h1>Submission</h1>
+<p>Submit the functioning PLC-controlled version described on this page. The submission consists of the VC model, including its robot program and configured signals, together with the CODESYS PLC program that coordinates the cell.</p>
+<p>Also document the interface between VC and the PLC. Use an I/O list or OPC UA mapping that shows the connected variables and their directions. This can be a table or a readable screenshot from the configured tools.</p>
+<p>The submitted system should perform the basic sequence described in <a href="#sec-cell-required-behavior" class="quarto-xref">Section&nbsp;2</a> using the external PLC control developed in <a href="#sec-cell-external-control" class="quarto-xref">Section&nbsp;6</a>. The sequence and division of control described in those sections define the expected behavior.</p>
+<p>Timeouts and fault recovery are optional extensions. Develop and verify the normal sequence and communication interface before considering adding them.</p>
 
 
 </section>
 
 </main> <!-- /main -->
+<dialog class="mermaid-enlarge-dialog" aria-label="Enlarged diagram">
+  <button class="mermaid-enlarge-dialog__close" type="button" aria-label="Close enlarged diagram" title="Close">×</button>
+  <div class="mermaid-enlarge-dialog__stage"></div>
+</dialog>
+
+<script>
+(() => {
+  const dialog = document.querySelector(".mermaid-enlarge-dialog");
+  const stage = dialog?.querySelector(".mermaid-enlarge-dialog__stage");
+  const closeButton = dialog?.querySelector(".mermaid-enlarge-dialog__close");
+
+  if (!dialog || !stage || !closeButton || typeof dialog.showModal !== "function") {
+    return;
+  }
+
+  const openDiagram = (sourceSvg) => {
+    const clone = sourceSvg.cloneNode(true);
+    const viewBox = sourceSvg.viewBox?.baseVal;
+    const sourceBounds = sourceSvg.getBoundingClientRect();
+    const naturalWidth = viewBox?.width || sourceBounds.width || 800;
+    const naturalHeight = viewBox?.height || sourceBounds.height || 500;
+    const availableWidth = window.innerWidth * 0.88;
+    const availableHeight = window.innerHeight * 0.78;
+    const scale = Math.max(
+      1,
+      Math.min(2, availableWidth / naturalWidth, availableHeight / naturalHeight)
+    );
+
+    clone.removeAttribute("style");
+    clone.setAttribute("width", String(Math.round(naturalWidth * scale)));
+    clone.setAttribute("height", String(Math.round(naturalHeight * scale)));
+    clone.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+    stage.replaceChildren(clone);
+    dialog.showModal();
+    closeButton.focus();
+  };
+
+  const enhanceDiagram = (diagram) => {
+    if (diagram.classList.contains("mermaid-enlargeable")) return;
+
+    const container = diagram.parentElement;
+    if (!container) return;
+
+    diagram.classList.add("mermaid-enlargeable");
+    diagram.setAttribute("title", "Open larger view");
+    diagram.addEventListener("click", () => openDiagram(diagram));
+
+    container.classList.add("mermaid-enlarge-container");
+    const expandButton = document.createElement("button");
+    expandButton.type = "button";
+    expandButton.className = "mermaid-enlarge-button";
+    expandButton.textContent = "\u26f6";
+    expandButton.setAttribute("aria-label", "Open diagram in a larger view");
+    expandButton.title = "Open larger view";
+    expandButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openDiagram(diagram);
+    });
+    container.appendChild(expandButton);
+  };
+
+  const findDiagrams = (root) => {
+    if (root instanceof Element && root.matches("svg.mermaid-js")) {
+      enhanceDiagram(root);
+    }
+    root.querySelectorAll?.("svg.mermaid-js").forEach(enhanceDiagram);
+  };
+
+  findDiagrams(document);
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => findDiagrams(node));
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  closeButton.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (event) => {
+    const bounds = dialog.getBoundingClientRect();
+    const outside =
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom;
+
+    if (outside) dialog.close();
+  });
+  dialog.addEventListener("close", () => stage.replaceChildren());
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
