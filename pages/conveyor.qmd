@@ -122,7 +122,7 @@ differs in your VC installation, search for the stated component name.
 </tr>
 <tr>
 <td class="text-end">4</td>
-<td class="component-catalog-table__preview-cell" aria-label="No preview available">&mdash;</td>
+<td class="component-catalog-table__preview-cell"><img class="component-catalog-table__preview" src="img/VC Components Previews/pusher_conveyor.png" alt="Preview of the Pusher Conveyor component" loading="lazy"></td>
 <td>Pusher Conveyor</td>
 <td><code>Conveyors</code></td>
 <td>Route one selected product type at each sorting station.</td>
