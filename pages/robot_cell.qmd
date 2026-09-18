@@ -517,6 +517,8 @@ flowchart LR
         ROBOT -->|Call operation| ROUTINES
     end
 
+    style VC fill:#f4f7fa,stroke:#7a8796,color:#111827
+
     PLC -->|Command| ROBOT
     ROBOT -->|State and active command| PLC
     PLC -->|Run| CONVEYOR
@@ -645,55 +647,57 @@ uses the order of statements in a repeating loop to move through the states.
 `RobotState` then reports where that sequence currently is, while one
 `Switch Case` on `ActiveCommand` selects the requested robot operation.
 
-In the VC Program Editor, use **Set Property** statements for assignments such
-as `PLC::ActiveCommand = PLC::Command` and `PLC::RobotState = 2`. The following
-outline follows this sequential implementation. It adds an explicit validity
-check before reporting `Busy`, so an undefined command cannot briefly appear to
-have been accepted. The outline illustrates the structure; it is not source
-code that can be pasted into VC. Uppercase lines represent VC statements or
-control structures, while lines beginning with `//` explain the purpose of the
-following statements.
+In the VC Program Editor, use **Assign Variable** statements for assignments
+such as `PLC::ActiveCommand = PLC::Command` and `PLC::RobotState = 2`. The
+following outline shows one possible implementation of the sequential FSM. It
+adds an explicit validity check before reporting `Busy`, so an undefined
+command cannot briefly appear to have been accepted. This is explanatory
+pseudocode, not valid VC syntax, and it cannot be pasted into the Program
+Editor. The connecting lines visualize the hierarchy that you would build in
+VC. Uppercase lines represent actions or control structures, while lines
+marked with `//` explain the purpose of the following actions.
 
-```text
+```{.text .vc-pseudocode}
 // Clear status from an earlier run and establish a known robot state.
-SET PROPERTY: PLC::RobotState = 0 (Initializing)
-SET PROPERTY: PLC::ActiveCommand = 0
+ASSIGN: PLC::RobotState = 0 (Initializing)
+ASSIGN: PLC::ActiveCommand = 0
 SET ROBOT OUTPUT: command the gripper open
 WAIT for gripper-open feedback
 CALL the move-home routine
 
 // Do not accept a command that was already active during startup.
 WHILE PLC::Command is not 0
-  DELAY 0.05 s
-SET PROPERTY: PLC::RobotState = 1 (Ready)
+└─ DELAY 0.05 s
+ASSIGN: PLC::RobotState = 1 (Ready)
 
 // Repeat the command dispatcher for as long as the program runs.
-WHILE the robot program is running
-  WHILE PLC::Command is 0
-    DELAY 0.05 s
-
-  // Latch and validate the new request.
-  SET PROPERTY: PLC::ActiveCommand = PLC::Command
-
-  IF PLC::ActiveCommand is in the range 1 to 4
-    SET PROPERTY: PLC::RobotState = 2 (Busy)
-
-    SWITCH CASE PLC::ActiveCommand
-      CASE 1: CALL the pick subroutine
-      CASE 2: CALL the load subroutine
-      CASE 3: CALL the unload subroutine
-      CASE 4: CALL the home subroutine
-
-    SET PROPERTY: PLC::RobotState = 3 (Done)
-  ELSE
-    SET PROPERTY: PLC::RobotState = 4 (Invalid command)
-
-  // Hold the result until the PLC acknowledges it by clearing Command.
-  WHILE PLC::Command is not 0
-    DELAY 0.05 s
-
-  SET PROPERTY: PLC::ActiveCommand = 0
-  SET PROPERTY: PLC::RobotState = 1 (Ready)
+WHILE TRUE
+├─ WHILE PLC::Command is 0
+│  └─ DELAY 0.05 s
+│
+├─ // Latch and validate the new request.
+├─ ASSIGN: PLC::ActiveCommand = PLC::Command
+│
+├─ IF PLC::ActiveCommand is in the range 1 to 4
+│  ├─ ASSIGN VARIABLE: PLC::RobotState = 2 (Busy)
+│  │
+│  ├─ SWITCH CASE PLC::ActiveCommand
+│  │  ├─ CASE 1: CALL the pick subroutine
+│  │  ├─ CASE 2: CALL the load subroutine
+│  │  ├─ CASE 3: CALL the unload subroutine
+│  │  └─ CASE 4: CALL the home subroutine
+│  │
+│  └─ ASSIGN: PLC::RobotState = 3 (Done)
+│
+├─ ELSE
+│  └─ ASSIGN: PLC::RobotState = 4 (Invalid command)
+│
+├─ // Hold the result until the PLC acknowledges it by clearing Command.
+├─ WHILE PLC::Command is not 0
+│  └─ DELAY 0.05 s
+│
+├─ ASSIGN: PLC::ActiveCommand = 0
+└─ ASSIGN: PLC::RobotState = 1 (Ready)
 ```
 
 The exact gripper output and feedback names depend on the signal mapping. The

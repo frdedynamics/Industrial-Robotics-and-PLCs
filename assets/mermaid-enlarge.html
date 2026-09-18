@@ -1,0 +1,92 @@
+<dialog class="mermaid-enlarge-dialog" aria-label="Enlarged diagram">
+  <button class="mermaid-enlarge-dialog__close" type="button"
+    aria-label="Close enlarged diagram" title="Close">&times;</button>
+  <div class="mermaid-enlarge-dialog__stage"></div>
+</dialog>
+
+<script>
+(() => {
+  const dialog = document.querySelector(".mermaid-enlarge-dialog");
+  const stage = dialog?.querySelector(".mermaid-enlarge-dialog__stage");
+  const closeButton = dialog?.querySelector(".mermaid-enlarge-dialog__close");
+
+  if (!dialog || !stage || !closeButton || typeof dialog.showModal !== "function") {
+    return;
+  }
+
+  const openDiagram = (sourceSvg) => {
+    const clone = sourceSvg.cloneNode(true);
+    const viewBox = sourceSvg.viewBox?.baseVal;
+    const sourceBounds = sourceSvg.getBoundingClientRect();
+    const naturalWidth = viewBox?.width || sourceBounds.width || 800;
+    const naturalHeight = viewBox?.height || sourceBounds.height || 500;
+    const availableWidth = window.innerWidth * 0.88;
+    const availableHeight = window.innerHeight * 0.78;
+    const scale = Math.max(
+      1,
+      Math.min(2, availableWidth / naturalWidth, availableHeight / naturalHeight)
+    );
+
+    clone.removeAttribute("style");
+    clone.setAttribute("width", String(Math.round(naturalWidth * scale)));
+    clone.setAttribute("height", String(Math.round(naturalHeight * scale)));
+    clone.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+    stage.replaceChildren(clone);
+    dialog.showModal();
+    closeButton.focus();
+  };
+
+  const enhanceDiagram = (diagram) => {
+    if (diagram.classList.contains("mermaid-enlargeable")) return;
+
+    const container = diagram.parentElement;
+    if (!container) return;
+
+    diagram.classList.add("mermaid-enlargeable");
+    diagram.setAttribute("title", "Open larger view");
+    diagram.addEventListener("click", () => openDiagram(diagram));
+
+    container.classList.add("mermaid-enlarge-container");
+    const expandButton = document.createElement("button");
+    expandButton.type = "button";
+    expandButton.className = "mermaid-enlarge-button";
+    expandButton.textContent = "\u26f6";
+    expandButton.setAttribute("aria-label", "Open diagram in a larger view");
+    expandButton.title = "Open larger view";
+    expandButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openDiagram(diagram);
+    });
+    container.appendChild(expandButton);
+  };
+
+  const findDiagrams = (root) => {
+    if (root instanceof Element && root.matches("svg.mermaid-js")) {
+      enhanceDiagram(root);
+    }
+    root.querySelectorAll?.("svg.mermaid-js").forEach(enhanceDiagram);
+  };
+
+  findDiagrams(document);
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => findDiagrams(node));
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  closeButton.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (event) => {
+    const bounds = dialog.getBoundingClientRect();
+    const outside =
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom;
+
+    if (outside) dialog.close();
+  });
+  dialog.addEventListener("close", () => stage.replaceChildren());
+})();
+</script>

@@ -55,6 +55,7 @@ format:
     css: styles.css
     toc: true
     lightbox: true
+    include-after-body: assets/mermaid-enlarge.html
     embed-resources: false
 
 
