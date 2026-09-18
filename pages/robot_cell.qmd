@@ -650,42 +650,55 @@ as `PLC::ActiveCommand = PLC::Command` and `PLC::RobotState = 2`. The following
 outline follows this sequential implementation. It adds an explicit validity
 check before reporting `Busy`, so an undefined command cannot briefly appear to
 have been accepted. The outline illustrates the structure; it is not source
-code that can be pasted into VC.
+code that can be pasted into VC. Uppercase lines represent VC statements or
+control structures, while lines beginning with `//` explain the purpose of the
+following statements.
 
 ```text
-Set Property: PLC::RobotState = 0 (Initializing)
-Set Property: PLC::ActiveCommand = 0
-perform the required initialization
+// Clear status from an earlier run and establish a known robot state.
+SET PROPERTY: PLC::RobotState = 0 (Initializing)
+SET PROPERTY: PLC::ActiveCommand = 0
+SET ROBOT OUTPUT: command the gripper open
+WAIT for gripper-open feedback
+CALL the move-home routine
 
-While PLC::Command is not 0
-  Delay 0.05 s
-Set Property: PLC::RobotState = 1 (Ready)
+// Do not accept a command that was already active during startup.
+WHILE PLC::Command is not 0
+  DELAY 0.05 s
+SET PROPERTY: PLC::RobotState = 1 (Ready)
 
-While the robot program is running
-  While PLC::Command is 0
-    Delay 0.05 s
+// Repeat the command dispatcher for as long as the program runs.
+WHILE the robot program is running
+  WHILE PLC::Command is 0
+    DELAY 0.05 s
 
-  Set Property: PLC::ActiveCommand = PLC::Command
+  // Latch and validate the new request.
+  SET PROPERTY: PLC::ActiveCommand = PLC::Command
 
-  If PLC::ActiveCommand is in the range 1 to 4
-    Set Property: PLC::RobotState = 2 (Busy)
+  IF PLC::ActiveCommand is in the range 1 to 4
+    SET PROPERTY: PLC::RobotState = 2 (Busy)
 
-    Switch Case PLC::ActiveCommand
-      Case 1: call the pick subroutine
-      Case 2: call the load subroutine
-      Case 3: call the unload subroutine
-      Case 4: call the home subroutine
+    SWITCH CASE PLC::ActiveCommand
+      CASE 1: CALL the pick subroutine
+      CASE 2: CALL the load subroutine
+      CASE 3: CALL the unload subroutine
+      CASE 4: CALL the home subroutine
 
-    Set Property: PLC::RobotState = 3 (Done)
-  Else
-    Set Property: PLC::RobotState = 4 (Invalid command)
+    SET PROPERTY: PLC::RobotState = 3 (Done)
+  ELSE
+    SET PROPERTY: PLC::RobotState = 4 (Invalid command)
 
-  While PLC::Command is not 0
-    Delay 0.05 s
+  // Hold the result until the PLC acknowledges it by clearing Command.
+  WHILE PLC::Command is not 0
+    DELAY 0.05 s
 
-  Set Property: PLC::ActiveCommand = 0
-  Set Property: PLC::RobotState = 1 (Ready)
+  SET PROPERTY: PLC::ActiveCommand = 0
+  SET PROPERTY: PLC::RobotState = 1 (Ready)
 ```
+
+The exact gripper output and feedback names depend on the signal mapping. The
+important point is that initialization establishes a known gripper state and a
+known robot pose before the program reports `Ready`.
 
 The first waiting loop holds `Ready` until a command arrives. The robot then
 latches and checks the request. For values `1` to `4`, it reports `Busy` and
