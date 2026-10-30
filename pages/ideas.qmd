@@ -37,3 +37,7 @@ TODO:
 - when more of the project is defined, we should revisit all the exercises on the pages and adapt them to the project and other VC content.
 
 - think about how to use the lean robotics book beneficially in the course, e.g. by giving exercises and using it for the project. Then finish the corresponding page for it.
+
+- we should make a list with useful VC examples in Layouts templates, layouts and layouts OLP
+
+- Make info on statistics in VC, students should collect some data from their project/cell and analyze in the report
