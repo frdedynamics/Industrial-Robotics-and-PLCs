@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Gathering 2: From simulation to the robot cell – Industrial Robotics and PLCs</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../favicon.ico" rel="icon">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gathering_1.html">Gatherings</a></li><li class="breadcrumb-item"><a href="../pages/gathering_2.html">Gathering 2</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Industrial Robotics and PLCs</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Robot Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Automation with Robots</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot Programming</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_safety.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot Safety</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/frames_poses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Frames and Poses</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/kinematics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Kinematics</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Simulation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/visual_components.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Visual Components</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Project</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/project.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/conveyor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Conveyor System</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/robot_cell.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Robot cell</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Gatherings</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/gathering_1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Gathering 1</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/gathering_2.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Gathering 2</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../pages/further_reading.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Further Reading</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#objective" id="toc-objective" class="nav-link active" data-scroll-target="#objective">Objective</a></li>
+  <li><a href="#the-task" id="toc-the-task" class="nav-link" data-scroll-target="#the-task">The task</a></li>
+  <li><a href="#build-the-robot-program-in-vc" id="toc-build-the-robot-program-in-vc" class="nav-link" data-scroll-target="#build-the-robot-program-in-vc">Build the robot program in VC</a>
+  <ul class="collapse">
+  <li><a href="#teach-the-motion-sequence" id="toc-teach-the-motion-sequence" class="nav-link" data-scroll-target="#teach-the-motion-sequence">Teach the motion sequence</a></li>
+  <li><a href="#structure-the-main-routine" id="toc-structure-the-main-routine" class="nav-link" data-scroll-target="#structure-the-main-routine">Structure the main routine</a></li>
+  </ul></li>
+  <li><a href="#robot-io" id="toc-robot-io" class="nav-link" data-scroll-target="#robot-io">Robot I/O</a>
+  <ul class="collapse">
+  <li><a href="#vc-actions-and-physical-io-are-different" id="toc-vc-actions-and-physical-io-are-different" class="nav-link" data-scroll-target="#vc-actions-and-physical-io-are-different">VC actions and physical I/O are different</a></li>
+  </ul></li>
+  <li><a href="#sec-gathering2-sim-to-real" id="toc-sec-gathering2-sim-to-real" class="nav-link" data-scroll-target="#sec-gathering2-sim-to-real">From simulation to the physical cell</a></li>
+  <li><a href="#commission-the-industrial-robot-carefully" id="toc-commission-the-industrial-robot-carefully" class="nav-link" data-scroll-target="#commission-the-industrial-robot-carefully">Commission the industrial robot carefully</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/gathering_2.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../pages/gathering_1.html">Gatherings</a></li><li class="breadcrumb-item"><a href="../pages/gathering_2.html">Gathering 2</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Gathering 2: From simulation to the robot cell</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="objective" class="level1">
+<h1>Objective</h1>
+<p>In this gathering, you will program a KUKA KR 6 R700 Agilus robot to work with a PLC-controlled Festo MecLab conveyor station. The exercise is deliberately small: one workpiece circulates between the conveyor and the robot. The main challenge is not the number of motions, but coordinating two controllers and transferring a program from simulation to a real industrial robot.</p>
+<p>You receive the Visual Components (VC) model with the robot, gripper, conveyor, and workpiece, but without the robot program. This page guides you through the work in the intended order: understand the cycle, teach and test it in VC, add the PLC handshake, and then commission the generated program in the physical cell. <a href="#fig-gathering2-cell" class="quarto-xref">Figure&nbsp;1</a> shows the supplied starting point.</p>
+<div id="fig-gathering2-cell" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gathering2-cell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/Robot_conveyor_VC.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: The supplied VC model contains the KUKA robot, Schunk gripper, and a recreated model of the Festo conveyor station."><img src="img/Robot_conveyor_VC.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:82.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gathering2-cell-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The supplied VC model contains the KUKA robot, Schunk gripper, and a recreated model of the Festo conveyor station.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="the-task" class="level1">
+<h1>The task</h1>
+<p>The robot is equipped with a Schunk EGP 40-N-N-B gripper. The conveyor has an inductive sensor near its start and a photoelectric sensor near the pusher. The workpieces are plastic cylinders with a diameter of 40 mm and a height of 25 mm. Some have a metallic coating. The inductive sensor identifies these workpieces near the start of the conveyor, and the PLC stores the sorting decision. When the workpiece later reaches the photoelectric sensor, that sensor provides the timing for the pusher. Metal-coated workpieces are pushed onto the slide, while uncoated plastic workpieces continue along the conveyor. In this gathering, the robot keeps one metal-coated workpiece circulating. The cycle is:</p>
+<ol type="1">
+<li>The PLC reports that a workpiece is ready at the bottom of the slide.</li>
+<li>The robot picks it up and reports that the pickup is complete.</li>
+<li>The robot places it at the start of the conveyor.</li>
+<li>The conveyor detects the metal coating and later pushes the workpiece onto the slide, after which the sequence repeats.</li>
+</ol>
+<p><a href="#fig-gathering2-conveyor" class="quarto-xref">Figure&nbsp;2</a> shows the recreated conveyor model and the two places that matter to the robot: the pickup point at the bottom of the slide and the placement point at the start of the belt.</p>
+<div id="fig-gathering2-conveyor" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-gathering2-conveyor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="img/festo_conveyor_VC.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: The recreated conveyor station. A workpiece is picked from the bottom of the slide and returned to the start of the belt."><img src="img/festo_conveyor_VC.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gathering2-conveyor-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: The recreated conveyor station. A workpiece is picked from the bottom of the slide and returned to the start of the belt.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="build-the-robot-program-in-vc" class="level1">
+<h1>Build the robot program in VC</h1>
+<p>Start by making the complete robot motion work in VC before transferring it to the real controller. The <a href="../pages/visual_components.html#sec-vc-robots">VC robot-programming sections</a> introduce jogging, teaching, routines, and robot I/O.</p>
+<section id="teach-the-motion-sequence" class="level2">
+<h2 class="anchored" data-anchor-id="teach-the-motion-sequence">Teach the motion sequence</h2>
+<p>Use a separate routine for one complete pick-and-place cycle. A suitable sequence is:</p>
+<ol type="1">
+<li>Move to an approach pose above the workpiece at the slide.</li>
+<li>Move linearly to the pickup pose.</li>
+<li>Close the gripper and allow time for it to reach the commanded state.</li>
+<li>Retract linearly until the robot and workpiece are clear of the slide.</li>
+<li>Tell the PLC that the workpiece has been picked up and removed.</li>
+<li>Move to an approach pose above the conveyor start.</li>
+<li>Move linearly to the placement pose and open the gripper.</li>
+<li>Retract to a clear pose.</li>
+</ol>
+<p>Use point-to-point motion for unobstructed transfer moves and linear motion where the TCP must approach or leave the workpiece along a controlled path. For every motion statement, select <code>BASE_DATA[1]</code> as the base and <code>TCP</code> as the tool. Do not rely only on the active frames in the <strong>Jog</strong> panel: the base and tool must be assigned to the motion statements for the KUKA program to export correctly. The <a href="../pages/frames_poses.html">frames and poses</a> page explains what these frames represent.</p>
+<p>Teach the pickup first and run the simulation until the gripper has grasped the workpiece. Then jog the robot with the workpiece attached and teach the placement pose. This shows the actual workpiece position and orientation relative to the TCP instead of requiring you to estimate them with an empty gripper. Snapping can help when aligning the held workpiece with the conveyor.</p>
+<p>Use meaningful target names such as <code>PickApproach</code>, <code>Pick</code>, <code>PlaceApproach</code>, and <code>Place</code>. Keep an eye on reachability, joint limits, robot configuration, and collisions while teaching (<a href="../pages/visual_components.html#sec-vc-robot-analysis">Reachability, limits, and collisions</a>).</p>
+</section>
+<section id="structure-the-main-routine" class="level2">
+<h2 class="anchored" data-anchor-id="structure-the-main-routine">Structure the main routine</h2>
+<p>The main routine only coordinates repeated execution. The following is pseudocode, not KUKA or VC syntax:</p>
+<pre class="text"><code>SET PickedUp to false
+
+WHILE true
+    WAIT until ReadyToPick is true
+    CALL PickAndPlace
+END WHILE</code></pre>
+<p>Inside <code>PickAndPlace</code>, set <code>PickedUp</code> to true after the gripper has closed and the robot has retracted clear of the pickup point. Keep it true while the robot transfers and places the workpiece, then reset it before the routine ends. The PLC sets <code>ReadyToPick</code> after the pusher has delivered the workpiece to the slide. It keeps the signal true until it sees <code>PickedUp</code>, and then clears it. The robot resets <code>PickedUp</code> before the routine ends and returns to waiting for the next <code>ReadyToPick</code> signal.</p>
+<p>In the VC Program Editor, implement these interactions with <strong>Wait for Binary Input</strong> and <strong>Set Binary Output</strong> statements. The postprocessor translates them into the corresponding input waits and output assignments for the KUKA controller.</p>
+</section>
+</section>
+<section id="robot-io" class="level1">
+<h1>Robot I/O</h1>
+<p>We use four binary robot signals: two gripper commands and two signals for the PLC handshake. Their directions are described from the robot’s perspective. Confirm that these robot ports are connected to the intended PLC variables in the EtherCAT mapping before running the generated KUKA program.</p>
+<p>These numbers identify robot I/O ports in VC and the generated KUKA program; they are not EtherCAT addresses or physical terminal numbers. In VC, <code>IN[103]</code> is driven directly by the pusher sensor so that the robot program can be tested without the PLC. In the physical cell, it receives the PLC’s <code>ReadyToPick</code> signal through EtherCAT.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 30%">
+<col style="width: 23%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Robot signal</th>
+<th style="text-align: right;">Port</th>
+<th>Direction</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>OpenGripper</code></td>
+<td style="text-align: right;"><code>OUT[101]</code></td>
+<td>Robot to PLC/equipment</td>
+<td>Request the gripper to open.</td>
+</tr>
+<tr class="even">
+<td><code>CloseGripper</code></td>
+<td style="text-align: right;"><code>OUT[102]</code></td>
+<td>Robot to PLC/equipment</td>
+<td>Request the gripper to close.</td>
+</tr>
+<tr class="odd">
+<td><code>ReadyToPick</code></td>
+<td style="text-align: right;"><code>IN[103]</code></td>
+<td>PLC to robot</td>
+<td>A metal-coated workpiece is waiting at the pickup position.</td>
+</tr>
+<tr class="even">
+<td><code>PickedUp</code></td>
+<td style="text-align: right;"><code>OUT[103]</code></td>
+<td>Robot to PLC</td>
+<td>The robot has removed the workpiece from the pickup position.</td>
+</tr>
+</tbody>
+</table>
+<p>Before requesting one gripper direction, reset the opposite command; do not command opening and closing simultaneously. The supplied VC gripper also has simulated open and closed state signals. These can help when testing in VC, but they are not automatically available from the physical gripper unless corresponding feedback has been wired and mapped.</p>
+<section id="vc-actions-and-physical-io-are-different" class="level2">
+<h2 class="anchored" data-anchor-id="vc-actions-and-physical-io-are-different">VC actions and physical I/O are different</h2>
+<p>The same robot program has two different environments around it:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>In the VC model</th>
+<th>In the physical cell</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Move the gripper fingers</td>
+<td>Robot outputs are connected directly to the simulated gripper’s open and close inputs.</td>
+<td>The robot output bits are transferred over EtherCAT. The PLC uses them to control the gripper’s physical inputs.</td>
+</tr>
+<tr class="even">
+<td>Hold the workpiece</td>
+<td><strong>Actions Configuration</strong> uses <code>Grasp</code> and <code>Release</code> to attach or detach the simulated cylinder.</td>
+<td>The fingers and contact forces physically hold or release the workpiece. There is no VC action in the real cell.</td>
+</tr>
+<tr class="odd">
+<td>Coordinate the pickup</td>
+<td>A robot input can be toggled or connected to a simulated signal while testing.</td>
+<td><code>ReadyToPick</code> and <code>PickedUp</code> are exchanged between the PLC and robot over EtherCAT.</td>
+</tr>
+</tbody>
+</table>
+<p>The VC <code>Grasp</code> and <code>Release</code> actions are therefore simulation-only. They must be configured on the close command, because VC only offers <code>Release</code> for the false transition of an action signal. Select output <code>102</code>, set <strong>On True</strong> to <code>Grasp</code>, and set <strong>On False</strong> to <code>Release</code>. Closing the gripper then sets <code>OUT[102]</code> to true and attaches the workpiece. Opening first resets <code>OUT[102]</code>, which releases the workpiece, and then sets <code>OUT[101]</code> to open the fingers. These actions are not sent to the PLC. Conversely, an EtherCAT bit can be correct even if the simulated workpiece does not attach, because attachment depends on VC’s internal action configuration. The relationship between signal connections, numbered robot ports, and internal actions is explained in <a href="../pages/visual_components.html#sec-vc-robot-io">Robot I/O and signal actions</a>.</p>
+</section>
+</section>
+<section id="sec-gathering2-sim-to-real" class="level1">
+<h1>From simulation to the physical cell</h1>
+<p>The supplied conveyor is not an original CAD model or a calibrated digital twin. It was recreated from measurements using standard VC components. Small differences in dimensions and in the positions of the sensors, slide, and workpiece stops are therefore possible. More importantly, the conveyor’s pose relative to the robot base frame has not yet been calibrated.</p>
+<p>Treat the simulated targets as a strong starting point, not as verified robot targets. Use <code>BASE_DATA[1]</code> as the conveyor base for all motion statements. If the complete conveyor is displaced relative to the real robot, correcting this base frame relocates all targets that reference it together. Moving only the conveyor geometry in VC does not necessarily move the taught targets. After correcting the common offset, expect to touch up individual pick, place, approach, and retract targets to account for local modeling differences.</p>
+<p>VC also allows several visible robot positions to be selected and moved together. This is useful for correcting existing targets, but changing the shared base is preferable when the error belongs to the complete conveyor setup. In either case, check the paths, configurations, limits, and collisions again afterward. See <a href="https://help.visualcomponents.com/5.1/Premium/en/English/Robot%20Programming/Program/Edit_robot_positions.htm">Editing robot positions</a>.</p>
+<p>Also confirm that the TCP and base used by the generated program correspond to the physical robot configuration. A correct-looking pose in VC does not guarantee a correct physical pose when the model placement, base frame, or TCP differs.</p>
+</section>
+<section id="commission-the-industrial-robot-carefully" class="level1">
+<h1>Commission the industrial robot carefully</h1>
+<p>In Gathering 1, generated programs are run on a UR5e. In this gathering, you use a non-collaborative industrial manipulator with position control. The KUKA robot will attempt to follow the commanded trajectory; it does not understand that a target originated from an approximate simulation model or that an unexpected object is in its path.</p>
+<p>Before running the complete cycle on the physical robot:</p>
+<ol type="1">
+<li>Keep the cell locked and ensure that everyone is outside.</li>
+<li>Verify the base, TCP, load data, gripper I/O, and PLC handshake without automatic robot motion.</li>
+<li>With instructor authorization, check every target individually in T1/manual mode at low speed. Confirm both the target pose and the path used to reach it.</li>
+<li>Test approach and retract motions before testing the complete pick-and-place routine.</li>
+<li>Run the complete program only after all targets, motions, I/O actions, and handshake transitions have been verified.</li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled" title="Access to the experimental cell">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Access to the experimental cell
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This teaching cell does not implement every safeguard expected in a production installation. This is acceptable only while access remains controlled. No one may enter the cell unless the robot is in the safe state specified by the instructor. Never enter while the robot is enabled or capable of unexpected motion. The ordinary EtherCAT signals used for the handshake are control signals, not safety functions. The wider principles are discussed in <a href="../pages/robot_safety.html#normal-io-and-safety-io">Normal I/O and safety I/O</a> and <a href="../pages/robot_safety.html#sec-commissioning">Commissioning and periodic checks</a>.</p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<dialog class="mermaid-enlarge-dialog" aria-label="Enlarged diagram">
+  <button class="mermaid-enlarge-dialog__close" type="button" aria-label="Close enlarged diagram" title="Close">×</button>
+  <div class="mermaid-enlarge-dialog__stage"></div>
+</dialog>
+
+<script>
+(() => {
+  const dialog = document.querySelector(".mermaid-enlarge-dialog");
+  const stage = dialog?.querySelector(".mermaid-enlarge-dialog__stage");
+  const closeButton = dialog?.querySelector(".mermaid-enlarge-dialog__close");
+
+  if (!dialog || !stage || !closeButton || typeof dialog.showModal !== "function") {
+    return;
+  }
+
+  const openDiagram = (sourceSvg) => {
+    const clone = sourceSvg.cloneNode(true);
+    const viewBox = sourceSvg.viewBox?.baseVal;
+    const sourceBounds = sourceSvg.getBoundingClientRect();
+    const naturalWidth = viewBox?.width || sourceBounds.width || 800;
+    const naturalHeight = viewBox?.height || sourceBounds.height || 500;
+    const availableWidth = window.innerWidth * 0.88;
+    const availableHeight = window.innerHeight * 0.78;
+    const scale = Math.max(
+      1,
+      Math.min(2, availableWidth / naturalWidth, availableHeight / naturalHeight)
+    );
+
+    clone.removeAttribute("style");
+    clone.setAttribute("width", String(Math.round(naturalWidth * scale)));
+    clone.setAttribute("height", String(Math.round(naturalHeight * scale)));
+    clone.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+    stage.replaceChildren(clone);
+    dialog.showModal();
+    closeButton.focus();
+  };
+
+  const enhanceDiagram = (diagram) => {
+    if (diagram.classList.contains("mermaid-enlargeable")) return;
+
+    const container = diagram.parentElement;
+    if (!container) return;
+
+    diagram.classList.add("mermaid-enlargeable");
+    diagram.setAttribute("title", "Open larger view");
+    diagram.addEventListener("click", () => openDiagram(diagram));
+
+    container.classList.add("mermaid-enlarge-container");
+    const expandButton = document.createElement("button");
+    expandButton.type = "button";
+    expandButton.className = "mermaid-enlarge-button";
+    expandButton.textContent = "\u26f6";
+    expandButton.setAttribute("aria-label", "Open diagram in a larger view");
+    expandButton.title = "Open larger view";
+    expandButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      openDiagram(diagram);
+    });
+    container.appendChild(expandButton);
+  };
+
+  const findDiagrams = (root) => {
+    if (root instanceof Element && root.matches("svg.mermaid-js")) {
+      enhanceDiagram(root);
+    }
+    root.querySelectorAll?.("svg.mermaid-js").forEach(enhanceDiagram);
+  };
+
+  findDiagrams(document);
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => findDiagrams(node));
+    });
+  });
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  closeButton.addEventListener("click", () => dialog.close());
+  dialog.addEventListener("click", (event) => {
+    const bounds = dialog.getBoundingClientRect();
+    const outside =
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom;
+
+    if (outside) dialog.close();
+  });
+  dialog.addEventListener("close", () => stage.replaceChildren());
+})();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/frdedynamics\.github\.io\/Industrial-Robotics-and-PLCs\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/edit/master/pages/gathering_2.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/frdedynamics/Industrial-Robotics-and-PLCs/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

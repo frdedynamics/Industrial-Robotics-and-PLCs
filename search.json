@@ -253,6 +253,50 @@
     ]
   },
   {
+    "objectID": "pages/gathering_2.html",
+    "href": "pages/gathering_2.html",
+    "title": "Gathering 2: From simulation to the robot cell",
+    "section": "",
+    "text": "In this gathering, you will program a KUKA KR 6 R700 Agilus robot to work with a PLC-controlled Festo MecLab conveyor station. The exercise is deliberately small: one workpiece circulates between the conveyor and the robot. The main challenge is not the number of motions, but coordinating two controllers and transferring a program from simulation to a real industrial robot.\nYou receive the Visual Components (VC) model with the robot, gripper, conveyor, and workpiece, but without the robot program. This page guides you through the work in the intended order: understand the cycle, teach and test it in VC, add the PLC handshake, and then commission the generated program in the physical cell. Figure 1 shows the supplied starting point.\n\n\n\n\n\n\nFigure 1: The supplied VC model contains the KUKA robot, Schunk gripper, and a recreated model of the Festo conveyor station.",
+    "crumbs": [
+      "Gatherings",
+      "Gathering 2"
+    ]
+  },
+  {
+    "objectID": "pages/gathering_2.html#teach-the-motion-sequence",
+    "href": "pages/gathering_2.html#teach-the-motion-sequence",
+    "title": "Gathering 2: From simulation to the robot cell",
+    "section": "Teach the motion sequence",
+    "text": "Teach the motion sequence\nUse a separate routine for one complete pick-and-place cycle. A suitable sequence is:\n\nMove to an approach pose above the workpiece at the slide.\nMove linearly to the pickup pose.\nClose the gripper and allow time for it to reach the commanded state.\nRetract linearly until the robot and workpiece are clear of the slide.\nTell the PLC that the workpiece has been picked up and removed.\nMove to an approach pose above the conveyor start.\nMove linearly to the placement pose and open the gripper.\nRetract to a clear pose.\n\nUse point-to-point motion for unobstructed transfer moves and linear motion where the TCP must approach or leave the workpiece along a controlled path. For every motion statement, select BASE_DATA[1] as the base and TCP as the tool. Do not rely only on the active frames in the Jog panel: the base and tool must be assigned to the motion statements for the KUKA program to export correctly. The frames and poses page explains what these frames represent.\nTeach the pickup first and run the simulation until the gripper has grasped the workpiece. Then jog the robot with the workpiece attached and teach the placement pose. This shows the actual workpiece position and orientation relative to the TCP instead of requiring you to estimate them with an empty gripper. Snapping can help when aligning the held workpiece with the conveyor.\nUse meaningful target names such as PickApproach, Pick, PlaceApproach, and Place. Keep an eye on reachability, joint limits, robot configuration, and collisions while teaching (Reachability, limits, and collisions).",
+    "crumbs": [
+      "Gatherings",
+      "Gathering 2"
+    ]
+  },
+  {
+    "objectID": "pages/gathering_2.html#structure-the-main-routine",
+    "href": "pages/gathering_2.html#structure-the-main-routine",
+    "title": "Gathering 2: From simulation to the robot cell",
+    "section": "Structure the main routine",
+    "text": "Structure the main routine\nThe main routine only coordinates repeated execution. The following is pseudocode, not KUKA or VC syntax:\nSET PickedUp to false\n\nWHILE true\n    WAIT until ReadyToPick is true\n    CALL PickAndPlace\nEND WHILE\nInside PickAndPlace, set PickedUp to true after the gripper has closed and the robot has retracted clear of the pickup point. Keep it true while the robot transfers and places the workpiece, then reset it before the routine ends. The PLC sets ReadyToPick after the pusher has delivered the workpiece to the slide. It keeps the signal true until it sees PickedUp, and then clears it. The robot resets PickedUp before the routine ends and returns to waiting for the next ReadyToPick signal.\nIn the VC Program Editor, implement these interactions with Wait for Binary Input and Set Binary Output statements. The postprocessor translates them into the corresponding input waits and output assignments for the KUKA controller.",
+    "crumbs": [
+      "Gatherings",
+      "Gathering 2"
+    ]
+  },
+  {
+    "objectID": "pages/gathering_2.html#vc-actions-and-physical-io-are-different",
+    "href": "pages/gathering_2.html#vc-actions-and-physical-io-are-different",
+    "title": "Gathering 2: From simulation to the robot cell",
+    "section": "VC actions and physical I/O are different",
+    "text": "VC actions and physical I/O are different\nThe same robot program has two different environments around it:\n\n\n\n\n\n\n\n\nFunction\nIn the VC model\nIn the physical cell\n\n\n\n\nMove the gripper fingers\nRobot outputs are connected directly to the simulated gripper’s open and close inputs.\nThe robot output bits are transferred over EtherCAT. The PLC uses them to control the gripper’s physical inputs.\n\n\nHold the workpiece\nActions Configuration uses Grasp and Release to attach or detach the simulated cylinder.\nThe fingers and contact forces physically hold or release the workpiece. There is no VC action in the real cell.\n\n\nCoordinate the pickup\nA robot input can be toggled or connected to a simulated signal while testing.\nReadyToPick and PickedUp are exchanged between the PLC and robot over EtherCAT.\n\n\n\nThe VC Grasp and Release actions are therefore simulation-only. They must be configured on the close command, because VC only offers Release for the false transition of an action signal. Select output 102, set On True to Grasp, and set On False to Release. Closing the gripper then sets OUT[102] to true and attaches the workpiece. Opening first resets OUT[102], which releases the workpiece, and then sets OUT[101] to open the fingers. These actions are not sent to the PLC. Conversely, an EtherCAT bit can be correct even if the simulated workpiece does not attach, because attachment depends on VC’s internal action configuration. The relationship between signal connections, numbered robot ports, and internal actions is explained in Robot I/O and signal actions.",
+    "crumbs": [
+      "Gatherings",
+      "Gathering 2"
+    ]
+  },
+  {
     "objectID": "pages/further_reading.html",
     "href": "pages/further_reading.html",
     "title": "Further Reading",
@@ -424,6 +468,17 @@
     "crumbs": [
       "Robot Foundations",
       "Frames and Poses"
+    ]
+  },
+  {
+    "objectID": "pages/gathering_1.html",
+    "href": "pages/gathering_1.html",
+    "title": "Gathering 1",
+    "section": "",
+    "text": "Information and materials for Gathering 1 are available in Canvas.",
+    "crumbs": [
+      "Gatherings",
+      "Gathering 1"
     ]
   },
   {
