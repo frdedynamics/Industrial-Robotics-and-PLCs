@@ -41,6 +41,13 @@ website:
             href: pages/project.qmd
           - pages/conveyor.qmd
           - pages/robot_cell.qmd   
+
+      - section: Gatherings
+        contents:
+          - text: "Gathering 1"
+            href: pages/gathering_1.qmd
+          - text: "Gathering 2"
+            href: pages/gathering_2.qmd
           
       - text: "Further Reading"
         href: pages/further_reading.qmd
