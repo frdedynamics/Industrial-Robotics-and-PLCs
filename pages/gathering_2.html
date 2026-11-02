@@ -360,50 +360,56 @@ END WHILE</code></pre>
 </section>
 <section id="robot-io" class="level1">
 <h1>Robot I/O</h1>
-<p>We use four binary robot signals: two gripper commands and two signals for the PLC handshake. Their directions are described from the robot’s perspective. Confirm that these robot ports are connected to the intended PLC variables in the EtherCAT mapping before running the generated KUKA program.</p>
-<p>These numbers identify robot I/O ports in VC and the generated KUKA program; they are not EtherCAT addresses or physical terminal numbers. In VC, <code>IN[103]</code> is driven directly by the pusher sensor so that the robot program can be tested without the PLC. In the physical cell, it receives the PLC’s <code>ReadyToPick</code> signal through EtherCAT.</p>
+<p>We use four binary robot signals: two gripper commands and two signals for the PLC handshake. Their directions are described from the robot’s perspective. The VC model and the physical cell use different I/O numbers, so do not copy the simulated addresses into the physical program unchanged.</p>
 <table class="caption-top table">
 <colgroup>
+<col style="width: 17%">
+<col style="width: 17%">
 <col style="width: 23%">
-<col style="width: 30%">
 <col style="width: 23%">
-<col style="width: 23%">
+<col style="width: 17%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Robot signal</th>
-<th style="text-align: right;">Port</th>
 <th>Direction</th>
+<th style="text-align: right;">VC simulation</th>
+<th style="text-align: right;">Physical KUKA robot</th>
 <th>Purpose</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td><code>OpenGripper</code></td>
+<td>Robot to gripper</td>
 <td style="text-align: right;"><code>OUT[101]</code></td>
-<td>Robot to PLC/equipment</td>
-<td>Request the gripper to open.</td>
+<td style="text-align: right;"><code>$OUT[34]</code></td>
+<td>Command the gripper to open.</td>
 </tr>
 <tr class="even">
 <td><code>CloseGripper</code></td>
+<td>Robot to gripper</td>
 <td style="text-align: right;"><code>OUT[102]</code></td>
-<td>Robot to PLC/equipment</td>
-<td>Request the gripper to close.</td>
+<td style="text-align: right;"><code>$OUT[35]</code></td>
+<td>Command the gripper to close.</td>
 </tr>
 <tr class="odd">
 <td><code>ReadyToPick</code></td>
-<td style="text-align: right;"><code>IN[103]</code></td>
 <td>PLC to robot</td>
+<td style="text-align: right;"><code>IN[103]</code></td>
+<td style="text-align: right;"><code>$IN[1201]</code></td>
 <td>A metal-coated workpiece is waiting at the pickup position.</td>
 </tr>
 <tr class="even">
 <td><code>PickedUp</code></td>
-<td style="text-align: right;"><code>OUT[103]</code></td>
 <td>Robot to PLC</td>
+<td style="text-align: right;"><code>OUT[103]</code></td>
+<td style="text-align: right;"><code>$OUT[1201]</code></td>
 <td>The robot has removed the workpiece from the pickup position.</td>
 </tr>
 </tbody>
 </table>
+<p>In VC, <code>IN[103]</code> can be driven directly by the simulated pusher sensor so that the robot sequence can be tested without the PLC. In the physical cell, the PLC sends <code>ReadyToPick</code> to the robot’s X12 digital input, and the robot returns <code>PickedUp</code> from an X12 digital output to a PLC digital input. We use these simple hardwired digital signals because the attempted EtherCAT connection between the PLC and robot was not used in the final setup. Before commissioning, check that the generated KUKA program references the physical addresses in the table rather than the VC simulation addresses.</p>
 <p>Before requesting one gripper direction, reset the opposite command; do not command opening and closing simultaneously. The supplied VC gripper also has simulated open and closed state signals. These can help when testing in VC, but they are not automatically available from the physical gripper unless corresponding feedback has been wired and mapped.</p>
 <section id="vc-actions-and-physical-io-are-different" class="level2">
 <h2 class="anchored" data-anchor-id="vc-actions-and-physical-io-are-different">VC actions and physical I/O are different</h2>
@@ -424,8 +430,8 @@ END WHILE</code></pre>
 <tbody>
 <tr class="odd">
 <td>Move the gripper fingers</td>
-<td>Robot outputs are connected directly to the simulated gripper’s open and close inputs.</td>
-<td>The robot output bits are transferred over EtherCAT. The PLC uses them to control the gripper’s physical inputs.</td>
+<td><code>OUT[101]</code> and <code>OUT[102]</code> are connected directly to the simulated gripper’s open and close inputs.</td>
+<td>The KUKA controller uses <code>$OUT[34]</code> and <code>$OUT[35]</code> to command the physical gripper.</td>
 </tr>
 <tr class="even">
 <td>Hold the workpiece</td>
@@ -434,12 +440,12 @@ END WHILE</code></pre>
 </tr>
 <tr class="odd">
 <td>Coordinate the pickup</td>
-<td>A robot input can be toggled or connected to a simulated signal while testing.</td>
-<td><code>ReadyToPick</code> and <code>PickedUp</code> are exchanged between the PLC and robot over EtherCAT.</td>
+<td><code>IN[103]</code> can be toggled or connected to the simulated pusher sensor while testing; <code>OUT[103]</code> reports pickup.</td>
+<td><code>ReadyToPick</code> uses <code>$IN[1201]</code> and <code>PickedUp</code> uses <code>$OUT[1201]</code>. They are exchanged through the robot’s X12 digital I/O and ordinary PLC digital I/O.</td>
 </tr>
 </tbody>
 </table>
-<p>The VC <code>Grasp</code> and <code>Release</code> actions are therefore simulation-only. They must be configured on the close command, because VC only offers <code>Release</code> for the false transition of an action signal. Select output <code>102</code>, set <strong>On True</strong> to <code>Grasp</code>, and set <strong>On False</strong> to <code>Release</code>. Closing the gripper then sets <code>OUT[102]</code> to true and attaches the workpiece. Opening first resets <code>OUT[102]</code>, which releases the workpiece, and then sets <code>OUT[101]</code> to open the fingers. These actions are not sent to the PLC. Conversely, an EtherCAT bit can be correct even if the simulated workpiece does not attach, because attachment depends on VC’s internal action configuration. The relationship between signal connections, numbered robot ports, and internal actions is explained in <a href="../pages/visual_components.html#sec-vc-robot-io">Robot I/O and signal actions</a>.</p>
+<p>The VC <code>Grasp</code> and <code>Release</code> actions are therefore simulation-only. They must be configured on the close command, because VC only offers <code>Release</code> for the false transition of an action signal. Select output <code>102</code>, set <strong>On True</strong> to <code>Grasp</code>, and set <strong>On False</strong> to <code>Release</code>. Closing the gripper then sets <code>OUT[102]</code> to true and attaches the workpiece. Opening first resets <code>OUT[102]</code>, which releases the workpiece, and then sets <code>OUT[101]</code> to open the fingers. These actions exist only inside VC. Conversely, a physical output can be correct even if the simulated workpiece does not attach, because attachment depends on VC’s internal action configuration. The relationship between signal connections, numbered robot ports, and internal actions is explained in <a href="../pages/visual_components.html#sec-vc-robot-io">Robot I/O and signal actions</a>.</p>
 </section>
 </section>
 <section id="sec-gathering2-sim-to-real" class="level1">
@@ -470,7 +476,7 @@ END WHILE</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This teaching cell does not implement every safeguard expected in a production installation. This is acceptable only while access remains controlled. No one may enter the cell unless the robot is in the safe state specified by the instructor. Never enter while the robot is enabled or capable of unexpected motion. The ordinary EtherCAT signals used for the handshake are control signals, not safety functions. The wider principles are discussed in <a href="../pages/robot_safety.html#normal-io-and-safety-io">Normal I/O and safety I/O</a> and <a href="../pages/robot_safety.html#sec-commissioning">Commissioning and periodic checks</a>.</p>
+<p>This teaching cell does not implement every safeguard expected in a production installation. This is acceptable only while access remains controlled. No one may enter the cell unless the robot is in the safe state specified by the instructor. Never enter while the robot is enabled or capable of unexpected motion. The ordinary digital signals used for the handshake are control signals, not safety functions. The wider principles are discussed in <a href="../pages/robot_safety.html#normal-io-and-safety-io">Normal I/O and safety I/O</a> and <a href="../pages/robot_safety.html#sec-commissioning">Commissioning and periodic checks</a>.</p>
 </div>
 </div>
 
