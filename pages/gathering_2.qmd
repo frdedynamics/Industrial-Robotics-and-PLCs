@@ -115,21 +115,24 @@ controller.
 
 We use four binary robot signals: two gripper commands and two signals for the
 PLC handshake. Their directions are described from the robot's perspective.
-Confirm that these robot ports are connected to the intended PLC variables in
-the EtherCAT mapping before running the generated KUKA program.
+The VC model and the physical cell use different I/O numbers, so do not copy
+the simulated addresses into the physical program unchanged.
 
-These numbers identify robot I/O ports in VC and the generated KUKA program;
-they are not EtherCAT addresses or physical terminal numbers. In VC,
-`IN[103]` is driven directly by the pusher sensor so that the robot program can
-be tested without the PLC. In the physical cell, it receives the PLC's
-`ReadyToPick` signal through EtherCAT.
+| Robot signal | Direction | VC simulation | Physical KUKA robot | Purpose |
+|---|---|---:|---:|---|
+| `OpenGripper` | Robot to gripper | `OUT[101]` | `$OUT[34]` | Command the gripper to open. |
+| `CloseGripper` | Robot to gripper | `OUT[102]` | `$OUT[35]` | Command the gripper to close. |
+| `ReadyToPick` | PLC to robot | `IN[103]` | `$IN[1201]` | A metal-coated workpiece is waiting at the pickup position. |
+| `PickedUp` | Robot to PLC | `OUT[103]` | `$OUT[1201]` | The robot has removed the workpiece from the pickup position. |
 
-| Robot signal | Port | Direction | Purpose |
-|---|---:|---|---|
-| `OpenGripper` | `OUT[101]` | Robot to PLC/equipment | Request the gripper to open. |
-| `CloseGripper` | `OUT[102]` | Robot to PLC/equipment | Request the gripper to close. |
-| `ReadyToPick` | `IN[103]` | PLC to robot | A metal-coated workpiece is waiting at the pickup position. |
-| `PickedUp` | `OUT[103]` | Robot to PLC | The robot has removed the workpiece from the pickup position. |
+In VC, `IN[103]` can be driven directly by the simulated pusher sensor so that
+the robot sequence can be tested without the PLC. In the physical cell, the
+PLC sends `ReadyToPick` to the robot's X12 digital input, and the robot returns
+`PickedUp` from an X12 digital output to a PLC digital input. We use these
+simple hardwired digital signals because the attempted EtherCAT connection
+between the PLC and robot was not used in the final setup. Before commissioning,
+check that the generated KUKA program references the physical addresses in the
+table rather than the VC simulation addresses.
 
 Before requesting one gripper direction, reset the opposite command; do not
 command opening and closing simultaneously. The supplied VC gripper also has
@@ -143,9 +146,9 @@ The same robot program has two different environments around it:
 
 | Function | In the VC model | In the physical cell |
 |---|---|---|
-| Move the gripper fingers | Robot outputs are connected directly to the simulated gripper's open and close inputs. | The robot output bits are transferred over EtherCAT. The PLC uses them to control the gripper's physical inputs. |
+| Move the gripper fingers | `OUT[101]` and `OUT[102]` are connected directly to the simulated gripper's open and close inputs. | The KUKA controller uses `$OUT[34]` and `$OUT[35]` to command the physical gripper. |
 | Hold the workpiece | **Actions Configuration** uses `Grasp` and `Release` to attach or detach the simulated cylinder. | The fingers and contact forces physically hold or release the workpiece. There is no VC action in the real cell. |
-| Coordinate the pickup | A robot input can be toggled or connected to a simulated signal while testing. | `ReadyToPick` and `PickedUp` are exchanged between the PLC and robot over EtherCAT. |
+| Coordinate the pickup | `IN[103]` can be toggled or connected to the simulated pusher sensor while testing; `OUT[103]` reports pickup. | `ReadyToPick` uses `$IN[1201]` and `PickedUp` uses `$OUT[1201]`. They are exchanged through the robot's X12 digital I/O and ordinary PLC digital I/O. |
 
 The VC `Grasp` and `Release` actions are therefore simulation-only. They must
 be configured on the close command, because VC only offers `Release` for the
@@ -153,11 +156,10 @@ false transition of an action signal. Select output `102`, set **On True** to
 `Grasp`, and set **On False** to `Release`. Closing the gripper then sets
 `OUT[102]` to true and attaches the workpiece. Opening first resets
 `OUT[102]`, which releases the workpiece, and then sets `OUT[101]` to open the
-fingers. These actions are not sent to the PLC. Conversely, an EtherCAT bit
-can be correct even if the simulated workpiece does not attach, because
-attachment depends on VC's internal action configuration. The relationship
-between signal connections, numbered robot ports, and internal actions is
-explained in
+fingers. These actions exist only inside VC. Conversely, a physical output can
+be correct even if the simulated workpiece does not attach, because attachment
+depends on VC's internal action configuration. The relationship between signal
+connections, numbered robot ports, and internal actions is explained in
 [Robot I/O and signal actions](visual_components.qmd#sec-vc-robot-io).
 
 # From simulation to the physical cell {#sec-gathering2-sim-to-real}
@@ -208,7 +210,7 @@ This teaching cell does not implement every safeguard expected in a production
 installation. This is acceptable only while access remains controlled. No one
 may enter the cell unless the robot is in the safe state specified by the
 instructor. Never enter while the robot is enabled or capable of unexpected
-motion. The ordinary EtherCAT signals used for the handshake are control
+motion. The ordinary digital signals used for the handshake are control
 signals, not safety functions. The wider principles are discussed in
 [Normal I/O and safety I/O](robot_safety.qmd#normal-io-and-safety-io) and
 [Commissioning and periodic checks](robot_safety.qmd#sec-commissioning).
