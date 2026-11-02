@@ -1,0 +1,3 @@
+DEF conveyor_loop_v2( )
+$APO.CDIS = 50.0
+
